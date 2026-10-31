@@ -20,6 +20,9 @@
     var windEl = document.getElementById("weather-wind");
     var msgEl = document.getElementById("weather-msg");
     var forecastEl = document.getElementById("weather-forecast-list");
+    var tipEl = document.getElementById("weather-tip");
+    var tipTimer = null;
+    var tipOwner = null;
     var DEFAULT_NOTE = "업데이트 주기: 10분";
 
     function normalize(text) {
@@ -136,6 +139,36 @@
         msgEl.textContent = text || DEFAULT_NOTE;
     }
 
+    /* 예보 칸을 누르면(폰) 또는 키보드로 선택하면 간단한 설명을 말풍선으로 보여줘요. */
+    function hideTip() {
+        if (tipTimer !== null) {
+            clearTimeout(tipTimer);
+            tipTimer = null;
+        }
+        tipOwner = null;
+        tipEl.hidden = true;
+    }
+
+    function toggleTip(box, text) {
+        if (!tipEl.hidden && tipOwner === box) {
+            hideTip();
+            return;
+        }
+
+        hideTip();
+        tipOwner = box;
+        tipEl.textContent = text;
+        tipEl.hidden = false;
+
+        // 눌린 칸의 왼쪽, 세로 가운데에 붙여요.
+        var w = widget.getBoundingClientRect();
+        var b = box.getBoundingClientRect();
+        tipEl.style.right = (w.right - b.left + 4) + "px";
+        tipEl.style.top = (b.top - w.top + b.height / 2) + "px";
+
+        tipTimer = setTimeout(hideTip, 3000);
+    }
+
     function pad2(n) { return n < 10 ? "0" + n : String(n); }
 
     // "2026-11-01"에 n일을 더한 날짜 문자열
@@ -149,6 +182,7 @@
        - 지역 현지 시각이 06시 이전(자정~새벽)이면 "오늘"도 함께 보여줘요.
        - 그 외에는 "내일", "모레"만 보여줘요. */
     function renderForecast(current, hourly) {
+        hideTip();
         forecastEl.innerHTML = "";
 
         var nowText = String(current.time || "");
@@ -181,6 +215,8 @@
             var temp = document.createElement("span");
             temp.className = "fb-temp";
 
+            var tipText = "예보를 받아오지 못했어요";
+
             if (idx === -1) {
                 icon.textContent = "-";
                 temp.textContent = "--";
@@ -189,7 +225,20 @@
                 icon.textContent = info.icon;
                 temp.textContent = Math.round(hourly.temperature_2m[idx]) + "°";
                 box.title = day.label + " 오전 6시: " + info.text;
+                tipText = info.text;
             }
+
+            box.setAttribute("role", "button");
+            box.tabIndex = 0;
+            box.addEventListener("click", function () {
+                toggleTip(box, tipText);
+            });
+            box.addEventListener("keydown", function (e) {
+                if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    toggleTip(box, tipText);
+                }
+            });
 
             row.appendChild(icon);
             row.appendChild(temp);
@@ -403,6 +452,13 @@
         if (dropdownEl.hidden) return;
         if (searchRow.contains(e.target) || dropdownEl.contains(e.target)) return;
         closeDropdown();
+    });
+
+    // 예보 칸 바깥을 누르면 말풍선을 닫아요.
+    document.addEventListener("pointerdown", function (e) {
+        if (tipEl.hidden) return;
+        if (e.target.closest && e.target.closest(".weather-fbox")) return;
+        hideTip();
     });
 
     /* 시작: 저장된 지역이 있으면 그곳, 없으면 천안 */
