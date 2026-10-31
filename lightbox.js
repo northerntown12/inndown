@@ -1,8 +1,4 @@
-/* ===== 왼쪽 그림 클릭 시 팝업(크게 보기) =====
-   - 그림을 누르면(PC 클릭 / 폰 터치) 화면 가운데에 크게 떠요.
-   - 닫기: 아무 곳이나 누르기, 오른쪽 위 ✕ 버튼, 키보드 Esc
-   - 그림 파일명을 바꿔도 자동으로 그 그림을 보여줘요. (index.html의 <img>를 읽어요)
-   - CSS와 팝업 요소를 이 파일이 직접 만들어서, 이 파일 하나만 추가하면 돼요. */
+
 (function () {
     "use strict";
 
@@ -12,7 +8,7 @@
     /* 스타일 */
     var style = document.createElement("style");
     style.textContent = [
-        ".tree-panel img { cursor: zoom-in; }",
+        ".tree-panel img { cursor: pointer; }",
         "body.lightbox-open { overflow: hidden; }",
         ".img-lightbox {",
         "    position: fixed; inset: 0; z-index: 1000;",
