@@ -655,7 +655,7 @@ button:active {
     margin: 0;
     width: 100%;
     color: inherit;
-    font-size: 1.3rem;
+    font-size: 1.2rem;   /* 로또 추첨기 제목과 같은 크기 */
     text-align: center;
 }
 
