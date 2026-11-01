@@ -279,7 +279,7 @@ body {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     grid-template-rows: minmax(30px, auto) repeat(5, 1fr);
-    gap: 2px;
+    gap: 3px;
     width: 100%;
     height: 100%;
     min-width: 0;
@@ -354,27 +354,43 @@ button:active {
     grid-column: span 2;
 }
 
+/* 배경 그림(::before, z-index:1)이 버튼과 숫자를 덮어서 흐릿했어요 → 버튼과 표시창을 그 위로 올려요 */
+.calculator .display { position: relative; z-index: 2; }
+
 .calculator button {
     position: relative;
+    z-index: 2;
     border-radius: 8px;
     background: transparent;
     color: #000;
+    font-size: 1.05rem;
     font-weight: 900;
     -webkit-text-stroke: 0.6px #000;
 }
 
+/* 버튼 면: 칸을 꽉 채우고(기존 70% → 100%), 오른쪽·아래를 진하고 두껍게 해서 입체감을 줘요 */
 .calculator button::before {
     content: "";
     position: absolute;
-    width: 70%;
-    height: 70%;
-    top: 15%;
-    left: 15%;
-    border: 1px solid rgba(0, 102, 204, 0.18);
-    border-radius: 6px;
-    background: rgba(255, 255, 255, 0.35);
-    box-shadow: inset 0 0 2px rgba(0, 102, 204, 0.08);
+    z-index: -1;                        /* 숫자 글씨 뒤, 버튼 바닥 앞 */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 1px solid rgba(0, 70, 150, 0.35);
+    border-right: 3px solid rgba(0, 50, 130, 0.8);
+    border-bottom: 3px solid rgba(0, 50, 130, 0.8);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.88);
+    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.25);
     pointer-events: none;
+}
+
+/* 누르면 눌린 것처럼: 진한 테두리가 얇아지고 살짝 눌려요 */
+.calculator button:active::before {
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    box-shadow: none;
 }
 
 .calculator button:active {
@@ -391,7 +407,7 @@ button:active {
 
 .memo-pad {
     --u: 1cqw;                         /* 박스 너비의 1% */
-    --row: calc(var(--u) * 8.5);       /* 줄 간격 */
+    --row: calc(var(--u) * 8);         /* 줄 간격 */
     --line: #86aedb;                   /* 푸른 가로줄 */
     --margin: #e08585;                 /* 빨간 세로줄 */
     --ink: #5b4f1a;
@@ -401,8 +417,8 @@ button:active {
     min-height: 100%;                  /* 칸이 세로로 더 길면 메모지도 같이 늘어나요 */
     display: flex;
     flex-direction: column;
-    gap: calc(var(--u) * 1.6);
-    padding: calc(var(--u) * 3.2) calc(var(--u) * 3) calc(var(--u) * 2.4) calc(var(--u) * 11.5);
+    gap: calc(var(--u) * 1.4);
+    padding: calc(var(--u) * 2.8) calc(var(--u) * 3) calc(var(--u) * 1.6) calc(var(--u) * 11.5);
     overflow: hidden;
     background: linear-gradient(180deg, #fff3a6 0%, #fbe988 100%);
     color: #222;
@@ -432,8 +448,8 @@ button:active {
     margin: 0;
     flex: none;
     text-align: center;
-    font-size: max(10px, calc(var(--u) * 6.6));
-    line-height: calc(var(--u) * 8);
+    font-size: max(10px, calc(var(--u) * 6.4));
+    line-height: calc(var(--u) * 7.2);
     color: #3a3000;
     white-space: nowrap;
 }
@@ -442,8 +458,8 @@ button:active {
 .memo-tabs {
     flex: none;
     display: flex;
-    gap: calc(var(--u) * 1.6);
-    height: calc(var(--u) * 10.5);
+    gap: calc(var(--u) * 1.4);
+    height: calc(var(--u) * 10);
 }
 
 .memo-pad .memo-tab {
@@ -459,7 +475,7 @@ button:active {
 }
 
 .memo-pad .memo-tab-todo,
-.memo-pad .memo-tab-todo:hover { background: #d32f2f; color: #fff; }
+.memo-pad .memo-tab-todo:hover { background: #ff8a00; color: #2b1500; }
 .memo-pad .memo-tab-note,
 .memo-pad .memo-tab-note:hover { background: #9bdc4e; color: #1c3300; }
 
@@ -473,7 +489,7 @@ button:active {
 .memo-pad .memo-icon,
 .memo-pad .memo-icon:hover {
     flex: none;
-    width: calc(var(--u) * 10.5);
+    width: calc(var(--u) * 10);
     padding: 0;
     border: 1px solid #c9b04a;
     border-radius: calc(var(--u) * 2);
@@ -497,7 +513,7 @@ button:active {
     min-height: 0;
     display: flex;
     flex-direction: column;
-    gap: calc(var(--u) * 1.6);
+    gap: calc(var(--u) * 1.4);
 }
 
 .memo-panel[hidden] { display: none; }
@@ -606,8 +622,8 @@ button:active {
 .memo-add {
     flex: none;
     display: flex;
-    gap: calc(var(--u) * 1.6);
-    height: calc(var(--u) * 11);
+    gap: calc(var(--u) * 1.4);
+    height: calc(var(--u) * 10.2);
 }
 
 .memo-add input {
@@ -660,12 +676,26 @@ button:active {
 
 .memo-text::placeholder { color: var(--ink); opacity: 0.7; }
 
+/* 맨 아래 안내 문구: 구분선 없이 글씨만 */
+.memo-note {
+    flex: none;
+    margin: 0;
+    height: calc(var(--u) * 5.2);
+    text-align: center;
+    font-family: 'Gaegu', 'Nanum Pen Script', 'Comic Sans MS', cursive;
+    font-size: max(11px, calc(var(--u) * 5.8));
+    font-weight: 700;
+    line-height: calc(var(--u) * 5.2);
+    color: var(--ink);
+    white-space: nowrap;
+}
+
 /* 알림 (저장/가져오기 결과) */
 .memo-toast {
     position: absolute;
     left: calc(var(--u) * 12);
     right: calc(var(--u) * 3);
-    bottom: calc(var(--u) * 15);
+    bottom: calc(var(--u) * 18);
     padding: calc(var(--u) * 2) calc(var(--u) * 3);
     border-radius: calc(var(--u) * 2);
     background: rgba(30, 30, 30, 0.92);
@@ -836,6 +866,9 @@ button:active {
 
     .center-panel .square { height: auto; min-height: 220px; }
 
+    /* 계산기 칸: 가운데 정렬 대신 칸을 꽉 채워서, 위아래 회색 바탕이 안 보이게 해요 */
+    .center-panel .square.top-left { align-items: stretch; }
+
     .center-panel .calculator {
         height: auto;
         min-height: 220px;
@@ -843,6 +876,10 @@ button:active {
     }
 
     .center-panel .calculator * { min-width: 0; }
+
+    /* 폰에서는 버튼이 커졌으니 숫자도 크게 */
+    .center-panel .calculator button { font-size: 1.5rem; }
+    .center-panel .calculator .current-operand { font-size: 1.4rem; }
 
     .site-footer { width: 100%; margin-top: 30px; }
 }
