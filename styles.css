@@ -690,6 +690,7 @@ button:active {
     font-size: 0.7rem;
     outline: none;
     text-shadow: none;
+    text-overflow: ellipsis;
 }
 
 .weather-search .weather-arrow {
@@ -760,7 +761,7 @@ button:active {
     border-radius: 6px;
     background: transparent;
     color: #fff;
-    font-size: 1.2rem;
+    font-size: 0.96rem;   /* 1.2rem의 80% */
     text-align: left;
     white-space: nowrap;
     overflow: hidden;
@@ -904,6 +905,20 @@ button:active {
 /* 폰: 입력칸 글자를 16px로 해서 터치 시 화면이 확대되며 흔들리는 걸 막아요 */
 @media screen and (max-width: 768px) {
     .weather-search input { font-size: 16px; }
+
+    /* 검색 버튼을 오늘/내일/모레 칸과 같은 너비로 만들고 같은 오른쪽 끝에 맞춰요. (세로 정렬) */
+    .weather-search .weather-go {
+        left: auto;
+        right: 0;
+        width: 3.4rem;
+        padding: 0;
+        justify-content: center;
+    }
+
+    .weather-fbox {
+        width: 3.4rem;
+        min-width: 3.4rem;
+    }
 }
 
 /* 가운데 영역: 왼쪽 현재 날씨 + 오른쪽 아침 6시 예보 */
