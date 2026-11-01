@@ -24,13 +24,20 @@
     var tipTimer = null;
     var tipOwner = null;
     var DEFAULT_NOTE = "업데이트 주기: 10분";
+    var INPUT_HINT = "도시 입력 (예, 뉴욕)";
+
+    // 검색창이 비어 있을 때는 항상 이 안내문이 보여요.
+    inputEl.placeholder = INPUT_HINT;
+    inputEl.setAttribute("aria-label", INPUT_HINT);
 
     function normalize(text) {
         return String(text).toLowerCase().replace(/\s+/g, "");
     }
 
-    /* 목록에 나오는 지역들 (인구 많은 대도시 20곳 + 천안 수신면, 제주) */
+    /* 목록에 나오는 지역들 (맨 위: 경기 포천, 강원 인제 / 그 아래: 인구 많은 대도시 + 천안 수신면, 제주) */
     var PRESETS = [
+        { label: "포천",   lat: 37.8949, lon: 127.2002, aliases: ["경기포천", "경기도포천", "pocheon"] },
+        { label: "인제",   lat: 38.0697, lon: 128.1706, aliases: ["인제군", "강원인제", "강원도인제", "inje"] },
         { label: "서울",   lat: 37.5665, lon: 126.9780 },
         { label: "부산",   lat: 35.1796, lon: 129.0756 },
         { label: "인천",   lat: 37.4563, lon: 126.7052 },
@@ -428,7 +435,24 @@
     });
 
     // 검색창을 누르면 전체 목록을 보여줘요. (목록은 바깥을 누를 때까지 유지)
-    inputEl.addEventListener("focus", function () { openDropdown(""); });
+    var justFocused = false;
+    inputEl.addEventListener("focus", function () {
+        justFocused = true;
+        // 이전 도시가 적혀 있으면 전체 선택해서, 바로 새 도시를 덮어쓸 수 있게 해요.
+        try { inputEl.select(); } catch (err) { /* 무시 */ }
+        setTimeout(function () {
+            try { inputEl.select(); } catch (err) { /* 무시 */ }
+        }, 0);
+        openDropdown("");
+    });
+    // 마우스를 뗄 때 선택이 풀리는 것을 막아요. (처음 누를 때 한 번만)
+    inputEl.addEventListener("mouseup", function (e) {
+        if (justFocused) {
+            e.preventDefault();
+            justFocused = false;
+        }
+    });
+    inputEl.addEventListener("blur", function () { justFocused = false; });
     inputEl.addEventListener("click", function () {
         if (dropdownEl.hidden) openDropdown("");
     });
@@ -468,6 +492,8 @@
         if (saved && typeof saved.lat === "number" && typeof saved.lon === "number" && saved.label) {
             // 목록에 있는 지역이면 항상 최신 좌표를 사용해요.
             startPlace = findPreset(saved.label) || saved;
+            // 이전에 검색한 도시를 검색창에도 바로 보여줘요.
+            inputEl.value = startPlace.label;
         }
     } catch (e) { /* 무시 */ }
 
