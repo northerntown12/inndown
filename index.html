@@ -23,7 +23,7 @@
     <div class="page-layout">
         <!-- 왼쪽: 기존 강아지 대신 나무 이미지 -->
         <aside class="tree-panel" aria-label="나무 이미지">
-           <img src="pic1.jpg" alt="도시 이미지">
+            <img src="tree.jpg" alt="나무 이미지">
         </aside>
 
         <!-- 가운데: 기존 홈페이지 기능 -->
@@ -58,16 +58,35 @@
                     </div>
 
                     <div class="square top-right">
-                        <div class="temp-converter">
-                            <h2>온도 변환기</h2>
-                            <div class="converter-input">
-                                <input type="number" id="celsius" placeholder="섭씨 (°C)" class="temp-input">
-                                <span class="equals">=</span>
-                                <input type="number" id="fahrenheit" placeholder="화씨 (°F)" class="temp-input">
-                            </div>
-                            <div class="converter-buttons">
-                                <button id="convert-c-to-f"> °C → °F </button>
-                                <button id="convert-f-to-c"> °F → °C </button>
+                        <div class="memo-widget" id="memo-widget">
+                            <div class="memo-pad">
+                                <h2>할 일 · 메모</h2>
+                                <div class="memo-tabs" role="tablist" aria-label="할 일 · 메모">
+                                    <button type="button" role="tab" id="memo-tab-todo" class="memo-tab memo-tab-todo"
+                                            aria-selected="true" aria-controls="memo-panel-todo">할 일</button>
+                                    <button type="button" role="tab" id="memo-tab-note" class="memo-tab memo-tab-note"
+                                            aria-selected="false" aria-controls="memo-panel-note">메모</button>
+                                    <button type="button" id="memo-export" class="memo-icon" aria-label="내보내기" title="내보내기 (파일로 저장)">
+                                        <svg aria-hidden="true" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 11V2M4.5 5.5L8 2l3.5 3.5M3 13h10"/></svg>
+                                    </button>
+                                    <button type="button" id="memo-import" class="memo-icon" aria-label="가져오기" title="가져오기 (파일 불러오기)">
+                                        <svg aria-hidden="true" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v9M4.5 7.5L8 11l3.5-3.5M3 13h10"/></svg>
+                                    </button>
+                                    <input type="file" id="memo-file" accept="application/json,.json" hidden>
+                                </div>
+                                <div class="memo-panel" id="memo-panel-todo" role="tabpanel" aria-labelledby="memo-tab-todo">
+                                    <ul class="memo-list" id="memo-list"></ul>
+                                    <div class="memo-add">
+                                        <input type="text" id="memo-input" maxlength="60" placeholder="할 일 입력"
+                                               autocomplete="off" enterkeyhint="done" aria-label="할 일 입력">
+                                        <button type="button" id="memo-add-btn" class="memo-add-btn">추가</button>
+                                    </div>
+                                </div>
+                                <div class="memo-panel" id="memo-panel-note" role="tabpanel" aria-labelledby="memo-tab-note" hidden>
+                                    <textarea id="memo-text" class="memo-text" maxlength="3000"
+                                              placeholder="메모를 적어보세요" spellcheck="false" aria-label="메모"></textarea>
+                                </div>
+                                <div class="memo-toast" id="memo-toast" role="status"></div>
                             </div>
                         </div>
                     </div>
@@ -173,7 +192,6 @@
 
     <script src="script.js"></script>
     <script src="weather.js"></script>
-    <script src="lightbox.js"></script>
-    <script src="temp-converter.js"></script>
+    <script src="memo.js"></script>
 </body>
 </html>
