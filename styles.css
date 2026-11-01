@@ -647,7 +647,7 @@ button:active {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start;   /* 위에서부터 차례로 쌓고, 남는 공간은 가운데 영역이 가져가요 */
     gap: 4px;
 }
 
@@ -923,6 +923,7 @@ button:active {
 
 /* 가운데 영역: 왼쪽 현재 날씨 + 오른쪽 아침 6시 예보 */
 .weather-mid {
+    flex: 1 1 auto;      /* 남는 세로 공간을 여기서 채워서, 체감/습도/바람 칸이 맨 아래 문구에 바로 붙어요 */
     display: flex;
     align-items: center;
     justify-content: space-between;
