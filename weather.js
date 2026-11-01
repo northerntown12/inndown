@@ -142,8 +142,23 @@
         }
     }
 
+    /* 맨 아래 줄: 왼쪽 = 출처(가운데 근처까지), 오른쪽 끝 = 업데이트 주기/안내 문구 */
+    var msgSrcEl = document.createElement("a");
+    msgSrcEl.className = "wm-src";
+    msgSrcEl.href = "https://open-meteo.com/";
+    msgSrcEl.target = "_blank";
+    msgSrcEl.rel = "noopener noreferrer";
+    msgSrcEl.textContent = "출처: Open-Meteo.com";
+
+    var msgNoteEl = document.createElement("span");
+    msgNoteEl.className = "wm-note";
+
+    msgEl.textContent = "";
+    msgEl.appendChild(msgSrcEl);
+    msgEl.appendChild(msgNoteEl);
+
     function setMessage(text) {
-        msgEl.textContent = text || DEFAULT_NOTE;
+        msgNoteEl.textContent = text || DEFAULT_NOTE;
     }
 
     /* 예보 칸을 누르면(폰) 또는 키보드로 선택하면 간단한 설명을 말풍선으로 보여줘요. */
@@ -504,3 +519,4 @@
         loadWeather(currentPlace);
     }, 10 * 60 * 1000);
 })();
+
