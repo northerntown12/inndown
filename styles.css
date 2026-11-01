@@ -785,11 +785,11 @@ button:active {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 4px;
 }
 
 .weather-icon {
-    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
     line-height: 1;
     text-shadow: none;
     animation: weather-float 3.2s ease-in-out infinite;
@@ -800,7 +800,7 @@ button:active {
 }
 
 .weather-temp {
-    font-size: clamp(1.4rem, 2.6vw, 2rem);
+    font-size: clamp(1.4rem, 2.6vw, 1.85rem);
     font-weight: 700;
     line-height: 1;
 }
@@ -952,7 +952,7 @@ button:active {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 6px;
+    gap: 4px;
     width: 100%;
 }
 
@@ -964,6 +964,52 @@ button:active {
     align-items: center;
     gap: 3px;
 }
+
+/* 미세먼지 / 초미세먼지 칸 (현재 날씨 왼쪽) */
+.weather-air {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.weather-abox {
+    width: 2.9rem;
+    padding: 2px 3px;
+    border-radius: 7px;
+    background: rgba(0, 0, 0, 0.28);
+    text-align: center;
+    line-height: 1.15;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.weather-abox .ab-label {
+    display: block;
+    font-size: 0.5rem;
+    white-space: nowrap;
+    opacity: 0.9;
+}
+
+.weather-abox .ab-grade {
+    display: block;
+    margin-top: 1px;
+    padding: 1px 2px;
+    border-radius: 4px;
+    font-size: 0.56rem;
+    font-weight: 700;
+    white-space: nowrap;
+    text-shadow: none;
+    color: #fff;
+}
+
+.ab-grade.g0 { background: rgba(255, 255, 255, 0.25); }   /* 불러오는 중 / 정보 없음 */
+.ab-grade.g1 { background: #2f7dd1; }                      /* 좋음 */
+.ab-grade.g2 { background: #2e9e5b; }                      /* 보통 */
+.ab-grade.g3 { background: #e08a1e; }                      /* 나쁨 */
+.ab-grade.g4 { background: #d33a3a; }                      /* 매우나쁨 */
 
 .weather-forecast {
     flex: 0 0 auto;
