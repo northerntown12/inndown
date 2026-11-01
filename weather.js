@@ -148,7 +148,8 @@
     msgSrcEl.href = "https://open-meteo.com/";
     msgSrcEl.target = "_blank";
     msgSrcEl.rel = "noopener noreferrer";
-    msgSrcEl.textContent = "출처: Open-Meteo.com";
+    msgSrcEl.textContent = "출처: Open-Meteo·CAMS";
+    msgSrcEl.title = "날씨: Open-Meteo.com / 대기질: CAMS (Copernicus) via Open-Meteo";
 
     var msgNoteEl = document.createElement("span");
     msgNoteEl.className = "wm-note";
@@ -171,7 +172,7 @@
         tipEl.hidden = true;
     }
 
-    function toggleTip(box, text) {
+    function toggleTip(box, text, side) {
         if (!tipEl.hidden && tipOwner === box) {
             hideTip();
             return;
@@ -182,10 +183,16 @@
         tipEl.textContent = text;
         tipEl.hidden = false;
 
-        // 눌린 칸의 왼쪽, 세로 가운데에 붙여요.
+        // 눌린 칸 옆, 세로 가운데에 붙여요. (기본: 칸의 왼쪽 / side가 "right"면 칸의 오른쪽)
         var w = widget.getBoundingClientRect();
         var b = box.getBoundingClientRect();
-        tipEl.style.right = (w.right - b.left + 4) + "px";
+        if (side === "right") {
+            tipEl.style.left = (b.right - w.left + 4) + "px";
+            tipEl.style.right = "auto";
+        } else {
+            tipEl.style.right = (w.right - b.left + 4) + "px";
+            tipEl.style.left = "auto";
+        }
         tipEl.style.top = (b.top - w.top + b.height / 2) + "px";
 
         tipTimer = setTimeout(hideTip, 3000);
@@ -270,6 +277,112 @@
         });
     }
 
+    /* ===== 미세먼지 / 초미세먼지 (Open-Meteo 대기질 API, 한국 환경부 등급 기준) =====
+       현재 날씨 왼쪽에 작은 칸 두 개를 만들어요. 칸을 누르면 수치(μg/m³)가 말풍선으로 나와요. */
+    var AIR_GRADES = ["좋음", "보통", "나쁨", "매우나쁨"];
+    var AIR_ITEMS = [
+        { key: "pm10",  label: "미세먼지",   name: "미세먼지(PM10)",    short: "PM10",  limits: [30, 80, 150] },
+        { key: "pm2_5", label: "초미세먼지", name: "초미세먼지(PM2.5)", short: "PM2.5", limits: [15, 35, 75] }
+    ];
+    var airRequestId = 0;
+    var airBoxes = [];
+
+    (function buildAirBoxes() {
+        var midEl = widget.querySelector(".weather-mid");
+        if (!midEl) return;
+
+        var airEl = document.createElement("div");
+        airEl.className = "weather-air";
+        airEl.setAttribute("aria-label", "미세먼지");
+
+        AIR_ITEMS.forEach(function (item) {
+            var box = document.createElement("div");
+            box.className = "weather-abox";
+            box.setAttribute("role", "button");
+            box.tabIndex = 0;
+
+            var label = document.createElement("span");
+            label.className = "ab-label";
+            label.textContent = item.label;
+
+            var grade = document.createElement("span");
+            grade.className = "ab-grade g0";
+            grade.textContent = "…";
+
+            box.appendChild(label);
+            box.appendChild(grade);
+            box._tip = item.name + " 불러오는 중...";
+
+            box.addEventListener("click", function () {
+                toggleTip(box, box._tip, "right");
+            });
+            box.addEventListener("keydown", function (e) {
+                if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    toggleTip(box, box._tip, "right");
+                }
+            });
+
+            airEl.appendChild(box);
+            airBoxes.push({ item: item, box: box, gradeEl: grade });
+        });
+
+        midEl.insertBefore(airEl, midEl.firstChild);
+    })();
+
+    function setAirBox(entry, value) {
+        var item = entry.item;
+        var v = (value === null || value === undefined) ? NaN : Number(value);
+
+        if (isNaN(v)) {
+            entry.gradeEl.className = "ab-grade g0";
+            entry.gradeEl.textContent = "-";
+            entry.box._tip = item.name + " 정보 없음";
+            entry.box.title = entry.box._tip;
+            return;
+        }
+
+        var r = Math.round(v);
+        var idx = r <= item.limits[0] ? 0 : r <= item.limits[1] ? 1 : r <= item.limits[2] ? 2 : 3;
+
+        entry.gradeEl.className = "ab-grade g" + (idx + 1);
+        entry.gradeEl.textContent = AIR_GRADES[idx];
+        entry.box._tip = item.short + " " + r + "μg/m³";
+        entry.box.title = entry.box._tip;
+    }
+
+    function loadAir(place) {
+        var myId = ++airRequestId;
+
+        airBoxes.forEach(function (entry) {
+            entry.gradeEl.className = "ab-grade g0";
+            entry.gradeEl.textContent = "…";
+            entry.box._tip = entry.item.name + " 불러오는 중...";
+        });
+
+        var url = "https://air-quality-api.open-meteo.com/v1/air-quality" +
+            "?latitude=" + place.lat +
+            "&longitude=" + place.lon +
+            "&current=pm10,pm2_5&timezone=auto";
+
+        fetch(url)
+            .then(function (res) {
+                if (!res.ok) throw new Error("HTTP " + res.status);
+                return res.json();
+            })
+            .then(function (data) {
+                if (myId !== airRequestId) return;      // 오래된 요청은 무시
+                if (!data || !data.current) throw new Error("no data");
+                airBoxes.forEach(function (entry) {
+                    setAirBox(entry, data.current[entry.item.key]);
+                });
+            })
+            .catch(function () {
+                if (myId !== airRequestId) return;
+                airBoxes.forEach(function (entry) { setAirBox(entry, null); });
+            });
+    }
+
     function render(place, current, hourly) {
         var info = describe(current.weather_code, current.is_day);
 
@@ -293,6 +406,7 @@
         currentPlace = place;
         placeEl.textContent = place.label;
         setMessage("불러오는 중...");
+        loadAir(place);
 
         var url = "https://api.open-meteo.com/v1/forecast" +
             "?latitude=" + place.lat +
@@ -496,7 +610,7 @@
     // 예보 칸 바깥을 누르면 말풍선을 닫아요.
     document.addEventListener("pointerdown", function (e) {
         if (tipEl.hidden) return;
-        if (e.target.closest && e.target.closest(".weather-fbox")) return;
+        if (e.target.closest && e.target.closest(".weather-fbox, .weather-abox")) return;
         hideTip();
     });
 
@@ -519,4 +633,3 @@
         loadWeather(currentPlace);
     }, 10 * 60 * 1000);
 })();
-
