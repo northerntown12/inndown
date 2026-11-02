@@ -156,24 +156,36 @@
         <!-- 오른쪽: PC에서만 보이는 광고 배너 6개 -->
        <aside class="ad-sidebar" aria-label="광고 배너">
     <div class="ad-grid">
-        <!-- 첫 번째 칸: 네이버로 이동하는 링크 + 슬레이트 그레이 파비콘 스타일 -->
-        <a class="ad-banner favicon-banner naver-ad" 
-           href="https://www.naver.com/" 
-           target="_blank" 
-           rel="noopener noreferrer" 
-           aria-label="네이버">
-        </a>
-                <a class="ad-banner google-favicon-banner" 
-           href="https://www.google.com/" 
-           target="_blank" 
-           rel="noopener noreferrer" 
+        <!-- 왼쪽 3칸을 합친 환율 위젯 (fx.js) -->
+        <div class="ad-banner fx-widget" id="fx-widget" aria-label="실시간 환율">
+            <h3 class="fx-title">환율 <small>원(₩)</small></h3>
+            <ul class="fx-list">
+                <li data-code="USD"><svg class="fx-flag" viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="20" fill="#fff"/><rect y="0.00" width="30" height="2.86" fill="#b22234"/><rect y="5.71" width="30" height="2.86" fill="#b22234"/><rect y="11.43" width="30" height="2.86" fill="#b22234"/><rect y="17.14" width="30" height="2.86" fill="#b22234"/><rect width="13" height="11.4" fill="#3c3b6e"/><circle cx="2" cy="2" r="0.8" fill="#fff"/><circle cx="2" cy="5" r="0.8" fill="#fff"/><circle cx="2" cy="8" r="0.8" fill="#fff"/><circle cx="6" cy="2" r="0.8" fill="#fff"/><circle cx="6" cy="5" r="0.8" fill="#fff"/><circle cx="6" cy="8" r="0.8" fill="#fff"/><circle cx="10" cy="2" r="0.8" fill="#fff"/><circle cx="10" cy="5" r="0.8" fill="#fff"/><circle cx="10" cy="8" r="0.8" fill="#fff"/></svg><span class="fx-name">달러</span><b class="fx-val">--</b></li>
+                <li data-code="JPY"><svg class="fx-flag" viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="20" fill="#fff"/><circle cx="15" cy="10" r="6" fill="#bc002d"/></svg><span class="fx-name">100엔</span><b class="fx-val">--</b></li>
+                <li data-code="EUR"><svg class="fx-flag" viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="20" fill="#039"/><circle cx="21.50" cy="10.00" r="1.05" fill="#fc0"/><circle cx="20.63" cy="13.25" r="1.05" fill="#fc0"/><circle cx="18.25" cy="15.63" r="1.05" fill="#fc0"/><circle cx="15.00" cy="16.50" r="1.05" fill="#fc0"/><circle cx="11.75" cy="15.63" r="1.05" fill="#fc0"/><circle cx="9.37" cy="13.25" r="1.05" fill="#fc0"/><circle cx="8.50" cy="10.00" r="1.05" fill="#fc0"/><circle cx="9.37" cy="6.75" r="1.05" fill="#fc0"/><circle cx="11.75" cy="4.37" r="1.05" fill="#fc0"/><circle cx="15.00" cy="3.50" r="1.05" fill="#fc0"/><circle cx="18.25" cy="4.37" r="1.05" fill="#fc0"/><circle cx="20.63" cy="6.75" r="1.05" fill="#fc0"/></svg><span class="fx-name">유로</span><b class="fx-val">--</b></li>
+                <li data-code="CNY"><svg class="fx-flag" viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="20" fill="#de2910"/><polygon points="5.00,2.00 5.67,4.07 7.85,4.07 6.09,5.35 6.76,7.43 5.00,6.15 3.24,7.43 3.91,5.35 2.15,4.07 4.33,4.07" fill="#ffde00"/><polygon points="10.34,1.06 10.32,1.79 11.00,2.03 10.30,2.24 10.28,2.96 9.87,2.36 9.17,2.56 9.62,1.99 9.21,1.38 9.89,1.63" fill="#ffde00"/><polygon points="12.64,3.73 12.37,4.41 12.93,4.87 12.20,4.82 11.93,5.50 11.75,4.79 11.03,4.74 11.65,4.36 11.47,3.65 12.03,4.12" fill="#ffde00"/><polygon points="12.87,7.50 12.38,8.04 12.74,8.67 12.08,8.37 11.59,8.91 11.67,8.19 11.01,7.90 11.72,7.74 11.79,7.02 12.16,7.65" fill="#ffde00"/><polygon points="10.98,10.33 10.34,10.67 10.47,11.38 9.95,10.88 9.31,11.22 9.62,10.57 9.10,10.06 9.82,10.16 10.14,9.51 10.27,10.23" fill="#ffde00"/></svg><span class="fx-name">위안</span><b class="fx-val">--</b></li>
+                <li data-code="GBP"><svg class="fx-flag" viewBox="0 0 30 20" aria-hidden="true"><rect width="30" height="20" fill="#012169"/><path d="M0,0L30,20M30,0L0,20" stroke="#fff" stroke-width="4"/><path d="M0,0L30,20M30,0L0,20" stroke="#c8102e" stroke-width="1.6"/><path d="M15,0V20M0,10H30" stroke="#fff" stroke-width="6"/><path d="M15,0V20M0,10H30" stroke="#c8102e" stroke-width="3.4"/></svg><span class="fx-name">파운드</span><b class="fx-val">--</b></li>
+            </ul>
+            <div class="fx-foot">
+                <span id="fx-date">불러오는 중...</span>
+                <a href="https://www.exchangerate-api.com" target="_blank" rel="noopener noreferrer">Rates By Exchange Rate API</a>
+            </div>
+        </div>
+        <!-- 오른쪽: 구글(위) → 네이버(아래) → 빈 배너 -->
+        <a class="ad-banner google-favicon-banner"
+           href="https://www.google.com/"
+           target="_blank"
+           rel="noopener noreferrer"
            aria-label="구글">
         </a>
-                <div class="ad-banner" aria-label="배너 공간"></div>
-                <div class="ad-banner" aria-label="배너 공간"></div>
-                <div class="ad-banner" aria-label="배너 공간"></div>
-                <div class="ad-banner" aria-label="배너 공간"></div>
-            </div>
+        <a class="ad-banner favicon-banner naver-ad"
+           href="https://www.naver.com/"
+           target="_blank"
+           rel="noopener noreferrer"
+           aria-label="네이버">
+        </a>
+        <div class="ad-banner" aria-label="배너 공간"></div>
+    </div>
         </aside>
     </div>
 
@@ -182,7 +194,7 @@
         <div class="footer-main-line" aria-hidden="true"></div>
         <div class="copyright-row">
             <span class="copyright-side-line" aria-hidden="true"></span>
-            <p class="copyright">Copyright © 2026 Choi Yunhyok. All rights reserved.</p>
+            <p class="copyright">Copyright © 2026 Summerman All rights reserved.</p>
             <span class="copyright-side-line" aria-hidden="true"></span>
         </div>
         <div class="visitor-counter" aria-label="방문자 통계">
@@ -192,6 +204,7 @@
 
     <script src="script.js"></script>
     <script src="weather.js"></script>
+    <script src="fx.js"></script>
     <script src="memo.js"></script>
 </body>
 </html>

@@ -83,6 +83,93 @@ body {
     50%, 100% { opacity: 0; }
 }
 
+/* ===== 환율 위젯 (왼쪽 3칸 합침) ===== */
+.ad-grid .fx-widget {
+    grid-column: 1;
+    grid-row: 1 / span 3;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    padding: 6px 7px 5px;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid #b5b5b5;
+    color: #222;
+    font-size: 0.8rem;
+}
+
+.fx-title {
+    margin: 0 0 3px;
+    font-size: 0.9rem;
+    line-height: 1.2;
+    text-align: center;
+    color: #1d2f5e;
+}
+
+.fx-title small { font-size: 0.65rem; font-weight: 400; color: #777; }
+
+.fx-list {
+    flex: 1 1 auto;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+}
+
+.fx-list li {
+    flex: 1 1 0;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    border-top: 1px solid #e3e6ee;
+}
+
+.fx-list li:first-child { border-top: 0; }
+
+.fx-flag {
+    flex: none;
+    width: 22px;
+    height: 15px;
+    border: 1px solid rgba(0, 0, 0, 0.25);
+    border-radius: 2px;
+}
+
+.fx-name {
+    flex: none;
+    font-size: 0.72rem;
+    color: #444;
+    white-space: nowrap;
+}
+
+.fx-val {
+    flex: 1 1 auto;
+    min-width: 0;
+    text-align: right;
+    font-size: 0.8rem;
+    font-variant-numeric: tabular-nums;
+    color: #0b2a6b;
+    white-space: nowrap;
+}
+
+.fx-foot {
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+    margin-top: 3px;
+    font-size: 0.55rem;
+    line-height: 1.2;
+    color: #888;
+    text-align: center;
+}
+
+.fx-foot a { color: #888; text-decoration: none; }
+.fx-foot a:hover { text-decoration: underline; }
+
 /* ===== 3단 레이아웃: 나무 / 기능 4칸 / 광고 ===== */
 .page-layout {
     width: 100%;
@@ -109,7 +196,7 @@ body {
     height: 100%;
     object-fit: cover;
     object-position: center;
-    cursor: pointer;           
+    cursor: zoom-in;            /* 클릭하면 새 창에서 크게 보여요 */
 }
 
 .center-panel {
@@ -225,8 +312,8 @@ body {
     font-size: 0;
 }
 
-/* 첫 번째 칸: 슬레이트 그레이 N 로고 */
-.ad-grid .ad-banner:first-child {
+/* 네이버 칸: 슬레이트 그레이 N 로고 */
+.ad-grid .naver-ad {
     position: relative;
     overflow: hidden;
     display: flex;
@@ -236,7 +323,7 @@ body {
     border: 1px solid #3b3f46;
 }
 
-.ad-grid .ad-banner:first-child::after {
+.ad-grid .naver-ad::after {
     content: "N";
     color: #00d2d3;
     font-size: 2.6rem;
