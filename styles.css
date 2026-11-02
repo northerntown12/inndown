@@ -475,9 +475,9 @@ button:active {
 }
 
 .memo-pad .memo-tab-todo,
-.memo-pad .memo-tab-todo:hover { background: #ff8a00; color: #2b1500; }
+.memo-pad .memo-tab-todo:hover { background: #0b2a6b; color: #ffffff; }
 .memo-pad .memo-tab-note,
-.memo-pad .memo-tab-note:hover { background: #9bdc4e; color: #1c3300; }
+.memo-pad .memo-tab-note:hover { background: #8a1f6b; color: #ffffff; }
 
 .memo-pad .memo-tab:hover { filter: brightness(1.08); }
 
@@ -643,8 +643,9 @@ button:active {
     padding: 0 calc(var(--u) * 3.6);
     border: 0;
     border-radius: calc(var(--u) * 2);
-    background: #1b6f5a;
-    color: #fff;
+    background: #fffff0;
+    color: #3a3000;
+    border: 1px solid #c9b04a;
     font-size: max(10px, calc(var(--u) * 5));
     font-weight: 700;
     white-space: nowrap;
