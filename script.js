@@ -551,3 +551,78 @@ document.addEventListener("DOMContentLoaded", () => {
         startRolling();
     });
 });
+
+/* ===== 왼쪽 그림 클릭 → 새 창에서 크게 보기 (마우스 휠 위로 = 확대, 아래로 = 축소, 드래그 = 이동) ===== */
+(function () {
+    const img = document.querySelector(".tree-panel img");
+    if (!img) return;
+
+    img.addEventListener("click", function () {
+        const src = img.currentSrc || img.src;
+        const nw = img.naturalWidth || 800;
+        const nh = img.naturalHeight || 600;
+        const ratio = Math.min(
+            (screen.availWidth * 0.9) / nw,
+            (screen.availHeight * 0.9) / nh,
+            1
+        );
+        const w = Math.max(320, Math.round(nw * ratio));
+        const h = Math.max(240, Math.round(nh * ratio));
+
+        const win = window.open(
+            "",
+            "imageViewer",
+            "width=" + w + ",height=" + h + ",resizable=yes,scrollbars=no"
+        );
+
+        if (!win) {
+            alert("팝업이 차단되었어요. 주소창의 팝업 허용을 눌러주세요.");
+            return;
+        }
+
+        const page =
+            '<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">' +
+            '<meta name="viewport" content="width=device-width, initial-scale=1.0">' +
+            "<title>그림 보기</title><style>" +
+            "html,body{margin:0;height:100%;background:#111;overflow:hidden}" +
+            "#stage{position:absolute;top:0;left:0;width:100vw;height:100vh;" +
+            "display:flex;align-items:center;justify-content:center;" +
+            "transform-origin:0 0;cursor:zoom-in}" +
+            "#stage.zoomed{cursor:grab}#stage.drag{cursor:grabbing}" +
+            "img{max-width:100%;max-height:100%;object-fit:contain;" +
+            "user-select:none;-webkit-user-drag:none}" +
+            "</style></head><body>" +
+            '<div id="stage"><img id="pic" alt="커피이미지"></div>' +
+            "<script>" +
+            "var stage=document.getElementById('stage');" +
+            "document.getElementById('pic').src=" + JSON.stringify(src) + ";" +
+            "var s=1,tx=0,ty=0,MIN=1,MAX=8,drag=null;" +
+            "function apply(){" +
+            "if(s<=1){s=1;tx=0;ty=0;}" +
+            "stage.style.transform='translate('+tx+'px,'+ty+'px) scale('+s+')';" +
+            "stage.classList.toggle('zoomed',s>1);}" +
+            "window.addEventListener('wheel',function(e){" +
+            "e.preventDefault();" +
+            "var f=e.deltaY<0?1.15:1/1.15;" +
+            "var ns=Math.min(MAX,Math.max(MIN,s*f));" +
+            "if(ns===s)return;" +
+            "var k=ns/s;" +
+            "tx=e.clientX-(e.clientX-tx)*k;" +
+            "ty=e.clientY-(e.clientY-ty)*k;" +
+            "s=ns;apply();},{passive:false});" +
+            "stage.addEventListener('mousedown',function(e){" +
+            "if(s<=1)return;e.preventDefault();" +
+            "drag={x:e.clientX-tx,y:e.clientY-ty};stage.classList.add('drag');});" +
+            "window.addEventListener('mousemove',function(e){" +
+            "if(!drag)return;tx=e.clientX-drag.x;ty=e.clientY-drag.y;apply();});" +
+            "window.addEventListener('mouseup',function(){" +
+            "drag=null;stage.classList.remove('drag');});" +
+            "stage.addEventListener('dblclick',function(){s=1;apply();});" +
+            "<\/script></body></html>";
+
+        win.document.open();
+        win.document.write(page);
+        win.document.close();
+        win.focus();
+    });
+})();
