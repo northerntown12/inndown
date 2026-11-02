@@ -286,9 +286,9 @@ body {
     min-height: 0;
     padding: 0;
     overflow: hidden;
-    border: 3px solid #1769e8;
-    background-color: rgba(255, 255, 255, 0.95);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border: 3px solid #3b2a8c;
+    background-color: #0b1a3d;
+    box-shadow: 0 4px 14px rgba(20, 10, 60, 0.45);
 }
 
 .calculator::before {
@@ -298,9 +298,14 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
+    /* 예전 그림 배경으로 돌아가려면 아래 두 줄의 주석을 풀고, 그 아래 '다크 그라데이션' 블록을 지우세요.
     background-image: url("calculator-bg.png");
-    background-size: cover;
-    background-position: center;
+    background-size: cover; background-position: center; opacity: 0.8; */
+    /* 다크 그라데이션: 진남색 → 보라 → 자주 + 얇은 격자선 */
+    background-image:
+        repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.05) 0 1px, transparent 1px 18px),
+        repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.05) 0 1px, transparent 1px 18px),
+        linear-gradient(135deg, #0b1a3d 0%, #2a1458 55%, #5a1f6e 100%);
     opacity: 1;
     z-index: 1;
     pointer-events: none;
@@ -315,18 +320,19 @@ body {
     align-items: flex-end;
     justify-content: space-around;
     word-break: break-all;
-    background-color: #f8f9fa;
-    border: 1px solid #9e9e9e;
+    background-color: rgba(5, 10, 30, 0.55);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 8px;
 }
 
 .previous-operand {
     min-height: 10px;
-    color: rgba(0, 0, 0, 0.6);
+    color: rgba(255, 255, 255, 0.6);
     font-size: 0.7rem;
 }
 
 .current-operand {
-    color: red;
+    color: #ffd166;
     font-size: 1rem;
     font-weight: 700;
 }
@@ -362,11 +368,14 @@ button:active {
     z-index: 2;
     border-radius: 8px;
     background: transparent;
-    color: #000;
+    color: #fff;
     font-size: 1.05rem;
-    font-weight: 900;
-    -webkit-text-stroke: 0.6px #000;
+    font-weight: 800;
+    -webkit-text-stroke: 0;
 }
+
+/* 연산 버튼(÷ × - +)은 골드색 글자로 구분해요 */
+.calculator button.operator { color: #ffd166; }
 
 /* 버튼 면: 칸을 꽉 채우고(기존 70% → 100%), 오른쪽·아래를 진하고 두껍게 해서 입체감을 줘요 */
 .calculator button::before {
@@ -377,12 +386,12 @@ button:active {
     left: 0;
     width: 100%;
     height: 100%;
-    border: 1px solid rgba(0, 70, 150, 0.35);
-    border-right: 3px solid rgba(0, 50, 130, 0.8);
-    border-bottom: 3px solid rgba(0, 50, 130, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    border-right: 3px solid rgba(5, 5, 30, 0.75);
+    border-bottom: 3px solid rgba(5, 5, 30, 0.75);
     border-radius: 8px;
-    background: rgba(255, 255, 255, 0.88);
-    box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.25);
+    background: rgba(255, 255, 255, 0.12);
+    box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
     pointer-events: none;
 }
 
@@ -393,8 +402,10 @@ button:active {
     box-shadow: none;
 }
 
+.calculator button:hover::before { background: rgba(255, 255, 255, 0.22); }
+
 .calculator button:active {
-    background-color: rgba(0, 102, 204, 0.12);
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 /* ===== 할 일 · 메모 (노란 메모지) =====
