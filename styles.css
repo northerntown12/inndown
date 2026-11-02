@@ -286,8 +286,8 @@ body {
     min-height: 0;
     padding: 0;
     overflow: hidden;
-    border: 3px solid #3b2a8c;
-    background-color: #0b1a3d;
+    border: 3px solid #5a4aa8;
+    background-color: #3d5391;
     box-shadow: 0 4px 14px rgba(20, 10, 60, 0.45);
 }
 
@@ -303,9 +303,9 @@ body {
     background-size: cover; background-position: center; opacity: 0.8; */
     /* 다크 그라데이션: 진남색 → 보라 → 자주 + 얇은 격자선 */
     background-image:
-        repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.05) 0 1px, transparent 1px 18px),
-        repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.05) 0 1px, transparent 1px 18px),
-        linear-gradient(135deg, #0b1a3d 0%, #2a1458 55%, #5a1f6e 100%);
+        repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.04) 0 1px, transparent 1px 18px),
+        repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.04) 0 1px, transparent 1px 18px),
+        linear-gradient(135deg, #3d5391 0%, #6b58a8 55%, #a2639f 100%);
     opacity: 1;
     z-index: 1;
     pointer-events: none;
@@ -320,7 +320,7 @@ body {
     align-items: flex-end;
     justify-content: space-around;
     word-break: break-all;
-    background-color: rgba(5, 10, 30, 0.55);
+    background-color: rgba(20, 20, 60, 0.4);
     border: 1px solid rgba(255, 255, 255, 0.25);
     border-radius: 8px;
 }

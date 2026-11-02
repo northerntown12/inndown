@@ -21,7 +21,7 @@ function playCalculatorSound(type) {
         const sounds = {
             number:   { frequency: 1200, duration: 0.045, volume: 0.07 },
             operator: { frequency: 720,  duration: 0.075, volume: 0.08 },
-            equals:   { frequency: 1500, duration: 0.12,  volume: 0.09 },
+            equals:   { frequency: 1500, duration: 0.28,  volume: 0.09 },
             clear:    { frequency: 420,  duration: 0.10,  volume: 0.07 },
             delete:   { frequency: 560,  duration: 0.06,  volume: 0.06 }
         };
@@ -31,10 +31,6 @@ function playCalculatorSound(type) {
 
         oscillator.type = "sine";
         oscillator.frequency.setValueAtTime(sound.frequency, now);
-
-        if (type === "equals") {
-            oscillator.frequency.setValueAtTime(1900, now + 0.06);
-        }
 
         gain.gain.setValueAtTime(sound.volume, now);
         gain.gain.exponentialRampToValueAtTime(
