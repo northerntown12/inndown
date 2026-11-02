@@ -301,7 +301,7 @@ body {
     background-image: url("calculator-bg.png");
     background-size: cover;
     background-position: center;
-    opacity: 0.8;
+    opacity: 1;
     z-index: 1;
     pointer-events: none;
 }
