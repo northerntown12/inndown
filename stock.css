@@ -1,0 +1,87 @@
+/* ===== 주식시장 위젯 (환율 위젯 아래, 광고칸 가로 전체) =====
+   .ad-banner 기본값(글자 투명, 높이 72px)을 덮어써요. */
+.ad-grid .stock-widget {
+    grid-column: 1 / -1;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    padding: 8px 10px 6px;
+    overflow: hidden;
+    background: linear-gradient(160deg, #3d5391 0%, #6b58a8 55%, #a2639f 100%);
+    border: 1px solid #5a4aa8;
+    color: #fff;
+    font-size: 0.8rem;
+}
+
+.stk-title {
+    margin: 0 0 2px;
+    font-size: 0.9rem;
+    line-height: 1.2;
+    text-align: center;
+    color: #fff;
+}
+
+.stk-group {
+    margin: 6px 0 2px;
+    padding-bottom: 2px;
+    font-size: 0.68rem;
+    color: rgba(255, 255, 255, 0.7);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+.stk-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.stk-list li {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+}
+.stk-list li:first-child { border-top: 0; }
+
+.stk-name {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.74rem;
+    color: rgba(255, 255, 255, 0.92);
+}
+
+.stk-price {
+    flex: none;
+    font-size: 0.8rem;
+    font-variant-numeric: tabular-nums;
+    color: #ffd166;
+    white-space: nowrap;
+}
+
+.stk-chg {
+    flex: none;
+    min-width: 64px;
+    text-align: right;
+    font-size: 0.72rem;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    color: rgba(255, 255, 255, 0.7);
+}
+.stk-chg.up   { color: #ff8a8a; }   /* 상승: 빨강 */
+.stk-chg.down { color: #7fc0ff; }   /* 하락: 파랑 */
+
+.stk-foot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+    margin-top: 6px;
+    font-size: 0.55rem;
+    line-height: 1.25;
+    color: rgba(255, 255, 255, 0.65);
+    text-align: center;
+}
