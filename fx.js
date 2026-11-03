@@ -65,7 +65,7 @@
 
         var t = new Date((data.time_last_update_unix || 0) * 1000);
         if (!isNaN(t.getTime()) && data.time_last_update_unix) {
-            dateEl.textContent = (t.getMonth() + 1) + "/" + t.getDate() + " 기준 (1일 1회 갱신)";
+            dateEl.textContent = (t.getMonth() + 1) + "/" + t.getDate() + " 기준 (1일 1회 자동갱신)";
         } else {
             dateEl.textContent = "1일 1회 자동갱신";
         }
