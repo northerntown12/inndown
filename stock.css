@@ -85,3 +85,24 @@
     color: rgba(255, 255, 255, 0.65);
     text-align: center;
 }
+
+/* ===== 넷플릭스 칸 (네이버 칸 아래) ===== */
+.ad-grid .netflix-ad {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #141414;
+    border: 1px solid #000;
+    text-decoration: none;
+}
+
+.ad-grid .netflix-ad::after {
+    content: "NETFLIX";
+    color: #e50914;
+    font-family: "Arial Black", Arial, sans-serif;
+    font-size: 1.15rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+}
