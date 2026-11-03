@@ -1,5 +1,5 @@
 
-   -
+   
 html.locked body > *:not(#login-gate) { display: none !important; }
 html.locked body { background: #fff; }
 
