@@ -1,12 +1,13 @@
-/* ===== 주식시장 위젯 (환율 위젯 아래) =====
-  (function () {
+
+(function () {
     "use strict";
 
     var widget = document.getElementById("stock-widget");
     if (!widget) return;
 
     /* ---------- 설정 ---------- */
-      var WORKER_URL = "https://https://stockproxy.sumerboy.workers.dev/";
+    // ★ Cloudflare Worker를 만든 뒤 나온 주소로 바꿔 주세요.
+    var WORKER_URL = "https://stockproxy.sumerboy.workers.dev/";
 
     var REFRESH_MS = 60 * 1000;
     var TIMEOUT_MS = 10 * 1000;
