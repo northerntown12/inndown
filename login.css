@@ -1,0 +1,71 @@
+/* ===== 로그인 화면 (테스트용) =====
+   - 로그인 전에는 로그인 창 말고 모든 내용을 숨겨요. (빈 화면 + 로그인 창)
+   - html 에 "locked" 클래스가 붙어 있는 동안만 적용돼요. */
+html.locked body > *:not(#login-gate) { display: none !important; }
+html.locked body { background: #fff; }
+
+#login-gate {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    z-index: 99999;
+    font-family: "Gaegu", "Malgun Gothic", sans-serif;
+}
+
+.login-box {
+    width: min(360px, 88vw);
+    padding: 32px 28px 28px;
+    border: 1px solid #d0d4d9;
+    border-radius: 14px;
+    background: #fafbfc;
+    box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+    text-align: center;
+}
+
+.login-title {
+    margin: 0 0 22px;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #222;
+}
+
+.login-box input[type="password"] {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 1.1rem;
+    border: 1px solid #b8bdc4;
+    border-radius: 8px;
+    outline: none;
+}
+.login-box input[type="password"]:focus { border-color: #4a7bd8; }
+
+.login-hint {
+    margin: 10px 0 0;
+    font-size: 1rem;
+    color: #888;
+}
+
+.login-btn {
+    margin-top: 18px;
+    width: 100%;
+    padding: 11px 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+    background: #4a7bd8;
+    border: 0;
+    border-radius: 8px;
+    cursor: pointer;
+}
+.login-btn:hover { background: #3b68bd; }
+
+.login-error {
+    min-height: 1.3em;
+    margin: 10px 0 0;
+    font-size: 1rem;
+    color: #d33;
+}
