@@ -1,7 +1,7 @@
 /* ===== 환율 위젯 (오른쪽 광고칸 왼쪽 3칸) =====
    - 데이터: ExchangeRate-API 무료 공개 주소 (API 키 필요 없음, 출처 표기 필요)
      https://open.er-api.com/v6/latest/USD
-   - 이 무료 주소는 하루 한 번 갱신돼요. (분 단위 '실시간'은 유료 API에만 있어요)
+   - 이 무료 주소는 하루 한 번 갱신
    - 서버에 부담을 주지 않도록, 받은 값을 이 브라우저(localStorage)에 저장해 두고
      다음 갱신 시각이 지났을 때만 다시 받아요.
    - 원화(KRW) 환산:  1 외화 = rates.KRW ÷ rates.외화  원  (엔은 100엔 기준) */
@@ -67,7 +67,7 @@
         if (!isNaN(t.getTime()) && data.time_last_update_unix) {
             dateEl.textContent = (t.getMonth() + 1) + "/" + t.getDate() + " 기준 (1일 1회 갱신)";
         } else {
-            dateEl.textContent = "1일 1회 갱신";
+            dateEl.textContent = "1일 1회 자동갱신";
         }
         return true;
     }
