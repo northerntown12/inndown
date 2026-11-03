@@ -32,7 +32,7 @@
     gate.id = "login-gate";
     gate.innerHTML =
         '<form class="login-box" autocomplete="off">' +
-            '<h2 class="login-title">로그인 테스트중</h2>' +
+            '<h2 class="login-title">로그인 테스트</h2>' +
             '<input type="password" id="login-pw" placeholder="비밀번호" aria-label="비밀번호" autofocus>' +
             '<p class="login-hint">password: 12</p>' +
             '<button type="submit" class="login-btn">로그인</button>' +
