@@ -1,11 +1,12 @@
 /* ===== 주식시장 위젯 (환율 위젯 아래, 광고칸 가로 전체) =====
    .ad-banner 기본값(글자 투명, 높이 72px)을 덮어써요. */
 .ad-grid .stock-widget {
-    grid-column: 1 / -1;
+    grid-column: 2;          /* 오른쪽 열(구글·네이버·넷플릭스와 같은 열) */
+    grid-row: 4;
     height: auto;
     display: flex;
     flex-direction: column;
-    padding: 8px 10px 6px;
+    padding: 8px 8px 6px;
     overflow: hidden;
     background: linear-gradient(160deg, #3d5391 0%, #6b58a8 55%, #a2639f 100%);
     border: 1px solid #5a4aa8;
@@ -38,7 +39,7 @@
 .stk-list li {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
     padding: 2px 0;
     border-top: 1px solid rgba(255, 255, 255, 0.14);
 }
@@ -50,13 +51,13 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    font-size: 0.74rem;
+    font-size: 0.68rem;
     color: rgba(255, 255, 255, 0.92);
 }
 
 .stk-price {
     flex: none;
-    font-size: 0.8rem;
+    font-size: 0.72rem;
     font-variant-numeric: tabular-nums;
     color: #ffd166;
     white-space: nowrap;
@@ -64,9 +65,9 @@
 
 .stk-chg {
     flex: none;
-    min-width: 64px;
+    min-width: 52px;
     text-align: right;
-    font-size: 0.72rem;
+    font-size: 0.66rem;
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
     color: rgba(255, 255, 255, 0.7);
@@ -105,4 +106,96 @@
     font-size: 1.15rem;
     font-weight: 900;
     letter-spacing: 0.08em;
+}
+
+/* ===== 우편번호 검색 칸 (주식시장표 왼쪽, 환율 위젯 아래) ===== */
+.ad-grid .postal-widget {
+    grid-column: 1;
+    grid-row: 4;
+    height: auto;            /* 옆 주식시장표 높이에 맞춰 늘어나요 */
+    display: flex;
+    flex-direction: column;
+    padding: 8px 8px 6px;
+    overflow: hidden;
+    background: linear-gradient(160deg, #3d5391 0%, #6b58a8 55%, #a2639f 100%);
+    border: 1px solid #5a4aa8;
+    color: #fff;
+    font-size: 0.8rem;
+}
+
+.pst-title {
+    margin: 0 0 6px;
+    font-size: 0.9rem;
+    line-height: 1.2;
+    text-align: center;
+    color: #fff;
+}
+
+.pst-btn {
+    width: 100%;
+    padding: 7px 0;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #3d3a7a;
+    background: #ffd166;
+    border: 0;
+    border-radius: 6px;
+    cursor: pointer;
+}
+.pst-btn:hover { background: #ffc233; }
+
+.pst-result {
+    margin-top: 8px;
+    padding-top: 6px;
+    border-top: 1px solid rgba(255, 255, 255, 0.35);
+    text-align: center;
+    min-width: 0;
+}
+
+.pst-zip {
+    display: block;
+    font-size: 1.5rem;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.06em;
+    color: rgba(255, 255, 255, 0.45);
+}
+.pst-result.has .pst-zip { color: #ffd166; cursor: pointer; }
+
+.pst-addr {
+    margin-top: 3px;
+    font-size: 0.68rem;
+    line-height: 1.3;
+    color: rgba(255, 255, 255, 0.92);
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+}
+.pst-jibun { color: rgba(255, 255, 255, 0.7); }
+
+.pst-copy {
+    display: none;
+    margin: 6px auto 0;
+    padding: 3px 10px;
+    font-size: 0.68rem;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.18);
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    border-radius: 12px;
+    cursor: pointer;
+}
+.pst-copy:hover { background: rgba(255, 255, 255, 0.3); }
+.pst-result.has .pst-copy { display: inline-block; }
+
+.pst-msg {
+    margin-top: auto;
+    padding-top: 4px;
+    min-height: 1.2em;
+    font-size: 0.6rem;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.75);
+}
+
+/* 화면이 좁을 때(1100px 이하)는 반폭이 너무 좁아서 가로 전체로 */
+@media screen and (max-width: 1100px) {
+    .ad-grid .postal-widget { grid-column: 1 / -1; grid-row: 4; min-height: 72px; }
+    .ad-grid .stock-widget  { grid-column: 1 / -1; grid-row: 5; }
 }
