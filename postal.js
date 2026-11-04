@@ -41,7 +41,13 @@
     result.appendChild(zipEl);
     result.appendChild(roadEl);
     result.appendChild(jibunEl);
-    result.appendChild(copyBtn);
+    var resetBtn = el("button", "pst-reset", "새로고침");
+    resetBtn.type = "button";
+    resetBtn.title = "표시된 주소 지우기";
+    var actions = el("div", "pst-actions");
+    actions.appendChild(copyBtn);
+    actions.appendChild(resetBtn);
+    result.appendChild(actions);
     box.appendChild(result);
 
     var msg = el("div", "pst-msg", "");
@@ -106,6 +112,12 @@
             fallback();
         }
     }
+
+    resetBtn.addEventListener("click", function () {
+        show(null);
+        try { localStorage.removeItem(STORAGE_KEY); } catch (e) { /* 무시 */ }
+        say("");
+    });
 
     zipEl.addEventListener("click", function () {
         if (current) copyText(current.zip, "우편번호를 복사했어요");

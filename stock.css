@@ -135,8 +135,8 @@
     flex-direction: column;
     padding: 8px 8px 6px;
     overflow: hidden;
-    background: linear-gradient(160deg, #3d5391 0%, #6b58a8 55%, #a2639f 100%);
-    border: 1px solid #5a4aa8;
+    background: linear-gradient(160deg, #2b4a63 0%, #32627a 100%);   /* 차분한 딥 틸블루 */
+    border: 1px solid #274558;
     color: #fff;
     font-size: 0.8rem;
 }
@@ -154,13 +154,13 @@
     padding: 7px 0;
     font-size: 0.85rem;
     font-weight: 700;
-    color: #3d3a7a;
-    background: #ffd166;
+    color: #24364b;
+    background: #f1dcae;
     border: 0;
     border-radius: 6px;
     cursor: pointer;
 }
-.pst-btn:hover { background: #ffc233; }
+.pst-btn:hover { background: #f7e6c0; }
 
 .pst-result {
     margin-top: 8px;
@@ -186,7 +186,7 @@
     border-radius: 3px;
     font-size: 1.05rem;
     font-variant-numeric: tabular-nums;
-    color: #ffd166;
+    color: #f1dcae;
 }
 
 .pst-addr {
@@ -200,19 +200,27 @@
 .pst-jibun { color: rgba(255, 255, 255, 0.7); }
 .pst-addr:empty { display: none; }
 
-.pst-copy {
+.pst-actions {
     display: none;
-    margin: 6px auto 0;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 6px;
+}
+.pst-result.has .pst-actions { display: flex; }
+
+.pst-copy,
+.pst-reset {
     padding: 3px 10px;
     font-size: 0.68rem;
     color: #fff;
-    background: rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.14);
     border: 1px solid rgba(255, 255, 255, 0.45);
     border-radius: 12px;
     cursor: pointer;
+    white-space: nowrap;
 }
-.pst-copy:hover { background: rgba(255, 255, 255, 0.3); }
-.pst-result.has .pst-copy { display: inline-block; }
+.pst-copy:hover,
+.pst-reset:hover { background: rgba(255, 255, 255, 0.28); }
 
 .pst-msg {
     padding-top: 4px;
