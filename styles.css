@@ -944,7 +944,7 @@ button:active {
 }
 
 /* ===== 모바일 (768px 이하): 나무/광고 숨기고 세로 배치 ===== */
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 768px), screen and (hover: none) and (pointer: coarse) and (max-width: 1000px) {
     body { padding: 36px 10px 18px; }
 
     .site-header { gap: 10px; margin-bottom: 30px; }
@@ -1307,7 +1307,7 @@ button:active {
 }
 
 /* 폰: 입력칸 글자를 16px로 해서 터치 시 화면이 확대되며 흔들리는 걸 막아요 */
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 768px), screen and (hover: none) and (pointer: coarse) and (max-width: 1000px) {
     .weather-search input { font-size: 16px; }
 
     /* 검색 버튼을 오늘/내일/모레 칸과 같은 너비로 만들고 같은 오른쪽 끝에 맞춰요. (세로 정렬) */

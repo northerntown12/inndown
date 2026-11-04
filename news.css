@@ -79,7 +79,7 @@
 .news-chip.n-politic { background: #2a7f78; color: #fff; }       /* 단청 청록 */
 
 /* 폰: "뉴스:" 칸을 윗줄 전체에, 분야 칸은 한 줄에 3칸씩 */
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 768px), screen and (hover: none) and (pointer: coarse) and (max-width: 1000px) {
     .news-bar { flex-wrap: wrap; margin-top: 14px; padding-top: 0; }
     .news-bar-label { flex: 0 0 100%; }
     .news-chip { flex: 1 1 28%; height: 38px; }
