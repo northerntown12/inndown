@@ -1,76 +1,66 @@
-/* ===== 세상 살펴 보기 및 뉴스 (4개 박스 아래, 가로는 왼쪽 그림 ~ 오른쪽 주식시장표 끝까지) =====
-   .page-layout 과 같은 너비(최대 1500px)라서 양쪽 끝이 그대로 맞아요. */
-.news-section {
-    width: 100%;
-    max-width: 1500px;
-    margin: 28px auto 0;
-}
+/* ===== 뉴스 줄 (4개 박스 바로 아래) =====
+   - 가운데 칸을 위아래로 늘려서, 뉴스 줄이 항상 맨 아래(= 왼쪽 그림 하단 = 주식시장표 하단)에 붙어요.
+   - 맨 왼쪽에 "뉴스" 글자, 그 오른쪽으로 작은 아이콘들이 나란히 나와요. */
+.center-panel { align-items: stretch; }
 
-.news-title {
+.news-bar {
     display: flex;
     align-items: center;
-    gap: 14px;
-    margin: 0 0 14px;
-    font-size: 1.15rem;
+    gap: 6px;
+    width: 100%;
+    margin-top: auto;      /* 남는 공간을 위로 밀어서 줄을 맨 아래에 붙여요 */
+    padding-top: 10px;
+}
+
+.news-bar-label {
+    flex: none;
+    padding-right: 4px;
+    font-size: 1rem;
     font-weight: 700;
     color: #24364b;
-    white-space: nowrap;
-}
-.news-title::before,
-.news-title::after {
-    content: "";
-    flex: 1 1 auto;
-    height: 1px;
-    background: #a6a6a6;
 }
 
-.news-grid {
-    display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
-    gap: 12px;
-}
-
-.news-tile {
+.news-chip {
+    flex: 1 1 0;
+    min-width: 0;
     display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 4px;
-    height: 92px;
-    border-radius: 10px;              /* 각이 약간 둥근 직사각형 */
+    height: 36px;
+    padding: 0 4px;
+    border-radius: 8px;              /* 각이 약간 둥근 직사각형 */
     color: #24364b;
     text-decoration: none;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.12);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
     transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
-.news-tile:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.18);
+.news-chip:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.news-ico {
-    font-size: 1.9rem;
-    line-height: 1;
-}
+.news-ico { flex: none; font-size: 1.05rem; line-height: 1; }
 
 .news-label {
-    font-size: 1rem;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.85rem;
     font-weight: 700;
-    letter-spacing: 0.02em;
 }
 
 /* 칸마다 다른 친근한 색 */
-.news-tile.n-society { background: #f6a04d; }   /* 주황 */
-.news-tile.n-life    { background: #a9d86e; }   /* 연두 */
-.news-tile.n-world   { background: #6db3ee; }   /* 파랑 */
-.news-tile.n-issue   { background: #f7d154; }   /* 노랑 */
-.news-tile.n-politic { background: #f29bb5; }   /* 분홍 */
+.news-chip.n-society { background: #f6a04d; }   /* 주황 */
+.news-chip.n-life    { background: #a9d86e; }   /* 연두 */
+.news-chip.n-world   { background: #6db3ee; }   /* 파랑 */
+.news-chip.n-issue   { background: #f7d154; }   /* 노랑 */
+.news-chip.n-politic { background: #f29bb5; }   /* 분홍 */
 
-/* 폰: 한 줄에 3칸 */
+/* 폰: "뉴스" 글자를 윗줄에, 아이콘은 한 줄에 3칸씩 */
 @media screen and (max-width: 768px) {
-    .news-section { max-width: 390px; margin-top: 22px; }
-    .news-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
-    .news-tile { height: 78px; }
-    .news-ico { font-size: 1.6rem; }
-    .news-label { font-size: 0.9rem; }
+    .news-bar { flex-wrap: wrap; margin-top: 14px; padding-top: 0; }
+    .news-bar-label { flex: 0 0 100%; text-align: center; padding: 0 0 2px; }
+    .news-chip { flex: 1 1 28%; height: 40px; }
 }

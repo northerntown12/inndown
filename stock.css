@@ -249,3 +249,12 @@
     .ad-grid .spare-widget { min-height: 72px; }
     .ad-grid .stock-widget  { grid-column: 1 / -1; grid-row: 5; }
 }
+
+/* ===== 오른쪽 광고 영역을 행 높이만큼 늘려서, 주식시장표 하단이 왼쪽 그림·뉴스 줄 하단과 맞게 ===== */
+.ad-sidebar .ad-grid {
+    height: 100%;
+    grid-template-rows: repeat(3, minmax(72px, auto)) 1fr;
+}
+@media screen and (max-width: 1100px) {
+    .ad-sidebar .ad-grid { grid-template-rows: repeat(3, minmax(72px, auto)) auto 1fr; }
+}
