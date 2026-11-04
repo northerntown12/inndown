@@ -43,7 +43,7 @@
         return e;
     }
 
-    var title = el("h3", "stk-title", "주식시장");
+    var title = el("h3", "stk-title", "오늘의 주식시장");
     widget.appendChild(title);
 
     GROUPS.forEach(function (g) {
