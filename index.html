@@ -197,7 +197,11 @@
            aria-label="넷플릭스">
         </a>
         <!-- 환율 위젯 아래 왼쪽: 전국 우편번호 검색 자리 -->
-        <div class="ad-banner postal-widget" id="postal-widget" aria-label="전국 우편번호 검색"></div>
+        <div class="pst-col">
+            <div class="ad-banner postal-widget" id="postal-widget" aria-label="전국 우편번호 검색"></div>
+            <!-- 후일 다른 용도로 쓸 빈 칸 (우편번호 칸 아래 남는 공간) -->
+            <div class="ad-banner spare-widget" id="spare-widget" aria-hidden="true"></div>
+        </div>
         <!-- 환율 위젯 아래: 주식시장 현황 (stock.js) -->
         <div class="ad-banner stock-widget" id="stock-widget" aria-label="주식시장 현황"></div>
     </div>

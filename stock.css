@@ -46,6 +46,8 @@
 .stk-list li:first-child { border-top: 0; }
 
 .stk-name {
+    color: inherit;
+    text-decoration: none;
     flex: 1 1 auto;
     min-width: 0;
     overflow: hidden;
@@ -54,6 +56,7 @@
     font-size: 0.68rem;
     color: rgba(255, 255, 255, 0.92);
 }
+.stk-name:hover { text-decoration: underline; color: #fff; }
 
 .stk-price {
     flex: none;
@@ -109,10 +112,25 @@
 }
 
 /* ===== 우편번호 검색 칸 (주식시장표 왼쪽, 환율 위젯 아래) ===== */
-.ad-grid .postal-widget {
+/* 왼쪽 열: 위 = 우편번호 칸(내용 높이만큼), 아래 = 남는 빈 칸 */
+.ad-grid .pst-col {
     grid-column: 1;
     grid-row: 4;
-    height: auto;            /* 옆 주식시장표 높이에 맞춰 늘어나요 */
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 0;
+}
+
+.ad-grid .spare-widget {
+    flex: 1 1 auto;
+    height: auto;
+    min-height: 0;
+}
+
+.ad-grid .postal-widget {
+    flex: none;
+    height: auto;            /* 내용 높이만큼만 */
     display: flex;
     flex-direction: column;
     padding: 8px 8px 6px;
@@ -153,13 +171,23 @@
 }
 
 .pst-zip {
-    display: block;
-    font-size: 1.5rem;
-    font-variant-numeric: tabular-nums;
-    letter-spacing: 0.06em;
-    color: rgba(255, 255, 255, 0.45);
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 3px;
 }
-.pst-result.has .pst-zip { color: #ffd166; cursor: pointer; }
+.pst-result.has .pst-zip { cursor: pointer; }
+
+.pst-d {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 1 / 1;
+    border: 1px solid #fff;
+    border-radius: 3px;
+    font-size: 1.05rem;
+    font-variant-numeric: tabular-nums;
+    color: #ffd166;
+}
 
 .pst-addr {
     margin-top: 3px;
@@ -170,6 +198,7 @@
     overflow-wrap: anywhere;
 }
 .pst-jibun { color: rgba(255, 255, 255, 0.7); }
+.pst-addr:empty { display: none; }
 
 .pst-copy {
     display: none;
@@ -186,7 +215,6 @@
 .pst-result.has .pst-copy { display: inline-block; }
 
 .pst-msg {
-    margin-top: auto;
     padding-top: 4px;
     min-height: 1.2em;
     font-size: 0.6rem;
@@ -196,6 +224,7 @@
 
 /* 화면이 좁을 때(1100px 이하)는 반폭이 너무 좁아서 가로 전체로 */
 @media screen and (max-width: 1100px) {
-    .ad-grid .postal-widget { grid-column: 1 / -1; grid-row: 4; min-height: 72px; }
+    .ad-grid .pst-col { grid-column: 1 / -1; grid-row: 4; }
+    .ad-grid .spare-widget { min-height: 72px; }
     .ad-grid .stock-widget  { grid-column: 1 / -1; grid-row: 5; }
 }

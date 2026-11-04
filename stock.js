@@ -15,20 +15,20 @@
 
     var GROUPS = [
         { title: "주요 지수", items: [
-            { sym: "^KS11",  name: "코스피",     kind: "idx" },
-            { sym: "^KQ11",  name: "코스닥",     kind: "idx" },
-            { sym: "^IXIC",  name: "나스닥",     kind: "idx" },
-            { sym: "^DJI",   name: "다우존스",   kind: "idx" },
-            { sym: "^GSPC",  name: "S&P 500",    kind: "idx" },
-            { sym: "^N225",  name: "닛케이225",  kind: "idx" }
+            { sym: "^KS11",  name: "코스피",     kind: "idx", url: "https://finance.naver.com/sise/sise_index.naver?code=KOSPI" },
+            { sym: "^KQ11",  name: "코스닥",     kind: "idx", url: "https://finance.naver.com/sise/sise_index.naver?code=KOSDAQ" },
+            { sym: "^IXIC",  name: "나스닥",     kind: "idx", url: "https://finance.naver.com/world/sise.naver?symbol=NAS@IXIC" },
+            { sym: "^DJI",   name: "다우존스",   kind: "idx", url: "https://finance.naver.com/world/sise.naver?symbol=DJI@DJI" },
+            { sym: "^GSPC",  name: "S&P 500",    kind: "idx", url: "https://finance.naver.com/world/sise.naver?symbol=SPI@SPX" },
+            { sym: "^N225",  name: "닛케이225",  kind: "idx", url: "https://finance.naver.com/world/sise.naver?symbol=NII@NI225" }
         ]},
         { title: "인기 종목", items: [
-            { sym: "005930.KS", name: "삼성전자",   kind: "krw" },
-            { sym: "000660.KS", name: "SK하이닉스", kind: "krw" },
-            { sym: "035420.KS", name: "NAVER",      kind: "krw" },
-            { sym: "NVDA",      name: "엔비디아",   kind: "usd" },
-            { sym: "TSLA",      name: "테슬라",     kind: "usd" },
-            { sym: "AAPL",      name: "애플",       kind: "usd" }
+            { sym: "005930.KS", name: "삼성전자",   kind: "krw", url: "https://finance.naver.com/item/main.naver?code=005930" },
+            { sym: "000660.KS", name: "SK하이닉스", kind: "krw", url: "https://finance.naver.com/item/main.naver?code=000660" },
+            { sym: "035420.KS", name: "NAVER",      kind: "krw", url: "https://finance.naver.com/item/main.naver?code=035420" },
+            { sym: "NVDA",      name: "엔비디아",   kind: "usd", url: "https://m.stock.naver.com/worldstock/stock/NVDA.O/total" },
+            { sym: "TSLA",      name: "테슬라",     kind: "usd", url: "https://m.stock.naver.com/worldstock/stock/TSLA.O/total" },
+            { sym: "AAPL",      name: "애플",       kind: "usd", url: "https://m.stock.naver.com/worldstock/stock/AAPL.O/total" }
         ]}
     ];
 
@@ -43,7 +43,7 @@
         return e;
     }
 
-    var title = el("h3", "stk-title", "오늘의 주식시장");
+    var title = el("h3", "stk-title", "주식시장");
     widget.appendChild(title);
 
     GROUPS.forEach(function (g) {
@@ -52,7 +52,11 @@
         g.items.forEach(function (it) {
             allSymbols.push(it.sym);
             var li = el("li");
-            var name = el("span", "stk-name", it.name);
+            var name = el("a", "stk-name", it.name);
+            name.href = it.url;
+            name.target = "_blank";
+            name.rel = "noopener noreferrer";
+            name.title = "네이버 증권에서 보기";
             var price = el("b", "stk-price", "--");
             var chg = el("span", "stk-chg", "--");
             li.appendChild(name);

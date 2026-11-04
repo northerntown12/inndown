@@ -26,7 +26,13 @@
     box.appendChild(btn);
 
     var result = el("div", "pst-result");
-    var zipEl  = el("b", "pst-zip", "-----");
+    var zipEl  = el("div", "pst-zip");
+    var digits = [];
+    for (var di = 0; di < 5; di++) {
+        var d = el("span", "pst-d", "");
+        digits.push(d);
+        zipEl.appendChild(d);
+    }
     var roadEl = el("div", "pst-addr", "");
     var jibunEl = el("div", "pst-addr pst-jibun", "");
     var copyBtn = el("button", "pst-copy", "주소 복사");
@@ -51,16 +57,20 @@
 
     var current = null;   // { zip, road, jibun }
 
+    function setDigits(zip) {
+        for (var i = 0; i < 5; i++) digits[i].textContent = zip.charAt(i) || "";
+    }
+
     function show(r) {
         current = r;
         if (!r) {
-            zipEl.textContent = "-----";
+            setDigits("");
             roadEl.textContent = "";
             jibunEl.textContent = "";
             result.classList.remove("has");
             return;
         }
-        zipEl.textContent = r.zip;
+        setDigits(r.zip);
         roadEl.textContent = r.road || "";
         jibunEl.textContent = r.jibun ? "(지번) " + r.jibun : "";
         result.classList.add("has");
