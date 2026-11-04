@@ -1,0 +1,76 @@
+/* ===== 세상 살펴 보기 및 뉴스 (4개 박스 아래, 가로는 왼쪽 그림 ~ 오른쪽 주식시장표 끝까지) =====
+   .page-layout 과 같은 너비(최대 1500px)라서 양쪽 끝이 그대로 맞아요. */
+.news-section {
+    width: 100%;
+    max-width: 1500px;
+    margin: 28px auto 0;
+}
+
+.news-title {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 0 0 14px;
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: #24364b;
+    white-space: nowrap;
+}
+.news-title::before,
+.news-title::after {
+    content: "";
+    flex: 1 1 auto;
+    height: 1px;
+    background: #a6a6a6;
+}
+
+.news-grid {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.news-tile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    height: 92px;
+    border-radius: 10px;              /* 각이 약간 둥근 직사각형 */
+    color: #24364b;
+    text-decoration: none;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.12);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.news-tile:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.18);
+}
+
+.news-ico {
+    font-size: 1.9rem;
+    line-height: 1;
+}
+
+.news-label {
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+/* 칸마다 다른 친근한 색 */
+.news-tile.n-society { background: #f6a04d; }   /* 주황 */
+.news-tile.n-life    { background: #a9d86e; }   /* 연두 */
+.news-tile.n-world   { background: #6db3ee; }   /* 파랑 */
+.news-tile.n-issue   { background: #f7d154; }   /* 노랑 */
+.news-tile.n-politic { background: #f29bb5; }   /* 분홍 */
+
+/* 폰: 한 줄에 3칸 */
+@media screen and (max-width: 768px) {
+    .news-section { max-width: 390px; margin-top: 22px; }
+    .news-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .news-tile { height: 78px; }
+    .news-ico { font-size: 1.6rem; }
+    .news-label { font-size: 0.9rem; }
+}
