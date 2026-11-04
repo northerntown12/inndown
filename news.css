@@ -1,6 +1,7 @@
 /* ===== 뉴스 줄 (4개 박스 바로 아래) =====
    - 가운데 칸을 위아래로 늘려서, 뉴스 줄이 항상 맨 아래(= 왼쪽 그림 하단 = 주식시장표 하단)에 붙어요.
-   - 맨 왼쪽에 "뉴스" 글자, 그 오른쪽으로 작은 아이콘들이 나란히 나와요. */
+   - 맨 왼쪽 "뉴스:" 칸(파랑 바탕·흰 글씨)이 가장 크고, 그 오른쪽으로 작은 분야 칸들이 나란히 나와요.
+   - 모든 칸은 모서리가 각진 직사각형이에요. */
 .center-panel { align-items: stretch; }
 
 .news-bar {
@@ -12,14 +13,24 @@
     padding-top: 10px;
 }
 
+/* "뉴스:" 칸: 다른 칸보다 가로로 더 크게 */
 .news-bar-label {
-    flex: none;
-    padding-right: 4px;
-    font-size: 1rem;
+    flex: 1.5 1 0;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 36px;
+    font-size: 1.05rem;
     font-weight: 700;
-    color: #24364b;
+    letter-spacing: 0.04em;
+    color: #fff;
+    background: #2f6fbf;             /* 파랑 */
+    border-radius: 0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
+/* 분야 칸: 조금 작게 */
 .news-chip {
     flex: 1 1 0;
     min-width: 0;
@@ -27,40 +38,40 @@
     align-items: center;
     justify-content: center;
     gap: 4px;
-    height: 36px;
-    padding: 0 4px;
-    border-radius: 8px;              /* 각이 약간 둥근 직사각형 */
+    height: 32px;
+    padding: 0 3px;
+    border-radius: 0;                /* 각진 직사각형 */
     color: #24364b;
     text-decoration: none;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
     transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 .news-chip:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
 }
 
-.news-ico { flex: none; font-size: 1.05rem; line-height: 1; }
+.news-ico { flex: none; font-size: 0.95rem; line-height: 1; }
 
 .news-label {
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     font-weight: 700;
 }
 
-/* 칸마다 다른 친근한 색 */
-.news-chip.n-society { background: #f6a04d; }   /* 주황 */
-.news-chip.n-life    { background: #a9d86e; }   /* 연두 */
-.news-chip.n-world   { background: #6db3ee; }   /* 파랑 */
-.news-chip.n-issue   { background: #f7d154; }   /* 노랑 */
-.news-chip.n-politic { background: #f29bb5; }   /* 분홍 */
+/* 칸마다 다른 색 (밝은 바탕은 남색 글씨, 진한 바탕은 흰 글씨) */
+.news-chip.n-society { background: #eb8a3d; }                    /* 주황 */
+.news-chip.n-life    { background: #9cc65a; }                    /* 연두 */
+.news-chip.n-world   { background: #8c2f63; color: #fff; }       /* 자주 */
+.news-chip.n-issue   { background: #f3bd3a; }                    /* 황금 노랑 */
+.news-chip.n-politic { background: #2a7f78; color: #fff; }       /* 단청 청록 */
 
-/* 폰: "뉴스" 글자를 윗줄에, 아이콘은 한 줄에 3칸씩 */
+/* 폰: "뉴스:" 칸을 윗줄 전체에, 분야 칸은 한 줄에 3칸씩 */
 @media screen and (max-width: 768px) {
     .news-bar { flex-wrap: wrap; margin-top: 14px; padding-top: 0; }
-    .news-bar-label { flex: 0 0 100%; text-align: center; padding: 0 0 2px; }
-    .news-chip { flex: 1 1 28%; height: 40px; }
+    .news-bar-label { flex: 0 0 100%; }
+    .news-chip { flex: 1 1 28%; height: 38px; }
 }
