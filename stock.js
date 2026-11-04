@@ -17,8 +17,8 @@
         { title: "주요 지수", items: [
             { sym: "^KS11",  name: "코스피",     kind: "idx", url: "https://finance.naver.com/sise/sise_index.naver?code=KOSPI" },
             { sym: "^KQ11",  name: "코스닥",     kind: "idx", url: "https://finance.naver.com/sise/sise_index.naver?code=KOSDAQ" },
-            { sym: "^IXIC",  name: "나스닥",     kind: "idx", url: "https://finance.naver.com/world/sise.naver?symbol=NAS@IXIC" },
             { sym: "^DJI",   name: "다우존스",   kind: "idx", url: "https://finance.naver.com/world/sise.naver?symbol=DJI@DJI" },
+            { sym: "^IXIC",  name: "나스닥",     kind: "idx", url: "https://finance.naver.com/world/sise.naver?symbol=NAS@IXIC" },
             { sym: "^GSPC",  name: "S&P 500",    kind: "idx", url: "https://finance.naver.com/world/sise.naver?symbol=SPI@SPX" },
             { sym: "^N225",  name: "닛케이225",  kind: "idx", url: "https://finance.naver.com/world/sise.naver?symbol=NII@NI225" }
         ]},
