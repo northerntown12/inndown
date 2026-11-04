@@ -21,13 +21,22 @@
     align-items: center;
     justify-content: center;
     height: 36px;
-    font-size: 1.05rem;
-    font-weight: 700;
-    letter-spacing: 0.04em;
+    font-family: "Montserrat", "Segoe UI", Arial, sans-serif;   /* 현대적인 산세리프 */
+    font-size: 1rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
     color: #fff;
-    background: #2f6fbf;             /* 파랑 */
+    background: #1b3470;             /* 남색에 가까운 진한 파랑 */
     border-radius: 0;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.news-colon {
+    margin-left: 3px;
+    font-size: 1.35em;       /* 콜론을 더 크고 또렷하게 */
+    font-weight: 800;
+    line-height: 1;
+    transform: translateY(-1px);
 }
 
 /* 분야 칸: 조금 작게 */
