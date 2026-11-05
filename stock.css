@@ -269,3 +269,39 @@
     pointer-events: none;
 }
 .spare-scene svg { display: block; width: 100%; height: 100%; }
+
+/* ===== 폰 화면: 뉴스 줄 아래에 환율 → 오늘의 주식시장 → 졸라맨만 보여요 =====
+   (구글·네이버·넷플릭스·우편번호 칸은 폰에서 계속 숨겨요) */
+@media screen and (max-width: 768px), screen and (hover: none) and (pointer: coarse) and (max-width: 1000px) {
+    .page-layout .ad-sidebar { display: block; margin-top: 16px; }
+
+    .ad-sidebar .ad-grid {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        height: auto;
+    }
+
+    .ad-sidebar .ad-grid .google-favicon-banner,
+    .ad-sidebar .ad-grid .naver-ad,
+    .ad-sidebar .ad-grid .netflix-ad,
+    .ad-sidebar .ad-grid .postal-widget { display: none; }
+
+  
+    .ad-sidebar .ad-grid .pst-col { display: contents; }
+
+    .ad-sidebar .ad-grid .fx-widget    { order: 1; }
+    /* 환율 칸: 폰에서는 줄 높이를 직접 정해 줘요 */
+    .ad-sidebar .ad-grid .fx-list { flex: none; }
+    .ad-sidebar .ad-grid .fx-list li { flex: none; min-height: 28px; padding: 2px 0; }
+    .ad-sidebar .ad-grid .fx-widget { padding: 8px 8px 6px; }
+    .ad-sidebar .ad-grid .stock-widget { order: 2; }
+    .ad-sidebar .ad-grid .spare-widget {
+        order: 3;
+        flex: none;
+        width: 100%;
+        height: auto;
+        min-height: 0;
+        aspect-ratio: 3 / 2;
+    }
+}
