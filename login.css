@@ -1,6 +1,4 @@
-/* ===== 로그인 화면 =====
-   - 로그인 전에는 로그인 창 말고 모든 내용을 숨겨요. (빈 화면 + 로그인 창)
-   - html 에 "locked" 클래스가 붙어 있는 동안만 적용돼요. */
+
 html.locked body > *:not(#login-gate) { display: none !important; }
 html.locked body { background: #fff; }
 
