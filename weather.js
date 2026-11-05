@@ -20,6 +20,7 @@
     var windEl = document.getElementById("weather-wind");
     var msgEl = document.getElementById("weather-msg");
     var forecastEl = document.getElementById("weather-forecast-list");
+    var laterEl = document.getElementById("weather-later");
     var tipEl = document.getElementById("weather-tip");
     var tipTimer = null;
     var tipOwner = null;
@@ -186,6 +187,16 @@
         // 눌린 칸 옆, 세로 가운데에 붙여요. (기본: 칸의 왼쪽 / side가 "right"면 칸의 오른쪽)
         var w = widget.getBoundingClientRect();
         var b = box.getBoundingClientRect();
+        if (side === "up") {
+            // 칸 위쪽 가운데에 띄워요 (아래 줄 칸용)
+            tipEl.style.transform = "translate(-50%, -100%)";
+            tipEl.style.left = (b.left - w.left + b.width / 2) + "px";
+            tipEl.style.right = "auto";
+            tipEl.style.top = (b.top - w.top - 4) + "px";
+            tipTimer = setTimeout(hideTip, 3000);
+            return;
+        }
+        tipEl.style.transform = "";
         if (side === "right") {
             tipEl.style.left = (b.right - w.left + 4) + "px";
             tipEl.style.right = "auto";
@@ -274,6 +285,71 @@
             box.appendChild(label);
             box.appendChild(row);
             forecastEl.appendChild(box);
+        });
+    }
+
+    /* 6시간 후 / 12시간 후 예보 (현재 시각의 정시 기준, 지역 현지 시각)
+       - 해당 시각을 못 찾으면 "--"로 보여줘요. */
+    function renderLater(current, hourly) {
+        if (!laterEl) return;
+        laterEl.innerHTML = "";
+
+        var nowText = String(current.time || "");
+        var m = nowText.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2})/);
+        if (!m) return;
+
+        [6, 12].forEach(function (h) {
+            var d = new Date(Date.UTC(+m[1], +m[2] - 1, +m[3], +m[4] + h));
+            var key = d.getUTCFullYear() + "-" + pad2(d.getUTCMonth() + 1) + "-" + pad2(d.getUTCDate()) +
+                      "T" + pad2(d.getUTCHours()) + ":00";
+            var idx = hourly && hourly.time ? hourly.time.indexOf(key) : -1;
+            var hh = d.getUTCHours();
+            var clock = (hh < 12 ? "오전 " : "오후 ") + (hh % 12 === 0 ? 12 : hh % 12) + "시";
+
+            var box = document.createElement("div");
+            box.className = "weather-fbox";
+
+            var label = document.createElement("span");
+            label.className = "fb-label";
+            label.textContent = h + "시간 후";
+
+            var row = document.createElement("span");
+            row.className = "fb-row";
+
+            var icon = document.createElement("span");
+            icon.className = "fb-icon";
+
+            var temp = document.createElement("span");
+            temp.className = "fb-temp";
+
+            var tipText = "예보를 받아오지 못했어요";
+
+            if (idx === -1) {
+                icon.textContent = "-";
+                temp.textContent = "--";
+            } else {
+                var info = describe(hourly.weather_code[idx], hourly.is_day ? hourly.is_day[idx] : 1);
+                icon.textContent = info.icon;
+                temp.textContent = Math.round(hourly.temperature_2m[idx]) + "°";
+                tipText = clock + " " + info.text;
+                box.title = h + "시간 후(" + tipText + ")";
+            }
+
+            box.setAttribute("role", "button");
+            box.tabIndex = 0;
+            box.addEventListener("click", function () { toggleTip(box, tipText, "up"); });
+            box.addEventListener("keydown", function (e) {
+                if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    toggleTip(box, tipText, "up");
+                }
+            });
+
+            row.appendChild(icon);
+            row.appendChild(temp);
+            box.appendChild(label);
+            box.appendChild(row);
+            laterEl.appendChild(box);
         });
     }
 
@@ -398,6 +474,7 @@
         humEl.textContent = Math.round(current.relative_humidity_2m) + "%";
         windEl.textContent = Number(current.wind_speed_10m).toFixed(1) + "m/s";
         renderForecast(current, hourly);
+        renderLater(current, hourly);
         setMessage("");
     }
 

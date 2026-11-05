@@ -1,10 +1,13 @@
-
+/* ===== 뉴스 줄 (4개 박스 바로 아래) =====
+   - 가운데 칸을 위아래로 늘려서, 뉴스 줄이 항상 맨 아래(= 왼쪽 그림 하단 = 주식시장표 하단)에 붙어요.
+   - 맨 왼쪽 "뉴스:" 칸(파랑 바탕·흰 글씨)이 가장 크고, 그 오른쪽으로 작은 분야 칸들이 나란히 나와요.
+   - 모든 칸은 모서리가 각진 직사각형이에요. */
 .center-panel { align-items: stretch; }
 
 .news-bar {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 0;                /* 칸 사이 빈 공간 없이 모두 붙여요 */
     width: 100%;
     margin-top: auto;      /* 남는 공간을 위로 밀어서 줄을 맨 아래에 붙여요 */
     padding-top: 10px;
@@ -23,11 +26,10 @@
     font-weight: 800;
     letter-spacing: 0.1em;
     color: #fff;
-    background: #073BA6;            
+    background: #073BA6;           
     border-radius: 0;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
-
 
 /* 분야 칸: 조금 작게 */
 .news-chip {

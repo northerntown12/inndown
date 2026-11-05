@@ -1468,3 +1468,16 @@ button:active {
 }
 
 .weather-tip[hidden] { display: none; }
+
+/* 6시간 후 / 12시간 후 예보 (가운데 영역과 체감·습도·바람 줄 사이) */
+.weather-later {
+    display: flex;
+    gap: 4px;
+    width: 100%;
+}
+
+.weather-later .weather-fbox {
+    flex: 1 1 0;
+    width: auto;
+    min-width: 0;
+}
