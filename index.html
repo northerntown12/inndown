@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Main Page</title>
-    <script>try{if(sessionStorage.getItem("loginOK")!=="1")document.documentElement.classList.add("locked")}catch(e){document.documentElement.classList.add("locked")}</script>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="login.css">
-    <link rel="stylesheet" href="stock.css">
-    <link rel="stylesheet" href="news.css">
+    <script>try{var a=JSON.parse(localStorage.getItem("loginAuth.v1"));if(!(a&&a.token&&a.exp>Date.now()))throw 0}catch(e){document.documentElement.classList.add("locked")}</script>
+    <link rel="stylesheet" href="styles.css?v=3">
+    <link rel="stylesheet" href="login.css?v=4">
+    <link rel="stylesheet" href="stock.css?v=3">
+    <link rel="stylesheet" href="news.css?v=3">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Gaegu:wght@400;700&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
@@ -233,13 +233,13 @@
         </div>
     </footer>
 
-    <script src="login.js"></script>
+    <script src="login.js?v=4"></script>
     <script src="script.js"></script>
-    <script src="weather.js"></script>
+    <script src="weather.js?v=3"></script>
     <script src="fx.js"></script>
-    <script src="stock.js"></script>
+    <script src="stock.js?v=3"></script>
     <script src="postal.js"></script>
-    <script src="spare.js"></script>
+    <script src="spare.js?v=3"></script>
     <script src="memo.js"></script>
 </body>
 </html>
