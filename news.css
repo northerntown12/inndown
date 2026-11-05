@@ -70,9 +70,10 @@
 .news-chip.n-issue   { background: #f3bd3a; }                    /* 황금 노랑 */
 .news-chip.n-politic { background: #2a7f78; color: #fff; }       /* 단청 청록 */
 
-/* 폰: 모든 칸을 한 줄에 3칸씩 */
+/* 폰: NEWS 칸(윗줄 전체) → 칩 2개 → 칩 3개 */
 @media screen and (max-width: 768px), screen and (hover: none) and (pointer: coarse) and (max-width: 1000px) {
     .news-bar { flex-wrap: wrap; margin-top: 14px; padding-top: 0; }
-    .news-bar-label,
-    .news-chip { flex: 1 1 28%; height: 38px; }
+    .news-bar-label { flex: 0 0 100%; height: 38px; }         /* NEWS: 맨 윗줄 전체 */
+    .news-chip { flex: 1 1 28%; height: 38px; }               /* 아래 세 칸: 한 줄에 3개 */
+    .news-chip:nth-of-type(-n+2) { flex: 1 1 45%; }           /* 사회·생활문화: 두 번째 줄에 2개 */
 }
