@@ -1566,22 +1566,18 @@ button:active {
 .lotto-last.ll-min { padding: 5px 6px; }
 .lotto-last.ll-off { display: none; }
 
-/* 엄지척(👍): 추첨이 끝나면 버튼 글자가 28px로 커져서 버튼이 아래로 늘어나요.
-   그 높이만큼 버튼을 위로 올려서 아래 "지난 당첨 결과" 띠와 겹치지 않게 해요. */
+
 .lotto-container .slot-btn[style*="28px"] {
     top: calc(var(--btn-drop) - 0.9rem);       /* PC */
 }
 
-/* ===== 배경 여성의 눈이 보이도록 공/버튼을 조금 아래로 =====
-   값을 키우면 더 아래로, 줄이면 위로 올라가요.
-   --balls-drop : 추첨공 줄을 내리는 정도
-   --btn-drop   : SPIN / 엄지척 버튼을 내리는 정도 (PC만 조금 더 내려요) */
+
 .lotto-container .lotto-balls {
     position: relative;
     top: var(--balls-drop, 0.9rem);
 }
-.lotto-container { --balls-drop: 2rem; }
-.lotto-container .slot-btn { --btn-drop: 2.5rem; }       /* PC: 공과 버튼 모두 내려요 */
+.lotto-container { --balls-drop: 2.2rem; }
+.lotto-container .slot-btn { --btn-drop: 2.7rem; }       /* PC: 공과 버튼 모두 내려요 */
 
 @media screen and (max-width: 768px), screen and (hover: none) and (pointer: coarse) and (max-width: 1000px) {
     .lotto-container { --balls-drop: 0.9rem; }            /* 폰: 공만 내려요 */
