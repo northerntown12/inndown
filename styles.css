@@ -1493,8 +1493,8 @@ button:active {
     position: absolute;
     left: 6px;
     right: 6px;
-    bottom: 4px;
-    padding: 3px 6px 4px;
+    bottom: 3px;
+    padding: 3px 6px 3px;
     text-align: center;
     color: #fff;
     /* 파란 계통의 투명한 유리창: 뒤의 배경사진이 비쳐 보여요. (투명도는 rgba 마지막 숫자 0.40, 0.56을 조절: 작을수록 더 투명) */
@@ -1569,5 +1569,22 @@ button:active {
 /* 엄지척(👍): 추첨이 끝나면 버튼 글자가 28px로 커져서 버튼이 아래로 늘어나요.
    그 높이만큼 버튼을 위로 올려서 아래 "지난 당첨 결과" 띠와 겹치지 않게 해요. */
 .lotto-container .slot-btn[style*="28px"] {
-    top: calc(var(--btn-drop) - 1.1rem);
+    top: calc(var(--btn-drop) - 0.9rem);       /* PC */
+}
+
+/* ===== 배경 여성의 눈이 보이도록 공/버튼을 조금 아래로 =====
+   값을 키우면 더 아래로, 줄이면 위로 올라가요.
+   --balls-drop : 추첨공 줄을 내리는 정도
+   --btn-drop   : SPIN / 엄지척 버튼을 내리는 정도 (PC만 조금 더 내려요) */
+.lotto-container .lotto-balls {
+    position: relative;
+    top: var(--balls-drop, 0.9rem);
+}
+.lotto-container { --balls-drop: 0.9rem; }
+.lotto-container .slot-btn { --btn-drop: 1.2rem; }       /* PC: 공과 버튼 모두 내려요 */
+
+@media screen and (max-width: 768px), screen and (hover: none) and (pointer: coarse) and (max-width: 1000px) {
+    .lotto-container { --balls-drop: 0.9rem; }            /* 폰: 공만 내려요 */
+    .lotto-container .slot-btn { --btn-drop: 0.9rem; }    /* 폰: 버튼은 그대로 */
+    .lotto-container .slot-btn[style*="28px"] { top: calc(var(--btn-drop) - 0.55rem); }   /* 폰: 엄지척 */
 }
