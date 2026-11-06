@@ -1,11 +1,14 @@
-
+/* ===== 로또 칸 아래: 지난 당첨 결과 (번호 + 1등 당첨금) =====
+   - 로또 당첨 정보 중계 서버(lotto-worker.js)에서 가장 최근 회차를 받아 와요.
+   - 한 번 받은 결과는 이 브라우저에 저장해 두고, 못 받을 땐 저장된 결과를 보여줘요.
+   - 추첨 시간(토요일 저녁) 전후에 바뀌므로 열어 둔 채로 두면 1시간마다 다시 확인해요. */
 (function () {
     "use strict";
 
     var box = document.querySelector(".lotto-container");
     if (!box) return;
 
-    var WORKER_URL = "https://twilight-rain-db97.sumerboy.workers.dev";
+    var WORKER_URL = "https://lottoinfo.sumerboy.workers.dev/";
     var OFFICIAL_URL = "https://www.dhlottery.co.kr/";
     var REFRESH_MS = 60 * 60 * 1000;
     var TIMEOUT_MS = 10 * 1000;
@@ -99,6 +102,7 @@
         panel.classList.remove("ll-min");
         panel.classList.add("ll-off");
     }
+    window.addEventListener("load", function () { setTimeout(fit, 100); });
     var fitTimer = null;
     window.addEventListener("resize", function () {
         clearTimeout(fitTimer);

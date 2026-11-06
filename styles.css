@@ -1483,57 +1483,63 @@ button:active {
 }
 
 /* ===== 로또 칸 아래: 지난 당첨 결과 (lotto-last.js) =====
-   칸의 맨 아래에 어두운 반투명 띠로 깔려요. (두 줄: 제목·당첨금 / 번호 공)
-   자리가 모자라면 lotto-last.js 가 ll-min(공만 보이기) → ll-off(숨기기) 순서로 줄여요. */
+   칸의 맨 아래에 어두운 반투명 띠로 깔려요.
+   - 칸이 넓으면 윗줄 한 줄(제목·회차 / 1등 금액·인원), 좁으면 윗줄이 두 줄로 나뉘어요.
+   - 그래도 SPIN 버튼과 겹치면 lotto-last.js 가 ll-min(공만) → ll-off(숨김) 순서로 줄여요.
+   - SPIN 버튼 위치를 올리려면 아래 --btn-drop 값을 줄이세요. (이전 2.2rem) */
+.lotto-container .slot-btn { --btn-drop: 0.9rem; }
+
 .lotto-container .lotto-last {
     position: absolute;
     left: 6px;
     right: 6px;
     bottom: 4px;
-    padding: 3px 6px;
+    padding: 3px 6px 4px;
     text-align: center;
     color: #fff;
-    background: rgba(0, 0, 0, 0.62);
-    border: 1px solid rgba(255, 215, 0, 0.55);
+    background: rgba(0, 0, 0, 0.68);
+    border: 1px solid rgba(255, 215, 0, 0.6);
     border-radius: 8px;
     container-type: inline-size;
 }
 
 .ll-head {
     display: flex;
+    flex-wrap: wrap;
     align-items: baseline;
-    justify-content: space-between;
-    gap: 6px;
-    height: 13px;
+    justify-content: center;
+    column-gap: 8px;
+    row-gap: 0;
     margin-bottom: 2px;
-    overflow: hidden;
-    line-height: 13px;
+    line-height: 1.1;
     white-space: nowrap;
 }
+@container (min-width: 300px) { .ll-head { justify-content: space-between; } }
 
 .ll-title {
     color: #ffd700;
-    font-size: 0.68rem;
+    font-size: 0.82rem;
     font-weight: 700;
     text-decoration: none;
 }
 .ll-title:hover { text-decoration: underline; }
 
 .ll-round {
-    margin-left: 3px;
-    font-size: 0.6rem;
-    color: rgba(255, 255, 255, 0.75);
+    margin-left: 4px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #fff;
 }
 
 .ll-prize {
-    font-size: 0.64rem;
+    font-size: 0.82rem;
     font-weight: 700;
     color: #fff;
     font-variant-numeric: tabular-nums;
 }
 
 .ll-more { display: none; }
-@container (min-width: 270px) { .ll-more { display: inline; } }
+@container (min-width: 300px) { .ll-more { display: inline; } }
 
 .ll-balls {
     display: flex;
@@ -1544,13 +1550,13 @@ button:active {
 }
 
 .lotto-last .ball {
-    width: 16px;
-    height: 16px;
-    font-size: 0.55rem;
+    width: 21px;
+    height: 21px;
+    font-size: 0.7rem;
     text-shadow: 0 1px 1px rgba(0, 0, 0, 0.8);
 }
-.lotto-last .plus-sign { font-size: 0.75rem; line-height: 1; }
+.lotto-last .plus-sign { font-size: 0.9rem; line-height: 1; }
 
 .lotto-last.ll-min .ll-head { display: none; }
-.lotto-last.ll-min { padding: 4px 6px; }
+.lotto-last.ll-min { padding: 5px 6px; }
 .lotto-last.ll-off { display: none; }
