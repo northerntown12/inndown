@@ -1497,9 +1497,14 @@ button:active {
     padding: 3px 6px 4px;
     text-align: center;
     color: #fff;
-    background: rgba(0, 0, 0, 0.68);
-    border: 1px solid rgba(255, 215, 0, 0.6);
+    /* 파란 계통의 투명한 유리창: 뒤의 배경사진이 비쳐 보여요. (투명도는 rgba 마지막 숫자 0.40, 0.56을 조절: 작을수록 더 투명) */
+    background: linear-gradient(180deg, rgba(40, 110, 240, 0.40) 0%, rgba(8, 50, 160, 0.56) 100%);
+    border: 1px solid rgba(190, 220, 255, 0.75);
     border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 20, 80, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+    -webkit-backdrop-filter: blur(1.5px);
+    backdrop-filter: blur(1.5px);
+    text-shadow: 0 1px 2px rgba(0, 20, 70, 0.9), 0 0 4px rgba(0, 20, 70, 0.7);
     container-type: inline-size;
 }
 
@@ -1517,7 +1522,7 @@ button:active {
 @container (min-width: 300px) { .ll-head { justify-content: space-between; } }
 
 .ll-title {
-    color: #ffd700;
+    color: #ffe45c;
     font-size: 0.82rem;
     font-weight: 700;
     text-decoration: none;
@@ -1560,3 +1565,9 @@ button:active {
 .lotto-last.ll-min .ll-head { display: none; }
 .lotto-last.ll-min { padding: 5px 6px; }
 .lotto-last.ll-off { display: none; }
+
+/* 엄지척(👍): 추첨이 끝나면 버튼 글자가 28px로 커져서 버튼이 아래로 늘어나요.
+   그 높이만큼 버튼을 위로 올려서 아래 "지난 당첨 결과" 띠와 겹치지 않게 해요. */
+.lotto-container .slot-btn[style*="28px"] {
+    top: calc(var(--btn-drop) - 1.1rem);
+}
