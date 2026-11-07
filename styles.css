@@ -1576,11 +1576,11 @@ button:active {
     position: relative;
     top: var(--balls-drop, 0.9rem);
 }
-.lotto-container { --balls-drop: 3rem; }
-.lotto-container .slot-btn { --btn-drop: 3.3rem; }       /* PC: 공과 버튼 모두 내려요 */
+.lotto-container { --balls-drop: 2.2rem; }
+.lotto-container .slot-btn { --btn-drop: 2.7rem; }       /* PC: 공과 버튼 모두 내려요 */
 
 @media screen and (max-width: 768px), screen and (hover: none) and (pointer: coarse) and (max-width: 1000px) {
-    .lotto-container { --balls-drop: 1.3rem; }            /* 폰: 공만 내려요 */
+    .lotto-container { --balls-drop: 0.9rem; }            /* 폰: 공만 내려요 */
     .lotto-container .slot-btn { --btn-drop: 0.9rem; }    /* 폰: 버튼은 그대로 */
     .lotto-container .slot-btn[style*="28px"] { top: calc(var(--btn-drop) - 0.55rem); }   /* 폰: 엄지척 */
 }
@@ -1624,3 +1624,186 @@ button:active {
 .weather-search .weather-loc.busy svg { animation: weather-loc-blink 0.8s ease-in-out infinite; }
 @keyframes weather-loc-blink { 50% { opacity: 0.3; } }
 .weather-dropdown .weather-option-loc { font-weight: 700; }
+
+
+/* ===== 할 일 · 메모 커버 (memo-cover.js) ===== */
+.memo-pad h2 { padding-right: calc(var(--u) * 22); }          /* 오른쪽 위 [커버 덮기] 버튼 자리 */
+
+.memo-pad .memo-cover-btn {
+    position: absolute;
+    z-index: 7;
+    top: calc(var(--u) * 2.5);
+    right: calc(var(--u) * 2.4);
+    display: inline-flex;
+    align-items: center;
+    gap: calc(var(--u) * 1);
+    height: calc(var(--u) * 7.6);
+    padding: 0 calc(var(--u) * 2.2);
+    border: 1px solid #c9a84a;
+    border-radius: 999px;
+    background: #0f2147;
+    color: #f3d27a;
+    font-size: max(9px, calc(var(--u) * 3.6));
+    font-weight: 700;
+    line-height: 1;
+    white-space: nowrap;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+.memo-pad .memo-cover-btn:hover { filter: brightness(1.15); background: #0f2147; }
+.memo-pad .memo-cover-btn.is-covered { background: #8a1f6b; border-color: #e6a8d6; color: #fff; }
+.memo-cover-btn svg { width: max(10px, calc(var(--u) * 4)); height: max(10px, calc(var(--u) * 4)); }
+.memo-pad .memo-cover-key[hidden] { display: none; }
+
+/* 표지: 스프링 쪽(왼쪽)을 축으로 돌아가며 덮이고 열려요 */
+.memo-cover {
+    position: absolute;
+    z-index: 5;
+    left: calc(var(--u) * 9.6);
+    right: calc(var(--u) * 1.4);
+    bottom: calc(var(--u) * 1.4);
+    top: 30%;
+    transform-origin: left center;
+    transform: perspective(1100px) rotateY(-118deg);
+    opacity: 0;
+    visibility: hidden;
+    transition: transform 0.8s cubic-bezier(0.45, 0, 0.55, 1), opacity 0.35s ease 0.45s, visibility 0s linear 0.8s;
+}
+.memo-cover.on {
+    transform: perspective(1100px) rotateY(0deg);
+    opacity: 1;
+    visibility: visible;
+    transition: transform 0.8s cubic-bezier(0.3, 1.25, 0.45, 1), opacity 0.2s ease, visibility 0s;
+}
+.memo-cover.mc-instant { transition: none !important; }
+
+.mc-face {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: calc(var(--u) * 3);
+    border-radius: calc(var(--u) * 1) calc(var(--u) * 3) calc(var(--u) * 3) calc(var(--u) * 1);
+    background-color: #2b2a27;
+    background-size: cover;            /* 신문 스크랩 그림은 memo-cover.js 에서 넣어요 */
+    background-position: center;
+    box-shadow: inset calc(var(--u) * 1.2) 0 calc(var(--u) * 1.5) rgba(0, 0, 0, 0.45), 3px 4px 12px rgba(0, 0, 0, 0.45);
+    color: #f3d27a;
+    text-align: center;
+    overflow: hidden;
+}
+/* 글씨 영역: 스크랩 위에 붙인 남색 이름표 */
+.mc-plate {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: calc(var(--u) * 1.4);
+    min-width: 62%;
+    max-width: 92%;
+    padding: calc(var(--u) * 4) calc(var(--u) * 5);
+    border-radius: calc(var(--u) * 2.4);
+    background:
+        radial-gradient(120% 90% at 30% 20%, rgba(255, 255, 255, 0.12), transparent 60%),
+        linear-gradient(160deg, #1c3a7a 0%, #0f2147 65%, #0a1734 100%);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(243, 210, 122, 0.35);
+}
+.mc-stitch {
+    position: absolute;
+    inset: calc(var(--u) * 1.3);
+    border: 1.5px dashed rgba(243, 210, 122, 0.55);
+    border-radius: calc(var(--u) * 1.6);
+    pointer-events: none;
+}
+.mc-emblem svg {
+    display: block;
+    width: calc(var(--u) * 10);
+    height: calc(var(--u) * 10);
+    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.5));
+}
+.mc-title {
+    font-family: 'Gaegu', 'Nanum Pen Script', 'Comic Sans MS', cursive;
+    font-size: max(14px, calc(var(--u) * 8.5));
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.04em;
+    text-shadow: 0 2px 3px rgba(0, 0, 0, 0.5);
+}
+.mc-sub, .mc-pin-msg {
+    font-size: max(9px, calc(var(--u) * 3.6));
+    color: rgba(255, 255, 255, 0.78);
+    line-height: 1.3;
+}
+.mc-pin-msg { min-height: 1.3em; }
+.mc-pin-msg.bad { color: #ffb3b3; }
+.mc-sub[hidden], .mc-pin[hidden], .mc-dlg[hidden], .mc-pin-input[hidden], .mc-btn[hidden] { display: none; }
+
+.mc-pin { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: calc(var(--u) * 1.2); }
+.mc-pin-input {
+    width: calc(var(--u) * 34);
+    min-width: 80px;
+    padding: calc(var(--u) * 1.4) 0;
+    border: 2px solid #f3d27a;
+    border-radius: calc(var(--u) * 2);
+    background: rgba(255, 255, 255, 0.95);
+    color: #0f2147;
+    font-size: max(16px, calc(var(--u) * 6));
+    font-weight: 700;
+    letter-spacing: 0.6em;
+    text-indent: 0.6em;
+    text-align: center;
+    outline: none;
+}
+.mc-pin-input:disabled { opacity: 0.5; }
+.mc-pin-row { display: flex; gap: calc(var(--u) * 5); }
+.memo-pad .mc-link, .memo-pad .mc-link:hover {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: rgba(255, 255, 255, 0.85);
+    font-size: max(9px, calc(var(--u) * 3.6));
+    text-decoration: underline;
+}
+
+@keyframes mc-shake { 20%, 60% { transform: translateX(-6px); } 40%, 80% { transform: translateX(6px); } }
+.mc-shake { animation: mc-shake 0.35s ease; }
+
+/* 작은 대화창: 비밀번호 정하기 / 바꾸기 / 초기화 */
+.mc-dlg {
+    position: absolute;
+    inset: 0;
+    z-index: 8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-left: calc(var(--u) * 9);
+    background: rgba(40, 30, 0, 0.35);
+}
+.mc-dlg-card {
+    width: 84%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: calc(var(--u) * 1.8);
+    padding: calc(var(--u) * 4) calc(var(--u) * 3.5);
+    border-radius: calc(var(--u) * 3);
+    background: #fffdf3;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+    text-align: center;
+}
+.mc-dlg-title { font-size: max(11px, calc(var(--u) * 5)); font-weight: 800; color: #0f2147; }
+.mc-dlg-text { font-size: max(9px, calc(var(--u) * 3.8)); color: #4a4220; line-height: 1.35; }
+.mc-dlg .mc-pin-input { border-color: #0f2147; }
+.mc-dlg .mc-pin-msg { color: #555; }
+.mc-dlg .mc-pin-msg.bad { color: #c0392b; }
+.mc-dlg-row { display: flex; gap: calc(var(--u) * 2); }
+.memo-pad .mc-btn, .memo-pad .mc-btn:hover {
+    padding: calc(var(--u) * 1.6) calc(var(--u) * 4);
+    border: 1px solid #c9b04a;
+    border-radius: calc(var(--u) * 2);
+    background: #fff;
+    color: #3a3000;
+    font-size: max(10px, calc(var(--u) * 3.8));
+    font-weight: 700;
+}
+.memo-pad .mc-btn-main.danger { background: #c0392b; border-color: #c0392b; color: #fff; }
