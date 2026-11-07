@@ -79,8 +79,13 @@
     var CX = 309, CY = 320.07, HS = 1.05;   // 다이얼 중심, 바늘 배율
 
     // 날짜 창
-    el("rect", { x: 432.3, y: 305, width: 38.9, height: 34.6, rx: 2, fill: "#f2f2ef" }, svg);
-    var dateWin = el("text", { x: 451.7, y: 322.3, "font-size": 24, "font-weight": "bold", fill: "#1d1d1d", "text-anchor": "middle", "dominant-baseline": "central", "font-family": "Arial, sans-serif" }, svg);
+    // 날짜 창: 남색 바탕 + 로즈골드 테두리 + 샴페인골드 숫자 (다이얼·테두리 색과 맞춤)
+    grad(defs, "dcDateBg", "linearGradient", [["0", "#06112b"], ["1", "#14295a"]], { x1: "0", y1: "0", x2: "0", y2: "1" });
+    grad(defs, "dcDateGold", "linearGradient", [["0", "#fbe7bf"], ["0.5", "#e2b87c"], ["1", "#b9834f"]], { x1: "0", y1: "0", x2: "0", y2: "1" });
+    grad(defs, "dcDateRim", "linearGradient", [["0", "#f4cdb0"], ["0.5", "#b9714f"], ["1", "#f0bf9c"]], { x1: "0", y1: "0", x2: "1", y2: "1" });
+    el("rect", { x: 417, y: 298.5, width: 58, height: 45, rx: 4, fill: "url(#dcDateBg)", stroke: "url(#dcDateRim)", "stroke-width": 3 }, svg);
+    el("rect", { x: 421, y: 302.5, width: 50, height: 37, rx: 2.5, fill: "none", stroke: "rgba(0,0,0,0.55)", "stroke-width": 1.5 }, svg);
+    var dateWin = el("text", { x: 446, y: 322.5, "font-size": 34, "font-weight": "bold", fill: "url(#dcDateGold)", "text-anchor": "middle", "dominant-baseline": "central", "font-family": "'Times New Roman', Georgia, serif", stroke: "rgba(0,0,0,0.35)", "stroke-width": 0.6 }, svg);
 
     // 바늘
     function hand(points) {
