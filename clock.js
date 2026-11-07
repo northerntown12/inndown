@@ -1,4 +1,12 @@
-
+/* =====================================================================
+   왼쪽 사진 아래 시계 (아날로그 + 디지털)
+   - 왼쪽 칸 맨 위에 시계, 그 옆에 파란 글씨 칸, 그 아래에 사진이 와요.
+   - 시계를 더블클릭하면 시계만 작은 창으로 떠요 (크롬·엣지 PC: 다른 프로그램 위에 항상 떠 있음).
+     그 밖의 브라우저에서는 홈페이지 화면 오른쪽 아래에 떠 있어요.
+     떠 있는 시계를 다시 더블클릭하거나 창을 닫으면 원래 자리로 돌아와요.
+   - 시계 그림: clock-face.webp (watchsample 이미지에서 바늘·숫자를 지운 것)
+   - 크기 조절: 아래 CLOCK_WIDTH 값을 바꾸면 돼요 (사진 높이도 자동으로 맞춰져요).
+   ===================================================================== */
 (function () {
     "use strict";
 
@@ -9,6 +17,9 @@
     var POPUP_W = 240, POPUP_H = 311; // 떠 있는 창 크기(px) - 시계 비율과 같게
     var VB_W = 618, VB_H = 801;      // 시계 그림 기준 크기 (비율 유지용)
 
+    var NOTE_TEXT = "Everything will be okay.";  // 시계 옆 파란 칸 글씨
+    var NOTE_HOLD = 15;                         // 다 쓴 뒤 다시 쓰기까지 기다리는 시간(초)
+
     var NS = "http://www.w3.org/2000/svg";
     var CYAN = "#3fd4ff";
     var DAYS = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
@@ -17,14 +28,23 @@
     /* ---------- 스타일 ---------- */
     var style = document.createElement("style");
     style.textContent = [
-        ".tree-panel { --dc-w: " + CLOCK_WIDTH + "px; }",
-        ".tree-panel img { height: calc(100% - var(--dc-w) * " + (VB_H / VB_W) + " - 12px) !important; }",
-        ".dc-home { position: absolute; left: 0; bottom: 0; width: var(--dc-w); }",
+        ".tree-panel { --dc-w: " + CLOCK_WIDTH + "px; --dc-h: calc(var(--dc-w) * " + (VB_H / VB_W) + "); }",
+        /* 시계 줄이 위, 사진이 아래 */
+        ".tree-panel img { top: calc(var(--dc-h) + 12px) !important; height: calc(100% - var(--dc-h) - 12px) !important; }",
+        ".dc-home { position: absolute; top: 0; left: 0; right: 24px; height: var(--dc-h); display: flex; gap: 10px; }",
+        ".dc-slot { flex: none; width: var(--dc-w); height: var(--dc-h); }",
         ".dc-wrap { width: 100%; cursor: pointer; user-select: none; -webkit-user-select: none; }",
         ".dc-svg { display: block; width: 100%; height: auto; filter: drop-shadow(0 3px 6px rgba(0,0,0,.35)); }",
         ".dc-wrap.dc-float { position: fixed; right: 16px; bottom: 16px; width: 170px; z-index: 2147483000; }",
         ".dc-ph { display: none; padding: 6px 2px; font-size: 10px; line-height: 1.4; color: #888; cursor: pointer; }",
-        ".dc-home.dc-away .dc-ph { display: block; }"
+        ".dc-home.dc-away .dc-ph { display: block; }",
+        /* 시계 옆 파란 칸 (졸라맨 칸과 같은 구조) */
+        ".dc-note { position: relative; flex: 1 1 auto; min-width: 0; background: #1f5fc4; border: 1px solid #164a9c; overflow: hidden; }",
+        ".dc-note::after { content: ''; position: absolute; inset: 12.5%; border: 4px solid #fff; border-radius: 3px; background: #1f5fc4; }",
+        ".dc-note-text { position: absolute; inset: 12.5%; z-index: 1; padding: 8px 9px; box-sizing: border-box; margin: 0;",
+        "    color: #fff; font: 700 13px/1.3 'Gaegu', 'Malgun Gothic', sans-serif; letter-spacing: 0.3px; white-space: pre-wrap; overflow: hidden; }",
+        ".dc-caret { display: inline-block; width: 1px; height: 0.95em; margin-left: 1px; vertical-align: -0.1em; background: #fff; animation: dc-blink 1s steps(1) infinite; }",
+        "@keyframes dc-blink { 50% { opacity: 0; } }"
     ].join("\n");
     document.head.appendChild(style);
 
@@ -128,9 +148,45 @@
     var ph = document.createElement("div");
     ph.className = "dc-ph";
     ph.textContent = "시계가 작은 창으로 떠 있어요. 여기를 클릭하면 돌아와요.";
-    home.appendChild(wrap);
-    home.appendChild(ph);
+    var slot = document.createElement("div");
+    slot.className = "dc-slot";
+    slot.appendChild(wrap);
+    slot.appendChild(ph);
+    home.appendChild(slot);
+
+    var note = document.createElement("div");
+    note.className = "dc-note";
+    var noteText = document.createElement("p");
+    noteText.className = "dc-note-text";
+    noteText.setAttribute("aria-label", NOTE_TEXT);
+    note.appendChild(noteText);
+    home.appendChild(note);
     panel.appendChild(home);
+
+    /* ---------- 파란 칸 글씨: 위에서부터 한 글자씩 ---------- */
+    (function typeNote() {
+        var lines = NOTE_TEXT.split(" ").join("\n");   // 한 단어씩 한 줄
+        var caret = document.createElement("span");
+        caret.className = "dc-caret";
+        var txt = document.createTextNode("");
+        noteText.appendChild(txt);
+        noteText.appendChild(caret);
+        if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+            txt.data = lines; return;
+        }
+        var i = 0;
+        function step() {
+            if (i <= lines.length) {
+                txt.data = lines.slice(0, i);
+                var ch = lines.charAt(i - 1);
+                i++;
+                setTimeout(step, ch === "\n" ? 450 : 110);
+            } else {
+                setTimeout(function () { i = 0; step(); }, NOTE_HOLD * 1000);   // 다 쓰고 잠시 뒤 다시 쓰기
+            }
+        }
+        setTimeout(step, 600);
+    })();
 
     /* ---------- 시간 갱신 ---------- */
     var timerWin = window, timer = null;
@@ -176,7 +232,7 @@
 
     function backHome() {
         wrap.classList.remove("dc-float");
-        if (wrap.parentNode !== home) home.insertBefore(wrap, ph);
+        if (wrap.parentNode !== slot) slot.insertBefore(wrap, ph);
         home.classList.remove("dc-away");
         hint.textContent = "더블클릭: 최소화";
         pipWin = null;
