@@ -1,7 +1,8 @@
 /* ===== 로또 칸 아래: 지난 당첨 결과 (번호 + 1등 당첨금) =====
    - 로또 당첨 정보 중계 서버(lotto-worker.js)에서 가장 최근 회차를 받아 와요.
    - 한 번 받은 결과는 이 브라우저에 저장해 두고, 못 받을 땐 저장된 결과를 보여줘요.
-   - 추첨 시간(토요일 저녁) 전후에 바뀌므로 열어 둔 채로 두면 1시간마다 다시 확인해요. */
+   - 열어 둔 채로 두면 1시간마다 다시 확인해요.
+     토요일 20:30 ~ 일요일 01:00(한국시간)에는 결과가 막 바뀌는 때라 5분마다 확인해요. */
 (function () {
     "use strict";
 
@@ -10,7 +11,8 @@
 
     var WORKER_URL = "https://lottoinfo.sumerboy.workers.dev/";
     var OFFICIAL_URL = "https://www.dhlottery.co.kr/";
-    var REFRESH_MS = 60 * 60 * 1000;
+    var REFRESH_MS = 60 * 60 * 1000;        // 평소 1시간
+    var REFRESH_FAST_MS = 5 * 60 * 1000;    // 토요일 추첨 직후 5분
     var TIMEOUT_MS = 10 * 1000;
     var STORAGE_KEY = "lottoLast.v1";
 
@@ -167,7 +169,20 @@
     }
     refresh();
 
-    setInterval(function () {
-        if (!document.hidden) refresh();
-    }, REFRESH_MS);
+    function isDrawWindow() {
+        var k = new Date(Date.now() + 9 * 3600 * 1000);      // 한국시간
+        var day = k.getUTCDay(), min = k.getUTCHours() * 60 + k.getUTCMinutes();
+        return (day === 6 && min >= 20 * 60 + 30) || (day === 0 && min < 60);
+    }
+    function schedule() {
+        setTimeout(function () {
+            if (!document.hidden) refresh();
+            schedule();
+        }, isDrawWindow() ? REFRESH_FAST_MS : REFRESH_MS);
+    }
+    schedule();
+    // 다른 탭을 보다가 돌아오면, 추첨 시간대에는 바로 한 번 확인해요.
+    document.addEventListener("visibilitychange", function () {
+        if (!document.hidden && isDrawWindow()) refresh();
+    });
 })();
