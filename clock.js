@@ -1,4 +1,12 @@
-
+/* =====================================================================
+   왼쪽 사진 아래 시계 (아날로그 + 디지털)
+   - 왼쪽 칸 맨 위에 시계, 그 옆에 파란 글씨 칸, 그 아래에 사진이 와요.
+   - 시계를 더블클릭하면 시계만 작은 창으로 떠요 (크롬·엣지 PC: 다른 프로그램 위에 항상 떠 있음).
+     그 밖의 브라우저에서는 홈페이지 화면 오른쪽 아래에 떠 있어요.
+     떠 있는 시계를 다시 더블클릭하거나 창을 닫으면 원래 자리로 돌아와요.
+   - 시계 그림: clock-face.webp (watchsample 이미지에서 바늘·숫자를 지운 것)
+   - 크기 조절: 아래 CLOCK_WIDTH 값을 바꾸면 돼요 (사진 높이도 자동으로 맞춰져요).
+   ===================================================================== */
 (function () {
     "use strict";
 
@@ -30,13 +38,14 @@
         ".dc-wrap.dc-float { position: fixed; right: 16px; bottom: 16px; width: 170px; z-index: 2147483000; }",
         ".dc-ph { display: none; padding: 6px 2px; font-size: 10px; line-height: 1.4; color: #888; cursor: pointer; }",
         ".dc-home.dc-away .dc-ph { display: block; }",
-        /* 시계 옆 파란 칸 (졸라맨 칸과 같은 구조) */
-        ".dc-note { position: relative; flex: 1 1 auto; min-width: 0; background: #1f5fc4; border: 1px solid #164a9c; overflow: hidden; }",
-        ".dc-note::after { content: ''; position: absolute; inset: 12.5%; border: 4px solid #fff; border-radius: 3px; background: #1f5fc4; }",
-        ".dc-note-text { position: absolute; inset: 12.5%; z-index: 1; padding: 8px 9px; box-sizing: border-box; margin: 0;",
-        "    color: #fff; font: 700 13px/1.3 'Gaegu', 'Malgun Gothic', sans-serif; letter-spacing: 0.3px; white-space: pre-wrap; overflow: hidden; }",
-        ".dc-caret { display: inline-block; width: 1px; height: 0.95em; margin-left: 1px; vertical-align: -0.1em; background: #fff; animation: dc-blink 1s steps(1) infinite; }",
-        "@keyframes dc-blink { 50% { opacity: 0; } }"
+        /* 시계 옆 파란 칸: 깃털 펜으로 쓰는 필기체 글씨 */
+        ".dc-note { position: relative; flex: 1 1 auto; min-width: 0; background: #1f5fc4; border: 1px solid #164a9c; overflow: hidden; container-type: inline-size; }",
+        ".dc-note-text { position: absolute; left: 0; right: 0; top: 0; margin: 0; padding: 10px 6px 0 10px;",
+        "    color: #fff; font: 400 min(28px, 19cqw)/1.05 'Great Vibes', 'Segoe Script', 'Brush Script MT', cursive; }",
+        ".dc-line { display: block; width: max-content; padding: 0 8px 4px 2px; margin-left: -2px; clip-path: inset(0 100% 0 0); }",
+        ".dc-quill { position: absolute; left: 0; top: 0; width: 34px; height: 48px; pointer-events: none; opacity: 0;",
+        "    transform-origin: 0 100%; filter: drop-shadow(1px 2px 1.5px rgba(0,0,0,.35)); transition: opacity .4s; }",
+        ".dc-note-text.dc-fade { transition: opacity .8s; opacity: 0; }"
     ].join("\n");
     document.head.appendChild(style);
 
@@ -151,33 +160,76 @@
     var noteText = document.createElement("p");
     noteText.className = "dc-note-text";
     noteText.setAttribute("aria-label", NOTE_TEXT);
+    noteText.setAttribute("role", "img");
     note.appendChild(noteText);
     home.appendChild(note);
     panel.appendChild(home);
 
-    /* ---------- 파란 칸 글씨: 위에서부터 한 글자씩 ---------- */
-    (function typeNote() {
-        var lines = NOTE_TEXT.split(" ").join("\n");   // 한 단어씩 한 줄
-        var caret = document.createElement("span");
-        caret.className = "dc-caret";
-        var txt = document.createTextNode("");
-        noteText.appendChild(txt);
-        noteText.appendChild(caret);
-        if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-            txt.data = lines; return;
+    /* ---------- 파란 칸 글씨: 깃털 펜으로 위에서부터 한 줄씩 ---------- */
+    (function writeNote() {
+        if (!document.querySelector('link[href*="Great+Vibes"]')) {
+            var fl = document.createElement("link");
+            fl.rel = "stylesheet";
+            fl.href = "https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap";
+            document.head.appendChild(fl);
         }
-        var i = 0;
-        function step() {
-            if (i <= lines.length) {
-                txt.data = lines.slice(0, i);
-                var ch = lines.charAt(i - 1);
-                i++;
-                setTimeout(step, ch === "\n" ? 450 : 110);
-            } else {
-                setTimeout(function () { i = 0; step(); }, NOTE_HOLD * 1000);   // 다 쓰고 잠시 뒤 다시 쓰기
+        var lines = NOTE_TEXT.split(" ").map(function (w) {      // 한 단어씩 한 줄
+            var sp = document.createElement("span");
+            sp.className = "dc-line";
+            sp.textContent = w;
+            noteText.appendChild(sp);
+            return sp;
+        });
+        var quill = document.createElementNS(NS, "svg");
+        quill.setAttribute("class", "dc-quill");
+        quill.setAttribute("viewBox", "0 0 34 48");
+        quill.setAttribute("aria-hidden", "true");
+        quill.innerHTML =
+            '<path d="M3 46 C 9 33, 18 17, 33 1 C 27 14, 22 26, 8 41 Z" fill="#fbf7ee"/>' +
+            '<path d="M6 42 C 8 30, 16 15, 33 1 C 22 11, 13 24, 9 37 Z" fill="#e6dfcf"/>' +
+            '<path d="M14 31 l-4 -2 M18 25 l-4 -2 M22 19 l-4 -2 M26 13 l-3 -2 M17 30 l2 -4 M21 24 l2 -4 M25 18 l2 -4" stroke="#cfc6b2" stroke-width=".7" stroke-linecap="round"/>' +
+            '<path d="M1 47.5 L 33 1" stroke="#b9ab8e" stroke-width="1.1" stroke-linecap="round"/>' +
+            '<path d="M0.5 48 L 2 43.5 L 5 45 Z" fill="#2a2a2a"/>';
+        note.appendChild(quill);
+
+        var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        if (reduce) { lines.forEach(function (l) { l.style.clipPath = "none"; }); return; }
+
+        var SPEED = 55;                 // 글씨 쓰는 속도 (px/초)
+        function place(line, p, t) {
+            var nr = note.getBoundingClientRect(), lr = line.getBoundingClientRect();
+            var x = lr.left - nr.left + 2 + p * (lr.width - 10);
+            var y = lr.top - nr.top + lr.height * 0.62 + Math.sin(t / 55) * 3.5;
+            quill.style.transform = "translate(" + x + "px," + (y - 48) + "px) rotate(" + (Math.sin(t / 90) * 4) + "deg)";
+        }
+        function writeLine(i, done) {
+            if (i >= lines.length) { done(); return; }
+            var line = lines[i], w = line.getBoundingClientRect().width || 60;
+            var dur = Math.max(500, w / SPEED * 1000), start = null;
+            function frame(t) {
+                if (start === null) start = t;
+                var p = Math.min(1, (t - start) / dur);
+                line.style.clipPath = "inset(0 " + ((1 - p) * 100).toFixed(2) + "% 0 0)";
+                place(line, p, t);
+                if (p < 1) requestAnimationFrame(frame);
+                else setTimeout(function () { writeLine(i + 1, done); }, 260);   // 다음 줄로
             }
+            requestAnimationFrame(frame);
         }
-        setTimeout(step, 600);
+        function run() {
+            noteText.classList.remove("dc-fade");
+            lines.forEach(function (l) { l.style.clipPath = "inset(0 100% 0 0)"; });
+            quill.style.opacity = "1";
+            writeLine(0, function () {
+                quill.style.opacity = "0";                     // 다 쓰면 펜이 사라져요
+                setTimeout(function () {
+                    noteText.classList.add("dc-fade");        // 잠시 뒤 지우고 다시 쓰기
+                    setTimeout(run, 900);
+                }, NOTE_HOLD * 1000);
+            });
+        }
+        var ready = document.fonts && document.fonts.load ? document.fonts.load("28px 'Great Vibes'") : Promise.resolve();
+        Promise.race([ready, new Promise(function (r) { setTimeout(r, 2500); })]).then(function () { setTimeout(run, 400); });
     })();
 
     /* ---------- 시간 갱신 ---------- */
