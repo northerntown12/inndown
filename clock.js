@@ -1,11 +1,5 @@
-/* =====================================================================
-   왼쪽 사진 아래 시계 (아날로그 + 디지털)
-   - 왼쪽 사진 높이를 줄이고, 생긴 공간의 왼쪽 구석에 시계를 넣어요.
-   - 시계를 더블클릭하면 시계만 작은 창으로 떠요 (크롬·엣지 PC: 다른 프로그램 위에 항상 떠 있음).
-     그 밖의 브라우저에서는 홈페이지 화면 오른쪽 아래에 떠 있어요.
-     떠 있는 시계를 다시 더블클릭하거나 창을 닫으면 원래 자리로 돌아와요.
-   - 크기 조절: 아래 CLOCK_WIDTH 값을 바꾸면 돼요 (사진 높이도 자동으로 맞춰져요).
-   ===================================================================== */
+
+
 (function () {
     "use strict";
 
@@ -13,8 +7,8 @@
     if (!panel) return;
 
     var CLOCK_WIDTH = 140;          // 홈페이지 안 시계 너비(px)
-    var POPUP_W = 240, POPUP_H = 360; // 떠 있는 창 크기(px)
-    var VB_W = 300, VB_H = 450;      // 시계 그림 기준 크기 (비율 유지용)
+    var POPUP_W = 240, POPUP_H = 350; // 떠 있는 창 크기(px)
+    var VB_W = 618, VB_H = 892;      // 시계 그림 기준 크기 (비율 유지용)
 
     var NS = "http://www.w3.org/2000/svg";
     var CYAN = "#3fd4ff";
@@ -48,106 +42,44 @@
         return g;
     }
 
-    /* ---------- 시계 그리기 ---------- */
+    /* ---------- 시계 그리기 (watchsample 이미지 위에 바늘·숫자를 얹어요) ---------- */
+    var FACE_URL = new URL("clock-face.webp", document.baseURI).href;
     var svg = el("svg", { viewBox: "0 0 " + VB_W + " " + VB_H, class: "dc-svg", role: "img", "aria-label": "시계" });
     var defs = el("defs", {}, svg);
-
-    grad(defs, "dcPlate", "linearGradient", [["0", "#6a6e75"], ["0.35", "#3c3f45"], ["0.65", "#4b4f56"], ["1", "#2a2c31"]], { x1: "0", y1: "0", x2: "1", y2: "1" });
-    grad(defs, "dcRose", "linearGradient", [["0", "#f7d3b8"], ["0.3", "#c07b58"], ["0.55", "#f2c4a3"], ["0.8", "#93533a"], ["1", "#e9b494"]], { x1: "0", y1: "0", x2: "1", y2: "1" });
-    grad(defs, "dcRoseIn", "linearGradient", [["0", "#7d432d"], ["1", "#d99a78"]], { x1: "0", y1: "0", x2: "1", y2: "1" });
-    grad(defs, "dcDial", "radialGradient", [["0", "#3a5fa8"], ["0.55", "#1d3a7a"], ["1", "#0b1a42"]], { cx: "0.45", cy: "0.4", r: "0.7" });
-    grad(defs, "dcSilver", "linearGradient", [["0", "#ffffff"], ["0.5", "#c9d0d9"], ["1", "#8d96a3"]], { x1: "0", y1: "0", x2: "1", y2: "0" });
-    grad(defs, "dcBrown", "linearGradient", [["0", "#3b231a"], ["1", "#1b0e0a"]], { x1: "0", y1: "0", x2: "0", y2: "1" });
-    grad(defs, "dcCopper", "linearGradient", [["0", "#e7a982"], ["0.5", "#8a4e35"], ["1", "#d89670"]], { x1: "0", y1: "0", x2: "1", y2: "1" });
-
-    // 가는 세로 결 (금속판 / 다이얼)
-    var brush = el("filter", { id: "dcBrush", x: "0", y: "0", width: "100%", height: "100%" }, defs);
-    el("feTurbulence", { type: "fractalNoise", baseFrequency: "0.9 0.006", numOctaves: "2", result: "n" }, brush);
-    el("feColorMatrix", { type: "saturate", values: "0" }, brush);
-    var stripes = el("pattern", { id: "dcStripes", width: "3", height: "10", patternUnits: "userSpaceOnUse" }, defs);
-    el("rect", { width: "1", height: "10", fill: "rgba(255,255,255,0.06)" }, stripes);
+    grad(defs, "dcSilver", "linearGradient", [["0", "#ffffff"], ["0.5", "#cfd5dd"], ["1", "#8a93a0"]], { x1: "0", y1: "0", x2: "1", y2: "0" });
     var glow = el("filter", { id: "dcGlow", x: "-20%", y: "-20%", width: "140%", height: "140%" }, defs);
-    el("feGaussianBlur", { stdDeviation: "1.6", result: "b" }, glow);
+    el("feGaussianBlur", { stdDeviation: "2.4", result: "b" }, glow);
     var merge = el("feMerge", {}, glow);
     el("feMergeNode", { in: "b" }, merge);
     el("feMergeNode", { in: "SourceGraphic" }, merge);
-    var shadow = el("filter", { id: "dcShadow", x: "-10%", y: "-10%", width: "120%", height: "120%" }, defs);
-    el("feDropShadow", { dx: "0", dy: "3", stdDeviation: "3", "flood-opacity": "0.55" }, shadow);
-    var dialClip = el("clipPath", { id: "dcDialClip" }, defs);
-    el("circle", { cx: 150, cy: 150, r: 100 }, dialClip);
+    var hshadow = el("filter", { id: "dcHandShadow", x: "-30%", y: "-30%", width: "160%", height: "160%" }, defs);
+    el("feDropShadow", { dx: "2", dy: "3", stdDeviation: "2", "flood-opacity": "0.5" }, hshadow);
 
-    // 금속판
-    el("rect", { x: 4, y: 4, width: 292, height: 442, rx: 18, fill: "url(#dcPlate)", stroke: "#15171b", "stroke-width": 2 }, svg);
-    el("rect", { x: 4, y: 4, width: 292, height: 442, rx: 18, fill: "#fff", filter: "url(#dcBrush)", opacity: "0.13" }, svg);
-    el("rect", { x: 12, y: 12, width: 276, height: 426, rx: 12, fill: "none", stroke: "rgba(255,255,255,0.22)", "stroke-width": 1.2 }, svg);
+    el("image", { href: FACE_URL, x: 0, y: 0, width: VB_W, height: VB_H }, svg);
 
-    // 테두리(로즈골드) + 다이얼
-    var face = el("g", { filter: "url(#dcShadow)" }, svg);
-    el("circle", { cx: 150, cy: 150, r: 128, fill: "url(#dcRose)" }, face);
-    el("circle", { cx: 150, cy: 150, r: 119, fill: "url(#dcRoseIn)" }, svg);
-    el("circle", { cx: 150, cy: 150, r: 116, fill: "#0c1430" }, svg);
-    el("circle", { cx: 150, cy: 150, r: 100, fill: "url(#dcDial)" }, svg);
-    el("rect", { x: 50, y: 50, width: 200, height: 200, fill: "url(#dcStripes)", "clip-path": "url(#dcDialClip)" }, svg);
-    el("circle", { cx: 150, cy: 150, r: 100, fill: "none", stroke: "rgba(255,255,255,0.25)", "stroke-width": 0.8 }, svg);
-
-    // 바깥 눈금과 작은 숫자
-    for (var i = 0; i < 60; i++) {
-        var a = i * 6 * Math.PI / 180, big = i % 5 === 0;
-        var r1 = big ? 108 : 110, r2 = 114;
-        el("line", {
-            x1: 150 + r1 * Math.sin(a), y1: 150 - r1 * Math.cos(a),
-            x2: 150 + r2 * Math.sin(a), y2: 150 - r2 * Math.cos(a),
-            stroke: big ? "#e8edf3" : "rgba(220,228,240,0.6)", "stroke-width": big ? 1.4 : 0.7
-        }, svg);
-        if (big) {
-            var t = el("text", {
-                x: 150 + 104 * Math.sin(a), y: 150 - 104 * Math.cos(a),
-                "font-size": 5, fill: "rgba(230,236,245,0.75)", "text-anchor": "middle",
-                "dominant-baseline": "central", "font-family": "Arial, sans-serif"
-            }, svg);
-            t.textContent = i === 0 ? "60" : String(i);
-        }
-    }
-
-    // 로마 숫자
-    var ROMAN = ["XII", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI"];
-    ROMAN.forEach(function (txt, h) {
-        var a = h * 30 * Math.PI / 180;
-        var t = el("text", {
-            x: 150 + 82 * Math.sin(a), y: 151 - 82 * Math.cos(a),
-            "font-size": h % 3 === 0 ? 19 : 16, "font-weight": "bold", fill: "url(#dcSilver)",
-            "text-anchor": "middle", "dominant-baseline": "central",
-            "font-family": "'Times New Roman', Georgia, serif",
-            stroke: "rgba(0,0,0,0.35)", "stroke-width": 0.4
-        }, svg);
-        t.textContent = txt;
-    });
+    var CX = 306.6, CY = 311.4;
 
     // 날짜 창
-    el("rect", { x: 187, y: 141, width: 22, height: 18, rx: 1.5, fill: "#f4f4f2", stroke: "#9aa3ae", "stroke-width": 1.2 }, svg);
-    var dateWin = el("text", { x: 198, y: 150.5, "font-size": 12, "font-weight": "bold", fill: "#222", "text-anchor": "middle", "dominant-baseline": "central", "font-family": "Arial, sans-serif" }, svg);
+    el("rect", { x: 424, y: 297, width: 37, height: 33, rx: 2, fill: "#f2f2ef" }, svg);
+    var dateWin = el("text", { x: 442.5, y: 314.5, "font-size": 23, "font-weight": "bold", fill: "#1d1d1d", "text-anchor": "middle", "dominant-baseline": "central", "font-family": "Arial, sans-serif" }, svg);
 
     // 바늘
     function hand(points) {
-        var g = el("g", {}, svg);
-        el("polygon", { points: points, fill: "url(#dcSilver)", stroke: "#6c7582", "stroke-width": 0.6, transform: "translate(150 150)" }, g);
+        var g = el("g", { filter: "url(#dcHandShadow)" }, svg);
+        el("polygon", { points: points, fill: "url(#dcSilver)", stroke: "#6c7582", "stroke-width": 1, transform: "translate(" + CX + " " + CY + ")" }, g);
         return g;
     }
-    var hourHand = hand("0,-56 5.5,-12 3,16 -3,16 -5.5,-12");
-    var minHand = hand("0,-90 4.2,-12 2.4,18 -2.4,18 -4.2,-12");
-    var secHand = el("g", {}, svg);
-    el("line", { x1: 150, y1: 172, x2: 150, y2: 56, stroke: "#2f7cf0", "stroke-width": 1.6, "stroke-linecap": "round" }, secHand);
-    el("circle", { cx: 150, cy: 166, r: 3.2, fill: "#2f7cf0" }, secHand);
-    el("circle", { cx: 150, cy: 150, r: 5.5, fill: "#2f7cf0", stroke: "#173f86", "stroke-width": 0.8 }, svg);
-    el("circle", { cx: 150, cy: 150, r: 2, fill: "#cfe0ff" }, svg);
-
-    // 디지털 창
-    el("rect", { x: 24, y: 298, width: 252, height: 122, rx: 9, fill: "url(#dcBrown)", stroke: "url(#dcCopper)", "stroke-width": 4 }, svg);
-    el("rect", { x: 31, y: 305, width: 238, height: 108, rx: 5, fill: "none", stroke: "rgba(0,0,0,0.55)", "stroke-width": 1.5 }, svg);
+    var hourHand = hand("0,-130 11,-26 6,28 -6,28 -11,-26");
+    var minHand = hand("0,-190 9,-26 5,34 -5,34 -9,-26");
+    var secHand = el("g", { filter: "url(#dcHandShadow)" }, svg);
+    el("line", { x1: CX, y1: CY + 46, x2: CX, y2: CY - 184, stroke: "#2f7cf0", "stroke-width": 3, "stroke-linecap": "round" }, secHand);
+    el("circle", { cx: CX, cy: CY + 34, r: 6, fill: "#2f7cf0" }, secHand);
+    el("circle", { cx: CX, cy: CY, r: 11, fill: "#2f7cf0", stroke: "#173f86", "stroke-width": 1.5 }, svg);
+    el("circle", { cx: CX, cy: CY, r: 4, fill: "#cfe0ff" }, svg);
 
     // 7-세그먼트 숫자
     var SEG = { 0: "abcdef", 1: "bc", 2: "abged", 3: "abgcd", 4: "fgbc", 5: "afgcd", 6: "afgedc", 7: "abc", 8: "abcdefg", 9: "abcdfg" };
-    var DW = 25, DH = 46, TH = 5, DY = 318;
+    var DW = 40, DH = 72, TH = 8, DY = 652;
     var digitsG = el("g", { transform: "translate(" + (Math.tan(6 * Math.PI / 180) * (DY + DH / 2)).toFixed(2) + " 0) skewX(-6)", filter: "url(#dcGlow)" }, svg);
     function hSeg(x0, x1, y) {
         var h = TH / 2;
@@ -158,7 +90,7 @@
         return [[x, y0], [x + h, y0 + h], [x + h, y1 - h], [x, y1], [x - h, y1 - h], [x - h, y0 + h]];
     }
     function makeDigit(x) {
-        var g = 1, ht = TH / 2, xl = x + ht, xr = x + DW - ht, yt = DY + ht, ym = DY + DH / 2, yb = DY + DH - ht;
+        var g = 1.5, ht = TH / 2, xl = x + ht, xr = x + DW - ht, yt = DY + ht, ym = DY + DH / 2, yb = DY + DH - ht;
         var shapes = {
             a: hSeg(xl + g, xr - g, yt), g: hSeg(xl + g, xr - g, ym), d: hSeg(xl + g, xr - g, yb),
             f: vSeg(xl, yt + g, ym - g), b: vSeg(xr, yt + g, ym - g),
@@ -171,20 +103,20 @@
         return segs;
     }
     function colon(x) {
-        el("circle", { cx: x, cy: DY + 14, r: 2.8, fill: CYAN }, digitsG);
-        el("circle", { cx: x, cy: DY + 32, r: 2.8, fill: CYAN }, digitsG);
+        el("circle", { cx: x, cy: DY + 22, r: 4.5, fill: CYAN }, digitsG);
+        el("circle", { cx: x, cy: DY + 50, r: 4.5, fill: CYAN }, digitsG);
     }
-    var digits = [], x = 36;
+    var digits = [], x = 128;
     for (var d = 0; d < 6; d++) {
         digits.push(makeDigit(x));
-        x += DW + 5;
-        if (d === 1 || d === 3) { colon(x + 3); x += 11; }
+        x += DW + 7;
+        if (d === 1 || d === 3) { colon(x + 4); x += 16; }
     }
-    var ampm = el("text", { x: x + 2, y: DY + DH - 1, "font-size": 15, "font-weight": "bold", fill: CYAN, "font-family": "Montserrat, Arial, sans-serif", filter: "url(#dcGlow)" }, svg);
-    var dateLine = el("text", { x: 150, y: 395, "font-size": 15.5, "font-weight": "bold", fill: CYAN, "text-anchor": "middle", "letter-spacing": 1.2, "font-family": "Montserrat, Arial, sans-serif", filter: "url(#dcGlow)" }, svg);
+    var ampm = el("text", { x: x + 2, y: DY + DH - 1, "font-size": 30, "font-weight": "bold", fill: CYAN, "font-family": "Montserrat, Arial, sans-serif", filter: "url(#dcGlow)" }, svg);
+    var dateLine = el("text", { x: 308, y: 790, "font-size": 34, "font-weight": "bold", fill: CYAN, "text-anchor": "middle", "letter-spacing": 1.5, "font-family": "Montserrat, Arial, sans-serif", filter: "url(#dcGlow)" }, svg);
 
     // 아주 작은 안내 문구
-    var hint = el("text", { x: 150, y: 435, "font-size": 8, fill: "rgba(255,255,255,0.45)", "text-anchor": "middle", "font-family": "'Malgun Gothic', sans-serif" }, svg);
+    var hint = el("text", { x: 309, y: 869, "font-size": 15, fill: "rgba(255,255,255,0.5)", "text-anchor": "middle", "font-family": "'Malgun Gothic', sans-serif" }, svg);
     hint.textContent = "더블클릭: 최소화";
 
     /* ---------- 화면에 넣기 ---------- */
@@ -214,9 +146,9 @@
         var h24 = now.getHours(), m = now.getMinutes(), s = now.getSeconds();
         var h12 = h24 % 12 || 12;
 
-        hourHand.setAttribute("transform", "rotate(" + ((h24 % 12) * 30 + m * 0.5) + " 150 150)");
-        minHand.setAttribute("transform", "rotate(" + (m * 6 + s * 0.1) + " 150 150)");
-        secHand.setAttribute("transform", "rotate(" + s * 6 + " 150 150)");
+        hourHand.setAttribute("transform", "rotate(" + ((h24 % 12) * 30 + m * 0.5) + " " + CX + " " + CY + ")");
+        minHand.setAttribute("transform", "rotate(" + (m * 6 + s * 0.1) + " " + CX + " " + CY + ")");
+        secHand.setAttribute("transform", "rotate(" + s * 6 + " " + CX + " " + CY + ")");
         dateWin.textContent = now.getDate();
 
         setDigit(digits[0], h12 >= 10 ? 1 : null);
