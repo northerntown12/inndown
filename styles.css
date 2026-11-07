@@ -1581,7 +1581,7 @@ button:active {
 
 @media screen and (max-width: 768px), screen and (hover: none) and (pointer: coarse) and (max-width: 1000px) {
     .lotto-container { --balls-drop: 1.3rem; }            /* 폰: 공만 내려요 */
-    .lotto-container .slot-btn { --btn-drop: 0.7rem; }    /* 폰: 버튼은 그대로 */
+    .lotto-container .slot-btn { --btn-drop: 1.2rem; }    /* 폰: 버튼은 그대로 */
     .lotto-container .slot-btn[style*="28px"] { top: calc(var(--btn-drop) - 0.55rem); }   /* 폰: 엄지척 */
 }
 
