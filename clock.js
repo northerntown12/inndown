@@ -18,7 +18,7 @@
     var VB_W = 618, VB_H = 801;      // 시계 그림 기준 크기 (비율 유지용)
 
     var NOTE_TEXT = "Everything will be okay.";  // 시계 옆 파란 칸 글씨
-    var NOTE_HOLD = 15;                         // 다 쓴 뒤 다시 쓰기까지 기다리는 시간(초)
+    var NOTE_HOLD = 1;                          // 다 쓴 뒤 다시 쓰기까지 기다리는 시간(초)
 
     var NS = "http://www.w3.org/2000/svg";
     var CYAN = "#3fd4ff";
@@ -42,10 +42,10 @@
         ".dc-note { position: relative; flex: 1 1 auto; min-width: 0; background: #1f5fc4; border: 1px solid #164a9c; overflow: hidden; container-type: inline-size; }",
         ".dc-note-text { position: absolute; left: 0; right: 0; top: 0; margin: 0; padding: 10px 6px 0 10px;",
         "    color: #fff; font: 400 min(28px, 19cqw)/1.05 'Great Vibes', 'Segoe Script', 'Brush Script MT', cursive; }",
-        ".dc-line { display: block; width: max-content; padding: 0 8px 4px 2px; margin-left: -2px; clip-path: inset(0 100% 0 0); }",
+        ".dc-line { font: inherit; display: block; width: max-content; padding: 0 8px 4px 2px; margin-left: -2px; clip-path: inset(0 100% 0 0); }",
         ".dc-quill { position: absolute; left: 0; top: 0; width: 34px; height: 48px; pointer-events: none; opacity: 0;",
         "    transform-origin: 0 100%; filter: drop-shadow(1px 2px 1.5px rgba(0,0,0,.35)); transition: opacity .4s; }",
-        ".dc-note-text.dc-fade { transition: opacity .8s; opacity: 0; }"
+        ".dc-note-text.dc-fade { transition: opacity .3s; opacity: 0; }"
     ].join("\n");
     document.head.appendChild(style);
 
@@ -224,11 +224,11 @@
                 quill.style.opacity = "0";                     // 다 쓰면 펜이 사라져요
                 setTimeout(function () {
                     noteText.classList.add("dc-fade");        // 잠시 뒤 지우고 다시 쓰기
-                    setTimeout(run, 900);
+                    setTimeout(run, 350);
                 }, NOTE_HOLD * 1000);
             });
         }
-        var ready = document.fonts && document.fonts.load ? document.fonts.load("28px 'Great Vibes'") : Promise.resolve();
+        var ready = document.fonts && document.fonts.load ? document.fonts.load("28px 'Great Vibes'").catch(function () {}) : Promise.resolve();
         Promise.race([ready, new Promise(function (r) { setTimeout(r, 2500); })]).then(function () { setTimeout(run, 400); });
     })();
 
