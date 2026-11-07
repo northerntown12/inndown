@@ -1576,8 +1576,8 @@ button:active {
     position: relative;
     top: var(--balls-drop, 0.9rem);
 }
-.lotto-container { --balls-drop: 2.2rem; }
-.lotto-container .slot-btn { --btn-drop: 2.7rem; }       /* PC: 공과 버튼 모두 내려요 */
+.lotto-container { --balls-drop: 2.6rem; }
+.lotto-container .slot-btn { --btn-drop: 2.9rem; }       /* PC: 공과 버튼 모두 내려요 */
 
 @media screen and (max-width: 768px), screen and (hover: none) and (pointer: coarse) and (max-width: 1000px) {
     .lotto-container { --balls-drop: 0.9rem; }            /* 폰: 공만 내려요 */
