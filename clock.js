@@ -10,7 +10,7 @@
     var VB_W = 618, VB_H = 801;      // 시계 그림 기준 크기 (비율 유지용)
 
     var NOTE_TEXT = "Everything will be okay.";  // 시계 옆 파란 칸 글씨
-    var NOTE_HOLD = 3;                          // 다 쓴 뒤 다시 쓰기까지 기다리는 시간(초)
+    var NOTE_HOLD = 5;                          // 다 쓴 뒤 다시 쓰기까지 기다리는 시간(초)
 
     var NS = "http://www.w3.org/2000/svg";
     var CYAN = "#3fd4ff";
