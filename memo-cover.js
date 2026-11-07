@@ -1,4 +1,12 @@
-
+/* =====================================================================
+   할 일 · 메모 커버 (사생활 보호용)
+   - 오른쪽 위 [커버 덮기]를 누르면 스프링 쪽을 축으로 노트 표지가 덮여요.
+   - 처음 한 번은 비밀번호(숫자 3자리)를 정해요.
+   - 덮인 뒤에는 버튼이 [커버 열기]로 바뀌고, 비밀번호를 맞게 넣어야 열려요.
+   - 5번 틀리면 30초 동안 입력을 막아요.
+   - 열쇠 버튼(탭 줄): 비밀번호 바꾸기 / 커버의 "잊었어요": 메모를 지우고 초기화
+   ※ 이 기기 브라우저 안에서만 쓰는 가벼운 가림막이에요. 은행 수준의 보안은 아니에요.
+   ===================================================================== */
 (function () {
     "use strict";
 
@@ -281,6 +289,7 @@
     /* ---------- 커버 위 비밀번호 입력 ---------- */
     var lockTimer = null;
     function showPin() {
+        pinBox.classList.remove("mc-shake");
         sub.hidden = true;
         pinBox.hidden = false;
         pinInput.value = "";
@@ -290,6 +299,7 @@
         setTimeout(function () { try { pinInput.focus(); } catch (e) {} }, 30);
     }
     function hidePin() {
+        pinBox.classList.remove("mc-shake");
         pinBox.hidden = true;
         sub.hidden = false;
         clearInterval(lockTimer);
@@ -314,11 +324,15 @@
         tick();
         if (st.lockUntil > Date.now()) lockTimer = setInterval(tick, 500);
     }
+    // 틀렸을 때만 흔들어요. 다 흔든 뒤에는 표시를 지워서, 다음에 창이 다시 뜰 때 저절로 흔들리지 않게 해요.
     function shake(el) {
         el.classList.remove("mc-shake");
         void el.offsetWidth;
         el.classList.add("mc-shake");
     }
+    [pinBox, dlgCard].forEach(function (el) {
+        el.addEventListener("animationend", function () { el.classList.remove("mc-shake"); });
+    });
 
     pinInput.addEventListener("input", function () {
         pinInput.value = pinInput.value.replace(/\D/g, "").slice(0, 3);
@@ -350,6 +364,7 @@
     var mode = "", step = 0, firstPin = "";
     function openDialog(m) {
         mode = m; step = 0; firstPin = "";
+        dlgCard.classList.remove("mc-shake");
         dlg.hidden = false;
         dlgMsg.textContent = ""; dlgMsg.className = "mc-pin-msg";
         dlgInput.value = "";
