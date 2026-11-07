@@ -1599,3 +1599,28 @@ button:active {
 .calculator .calc-sound[aria-pressed="true"] .calc-ico-on { display: none; }
 .calculator .calc-sound[aria-pressed="true"] .calc-ico-off { display: block; }
 .calculator .calc-sound[aria-pressed="true"] { color: rgba(255, 255, 255, 0.6); }
+
+
+/* ===== 날씨: 현재 위치 버튼 (검색창 왼쪽, weather.js) ===== */
+.weather-search .weather-loc {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: calc(50% + var(--combo-w) / 2 + 5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, 0.7);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.92);
+    color: #e0393e;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+    text-shadow: none;
+}
+.weather-search .weather-loc svg { width: 15px; height: 15px; display: block; }
+.weather-search .weather-loc:hover { background: rgba(235, 235, 235, 0.95); }
+.weather-search .weather-loc.busy svg { animation: weather-loc-blink 0.8s ease-in-out infinite; }
+@keyframes weather-loc-blink { 50% { opacity: 0.3; } }
+.weather-dropdown .weather-option-loc { font-weight: 700; }

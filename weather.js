@@ -288,7 +288,7 @@
         });
     }
 
-    /* 6시간 후 / 12시간 후 예보 (현재 시각의 정시 기준, 지역 현지 시각)
+    /* 3시간 후 / 6시간 후 / 12시간 후 예보 (현재 시각의 정시 기준, 지역 현지 시각)
        - 해당 시각을 못 찾으면 "--"로 보여줘요. */
     function renderLater(current, hourly) {
         if (!laterEl) return;
@@ -298,7 +298,7 @@
         var m = nowText.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2})/);
         if (!m) return;
 
-        [6, 12].forEach(function (h) {
+        [3, 6, 12].forEach(function (h) {
             var d = new Date(Date.UTC(+m[1], +m[2] - 1, +m[3], +m[4] + h));
             var key = d.getUTCFullYear() + "-" + pad2(d.getUTCMonth() + 1) + "-" + pad2(d.getUTCDate()) +
                       "T" + pad2(d.getUTCHours()) + ":00";
@@ -532,6 +532,16 @@
 
         dropdownEl.innerHTML = "";
 
+        if (!key) {
+            var here = document.createElement("button");
+            here.type = "button";
+            here.className = "weather-option weather-option-loc" + (currentPlace.auto ? " current" : "");
+            here.textContent = "📍 " + LOC_LABEL;
+            here.addEventListener("click", function () { useMyLocation(false); });
+            dropdownEl.appendChild(here);
+            count++;
+        }
+
         PRESETS.forEach(function (p) {
             if (key) {
                 var match = p.keys.some(function (k) { return k.indexOf(key) !== -1; });
@@ -580,6 +590,68 @@
         savePlace(place);
         loadWeather(place);
     }
+
+    /* ===== 현재 위치 (📍 버튼 / 목록 맨 위) =====
+       - 브라우저에 위치 권한을 물어보고, 허락하면 그 자리의 날씨를 보여줘요.
+       - 한 번 고르면 기억해서, 다음에 들어올 때도 현재 위치로 자동으로 찾아요. */
+    var LOC_LABEL = "현재 위치";
+
+    function reverseName(lat, lon) {
+        // 좌표 → 동네 이름 (키 필요 없음). 실패하면 "현재 위치"로 보여줘요.
+        var url = "https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=" + lat +
+                  "&longitude=" + lon + "&localityLanguage=ko";
+        return fetch(url)
+            .then(function (res) { if (!res.ok) throw new Error("HTTP " + res.status); return res.json(); })
+            .then(function (d) {
+                var name = d.city || d.locality || d.principalSubdivision || "";
+                if (d.city && d.locality && d.locality !== d.city) name = d.city + " " + d.locality;
+                return name ? "📍 " + name : "📍 " + LOC_LABEL;
+            })
+            .catch(function () { return "📍 " + LOC_LABEL; });
+    }
+
+    function useMyLocation(quiet) {
+        closeDropdown();
+        if (!navigator.geolocation) {
+            if (!quiet) setMessage("이 브라우저는 위치 찾기를 지원하지 않아요.");
+            return;
+        }
+        var myId = ++requestId;
+        if (!quiet) setMessage("현재 위치 찾는 중...");
+        if (locBtn) locBtn.classList.add("busy");
+
+        navigator.geolocation.getCurrentPosition(function (pos) {
+            if (locBtn) locBtn.classList.remove("busy");
+            if (myId !== requestId) return;
+            var lat = Math.round(pos.coords.latitude * 10000) / 10000;
+            var lon = Math.round(pos.coords.longitude * 10000) / 10000;
+            var place = { label: "📍 " + LOC_LABEL, lat: lat, lon: lon, auto: true };
+            inputEl.value = "";
+            savePlace(place);
+            loadWeather(place);
+            reverseName(lat, lon).then(function (name) {
+                if (currentPlace !== place) return;          // 그새 다른 도시를 골랐으면 그대로 둬요
+                place.label = name;
+                placeEl.textContent = name;
+                savePlace(place);
+            });
+        }, function (err) {
+            if (locBtn) locBtn.classList.remove("busy");
+            if (myId !== requestId) return;
+            if (quiet) { loadWeather(currentPlace); return; }
+            setMessage(err && err.code === 1 ? "위치 권한이 꺼져 있어요." : "위치를 찾지 못했어요.");
+        }, { enableHighAccuracy: false, timeout: 10000, maximumAge: 10 * 60 * 1000 });
+    }
+
+    // 검색창 왼쪽에 📍 버튼
+    var locBtn = document.createElement("button");
+    locBtn.type = "button";
+    locBtn.className = "weather-loc";
+    locBtn.setAttribute("aria-label", "현재 위치 날씨");
+    locBtn.title = "현재 위치 날씨";
+    locBtn.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7z" fill="currentColor"/><circle cx="12" cy="9" r="2.6" fill="#fff"/></svg>';
+    locBtn.addEventListener("click", function () { useMyLocation(false); });
+    searchRow.insertBefore(locBtn, searchRow.firstChild);
 
     /* ===== 검색 ===== */
     function searchPlace() {
@@ -703,7 +775,15 @@
         }
     } catch (e) { /* 무시 */ }
 
+    if (startPlace.auto) inputEl.value = "";
     loadWeather(startPlace);
+
+    // 지난번에 "현재 위치"를 골랐다면, 권한이 이미 허락된 경우 조용히 위치를 다시 찾아요.
+    if (startPlace.auto && navigator.permissions && navigator.permissions.query) {
+        navigator.permissions.query({ name: "geolocation" }).then(function (st) {
+            if (st.state === "granted") useMyLocation(true);
+        }).catch(function () {});
+    }
 
     /* 10분마다 자동 새로고침 */
     setInterval(function () {
