@@ -187,11 +187,24 @@
     var sub = mk("div", "mc-sub", "비밀번호 3자리로 열 수 있어요");
     var pinBox = mk("div", "mc-pin");
     pinBox.hidden = true;
+    /* 비밀번호 칸: type="password"를 쓰면 크롬이 "비밀번호 저장/업데이트" 창을 띄워요.
+       그래서 일반 글자 칸으로 만들고, 글자만 점(•)으로 가려 보여줘요. */
+    var MASK_OK = !!(window.CSS && CSS.supports && (CSS.supports("-webkit-text-security", "disc") || CSS.supports("text-security", "disc")));
+    function pinField(input) {
+        input.type = MASK_OK ? "text" : "password";
+        input.name = "mc-code-" + Math.random().toString(36).slice(2, 8);
+        input.setAttribute("autocomplete", "off");
+        input.setAttribute("autocorrect", "off");
+        input.setAttribute("autocapitalize", "off");
+        input.setAttribute("spellcheck", "false");
+        input.setAttribute("data-lpignore", "true");      // 비밀번호 관리 프로그램이 무시하게
+        input.setAttribute("data-1p-ignore", "");
+        input.setAttribute("data-form-type", "other");
+    }
     var pinInput = mk("input", "mc-pin-input");
-    pinInput.type = "password";
+    pinField(pinInput);
     pinInput.inputMode = "numeric";
     pinInput.maxLength = 3;
-    pinInput.autocomplete = "off";
     pinInput.setAttribute("aria-label", "비밀번호 3자리");
     pinInput.placeholder = "• • •";
     var pinMsg = mk("div", "mc-pin-msg", "");
@@ -214,8 +227,8 @@
     var dlgTitle = mk("div", "mc-dlg-title");
     var dlgText = mk("div", "mc-dlg-text");
     var dlgInput = mk("input", "mc-pin-input");
-    dlgInput.type = "password"; dlgInput.inputMode = "numeric"; dlgInput.maxLength = 3;
-    dlgInput.autocomplete = "off"; dlgInput.placeholder = "• • •";
+    pinField(dlgInput);
+    dlgInput.inputMode = "numeric"; dlgInput.maxLength = 3; dlgInput.placeholder = "• • •";
     dlgInput.setAttribute("aria-label", "비밀번호 3자리");
     var dlgMsg = mk("div", "mc-pin-msg", "");
     var dlgRow = mk("div", "mc-dlg-row");
@@ -453,6 +466,9 @@
         }
     });
     keyBtn.addEventListener("click", function () { if (!st.covered && st.hash) openDialog("change"); });
+
+    // 페이지를 떠날 때 입력칸을 비워서, 브라우저가 "입력한 비밀번호"로 여기지 않게 해요.
+    window.addEventListener("pagehide", function () { pinInput.value = ""; dlgInput.value = ""; });
 
     /* ---------- 시작: 덮어 둔 상태였으면 바로 덮인 채로 (움직임 없이) ---------- */
     if (st.covered) {

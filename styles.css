@@ -1756,6 +1756,7 @@ button:active {
     outline: none;
 }
 .mc-pin-input:disabled { opacity: 0.5; }
+.mc-pin-input[type="text"] { -webkit-text-security: disc; text-security: disc; }   /* 입력한 숫자를 점으로 가려요 */
 .mc-pin-row { display: flex; gap: calc(var(--u) * 5); }
 .memo-pad .mc-link, .memo-pad .mc-link:hover {
     padding: 0;
