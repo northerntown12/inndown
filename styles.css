@@ -1576,11 +1576,11 @@ button:active {
     position: relative;
     top: var(--balls-drop, 0.9rem);
 }
-.lotto-container { --balls-drop: 2.7rem; }
-.lotto-container .slot-btn { --btn-drop: 3rem; }       /* PC: 공과 버튼 모두 내려요 */
+.lotto-container { --balls-drop: 3rem; }
+.lotto-container .slot-btn { --btn-drop: 3.3rem; }       /* PC: 공과 버튼 모두 내려요 */
 
 @media screen and (max-width: 768px), screen and (hover: none) and (pointer: coarse) and (max-width: 1000px) {
-    .lotto-container { --balls-drop: 1.3rem; }            /* 폰: 공만 내려요 */
+    .lotto-container { --balls-drop: 1.7rem; }            /* 폰: 공만 내려요 */
     .lotto-container .slot-btn { --btn-drop: 0.9rem; }    /* 폰: 버튼은 그대로 */
     .lotto-container .slot-btn[style*="28px"] { top: calc(var(--btn-drop) - 0.55rem); }   /* 폰: 엄지척 */
 }
