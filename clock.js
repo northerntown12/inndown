@@ -1,16 +1,27 @@
-
+/* =====================================================================
+   왼쪽 사진 아래 시계 (아날로그 + 디지털)
+   - 왼쪽 칸 맨 위에 시계, 그 옆에 파란 글씨 칸, 그 아래에 사진이 와요.
+   - 폰에서는 시계와 파란 칸이 "Look up to the sky." 배너 바로 아래에 작게 나란히 나와요.
+   - 시계를 더블클릭하면 시계만 작은 창으로 떠요 (크롬·엣지 PC: 다른 프로그램 위에 항상 떠 있음).
+     그 밖의 브라우저에서는 홈페이지 화면 오른쪽 아래에 떠 있어요.
+     떠 있는 시계를 다시 더블클릭하거나 창을 닫으면 원래 자리로 돌아와요.
+   - 시계 그림: clock-face.webp (watchsample 이미지에서 바늘·숫자를 지운 것)
+   - 크기 조절: 아래 CLOCK_WIDTH 값을 바꾸면 돼요 (사진 높이도 자동으로 맞춰져요).
+   ===================================================================== */
 (function () {
     "use strict";
 
     var panel = document.querySelector(".tree-panel");
     if (!panel) return;
 
+    var MOBILE_CLOCK_WIDTH = 104;   // 폰에서 시계 너비(px)
+    var MOBILE_QUERY = "screen and (max-width: 768px), screen and (hover: none) and (pointer: coarse) and (max-width: 1000px)";
     var CLOCK_WIDTH = 150;          // 홈페이지 안 시계 너비(px)
     var POPUP_W = 240, POPUP_H = 311; // 떠 있는 창 크기(px) - 시계 비율과 같게
     var VB_W = 618, VB_H = 801;      // 시계 그림 기준 크기 (비율 유지용)
 
     var NOTE_TEXT = "Everything will be okay.";  // 시계 옆 파란 칸 글씨
-    var NOTE_HOLD = 5;                          // 다 쓴 뒤 다시 쓰기까지 기다리는 시간(초)
+    var NOTE_HOLD = 1;                          // 다 쓴 뒤 다시 쓰기까지 기다리는 시간(초)
 
     var NS = "http://www.w3.org/2000/svg";
     var CYAN = "#3fd4ff";
@@ -37,7 +48,11 @@
         ".dc-line { font: inherit; display: block; width: max-content; padding: 0 8px 4px 2px; margin-left: -2px; clip-path: inset(0 100% 0 0); }",
         ".dc-quill { position: absolute; left: 0; top: 0; width: 34px; height: 48px; pointer-events: none; opacity: 0;",
         "    transform-origin: 0 100%; filter: drop-shadow(1px 2px 1.5px rgba(0,0,0,.35)); transition: opacity .4s; }",
-        ".dc-note-text.dc-fade { transition: opacity .3s; opacity: 0; }"
+        ".dc-note-text.dc-fade { transition: opacity .3s; opacity: 0; }",
+        /* 폰: 배너 아래에 시계와 파란 칸을 작게 나란히 (다른 위젯에는 영향 없음) */
+        ".dc-mobile { --dc-w: " + MOBILE_CLOCK_WIDTH + "px; --dc-h: calc(var(--dc-w) * " + (VB_H / VB_W) + "); margin: 12px 0 16px; position: relative; z-index: 1; }",
+        ".dc-mobile .dc-home { position: relative; right: auto; width: 100%; gap: 8px; }",
+        ".dc-mobile .dc-note-text { font-size: min(21px, 14cqw); padding: 7px 5px 0 8px; }"
     ].join("\n");
     document.head.appendChild(style);
 
@@ -156,6 +171,26 @@
     note.appendChild(noteText);
     home.appendChild(note);
     panel.appendChild(home);
+
+    /* 폰에서는 왼쪽 칸이 숨겨지므로, 시계 줄을 배너 바로 아래로 옮겨요 */
+    var mobileBox = document.createElement("div");
+    mobileBox.className = "dc-mobile";
+    var mq = window.matchMedia(MOBILE_QUERY);
+    function placeHome() {
+        if (mq.matches) {
+            if (!mobileBox.parentNode) {
+                var banner = document.querySelector(".main-banner");   // "Look up to the sky." 배너 바로 아래
+                if (banner && banner.parentNode) banner.parentNode.insertBefore(mobileBox, banner.nextSibling);
+                else document.body.insertBefore(mobileBox, document.body.firstChild);
+            }
+            mobileBox.appendChild(home);
+        } else {
+            panel.appendChild(home);
+            if (mobileBox.parentNode) mobileBox.parentNode.removeChild(mobileBox);
+        }
+    }
+    placeHome();
+    if (mq.addEventListener) mq.addEventListener("change", placeHome); else mq.addListener(placeHome);
 
     /* ---------- 파란 칸 글씨: 깃털 펜으로 위에서부터 한 줄씩 ---------- */
     (function writeNote() {
