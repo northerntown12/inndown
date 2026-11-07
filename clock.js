@@ -1,14 +1,21 @@
-
-
+/* =====================================================================
+   왼쪽 사진 아래 시계 (아날로그 + 디지털)
+   - 왼쪽 사진 높이를 줄이고, 생긴 공간의 왼쪽 구석에 시계를 넣어요.
+   - 시계를 더블클릭하면 시계만 작은 창으로 떠요 (크롬·엣지 PC: 다른 프로그램 위에 항상 떠 있음).
+     그 밖의 브라우저에서는 홈페이지 화면 오른쪽 아래에 떠 있어요.
+     떠 있는 시계를 다시 더블클릭하거나 창을 닫으면 원래 자리로 돌아와요.
+   - 시계 그림: clock-face.webp (watchsample 이미지에서 바늘·숫자를 지운 것)
+   - 크기 조절: 아래 CLOCK_WIDTH 값을 바꾸면 돼요 (사진 높이도 자동으로 맞춰져요).
+   ===================================================================== */
 (function () {
     "use strict";
 
     var panel = document.querySelector(".tree-panel");
     if (!panel) return;
 
-    var CLOCK_WIDTH = 140;          // 홈페이지 안 시계 너비(px)
-    var POPUP_W = 240, POPUP_H = 350; // 떠 있는 창 크기(px)
-    var VB_W = 618, VB_H = 892;      // 시계 그림 기준 크기 (비율 유지용)
+    var CLOCK_WIDTH = 150;          // 홈페이지 안 시계 너비(px)
+    var POPUP_W = 240, POPUP_H = 311; // 떠 있는 창 크기(px) - 시계 비율과 같게
+    var VB_W = 618, VB_H = 801;      // 시계 그림 기준 크기 (비율 유지용)
 
     var NS = "http://www.w3.org/2000/svg";
     var CYAN = "#3fd4ff";
@@ -48,7 +55,7 @@
     var defs = el("defs", {}, svg);
     grad(defs, "dcSilver", "linearGradient", [["0", "#ffffff"], ["0.5", "#cfd5dd"], ["1", "#8a93a0"]], { x1: "0", y1: "0", x2: "1", y2: "0" });
     var glow = el("filter", { id: "dcGlow", x: "-20%", y: "-20%", width: "140%", height: "140%" }, defs);
-    el("feGaussianBlur", { stdDeviation: "2.4", result: "b" }, glow);
+    el("feGaussianBlur", { stdDeviation: "1.8", result: "b" }, glow);
     var merge = el("feMerge", {}, glow);
     el("feMergeNode", { in: "b" }, merge);
     el("feMergeNode", { in: "SourceGraphic" }, merge);
@@ -57,29 +64,29 @@
 
     el("image", { href: FACE_URL, x: 0, y: 0, width: VB_W, height: VB_H }, svg);
 
-    var CX = 306.6, CY = 311.4;
+    var CX = 309, CY = 320.07, HS = 1.05;   // 다이얼 중심, 바늘 배율
 
     // 날짜 창
-    el("rect", { x: 424, y: 297, width: 37, height: 33, rx: 2, fill: "#f2f2ef" }, svg);
-    var dateWin = el("text", { x: 442.5, y: 314.5, "font-size": 23, "font-weight": "bold", fill: "#1d1d1d", "text-anchor": "middle", "dominant-baseline": "central", "font-family": "Arial, sans-serif" }, svg);
+    el("rect", { x: 432.3, y: 305, width: 38.9, height: 34.6, rx: 2, fill: "#f2f2ef" }, svg);
+    var dateWin = el("text", { x: 451.7, y: 322.3, "font-size": 24, "font-weight": "bold", fill: "#1d1d1d", "text-anchor": "middle", "dominant-baseline": "central", "font-family": "Arial, sans-serif" }, svg);
 
     // 바늘
     function hand(points) {
         var g = el("g", { filter: "url(#dcHandShadow)" }, svg);
-        el("polygon", { points: points, fill: "url(#dcSilver)", stroke: "#6c7582", "stroke-width": 1, transform: "translate(" + CX + " " + CY + ")" }, g);
+        el("polygon", { points: points, fill: "url(#dcSilver)", stroke: "#6c7582", "stroke-width": 1, transform: "translate(" + CX + " " + CY + ") scale(" + HS + ")" }, g);
         return g;
     }
     var hourHand = hand("0,-130 11,-26 6,28 -6,28 -11,-26");
     var minHand = hand("0,-190 9,-26 5,34 -5,34 -9,-26");
     var secHand = el("g", { filter: "url(#dcHandShadow)" }, svg);
-    el("line", { x1: CX, y1: CY + 46, x2: CX, y2: CY - 184, stroke: "#2f7cf0", "stroke-width": 3, "stroke-linecap": "round" }, secHand);
-    el("circle", { cx: CX, cy: CY + 34, r: 6, fill: "#2f7cf0" }, secHand);
-    el("circle", { cx: CX, cy: CY, r: 11, fill: "#2f7cf0", stroke: "#173f86", "stroke-width": 1.5 }, svg);
+    el("line", { x1: CX, y1: CY + 48, x2: CX, y2: CY - 193, stroke: "#2f7cf0", "stroke-width": 3.2, "stroke-linecap": "round" }, secHand);
+    el("circle", { cx: CX, cy: CY + 36, r: 6.3, fill: "#2f7cf0" }, secHand);
+    el("circle", { cx: CX, cy: CY, r: 11.5, fill: "#2f7cf0", stroke: "#173f86", "stroke-width": 1.5 }, svg);
     el("circle", { cx: CX, cy: CY, r: 4, fill: "#cfe0ff" }, svg);
 
     // 7-세그먼트 숫자
     var SEG = { 0: "abcdef", 1: "bc", 2: "abged", 3: "abgcd", 4: "fgbc", 5: "afgcd", 6: "afgedc", 7: "abc", 8: "abcdefg", 9: "abcdfg" };
-    var DW = 40, DH = 72, TH = 8, DY = 652;
+    var DW = 28, DH = 50, TH = 6, DY = 637;
     var digitsG = el("g", { transform: "translate(" + (Math.tan(6 * Math.PI / 180) * (DY + DH / 2)).toFixed(2) + " 0) skewX(-6)", filter: "url(#dcGlow)" }, svg);
     function hSeg(x0, x1, y) {
         var h = TH / 2;
@@ -103,20 +110,20 @@
         return segs;
     }
     function colon(x) {
-        el("circle", { cx: x, cy: DY + 22, r: 4.5, fill: CYAN }, digitsG);
-        el("circle", { cx: x, cy: DY + 50, r: 4.5, fill: CYAN }, digitsG);
+        el("circle", { cx: x, cy: DY + 15, r: 3.2, fill: CYAN }, digitsG);
+        el("circle", { cx: x, cy: DY + 35, r: 3.2, fill: CYAN }, digitsG);
     }
-    var digits = [], x = 128;
+    var digits = [], x = 184;
     for (var d = 0; d < 6; d++) {
         digits.push(makeDigit(x));
-        x += DW + 7;
-        if (d === 1 || d === 3) { colon(x + 4); x += 16; }
+        x += DW + 5;
+        if (d === 1 || d === 3) { colon(x + 3); x += 12; }
     }
-    var ampm = el("text", { x: x + 2, y: DY + DH - 1, "font-size": 30, "font-weight": "bold", fill: CYAN, "font-family": "Montserrat, Arial, sans-serif", filter: "url(#dcGlow)" }, svg);
-    var dateLine = el("text", { x: 308, y: 790, "font-size": 34, "font-weight": "bold", fill: CYAN, "text-anchor": "middle", "letter-spacing": 1.5, "font-family": "Montserrat, Arial, sans-serif", filter: "url(#dcGlow)" }, svg);
+    var ampm = el("text", { x: x + 1, y: DY + DH - 1, "font-size": 20, "font-weight": "bold", fill: CYAN, "font-family": "Montserrat, Arial, sans-serif", filter: "url(#dcGlow)" }, svg);
+    var dateLine = el("text", { x: 309, y: 721, "font-size": 22, "font-weight": "bold", fill: CYAN, "text-anchor": "middle", "letter-spacing": 1.2, "font-family": "Montserrat, Arial, sans-serif", filter: "url(#dcGlow)" }, svg);
 
     // 아주 작은 안내 문구
-    var hint = el("text", { x: 309, y: 869, "font-size": 15, fill: "rgba(255,255,255,0.5)", "text-anchor": "middle", "font-family": "'Malgun Gothic', sans-serif" }, svg);
+    var hint = el("text", { x: 309, y: 762, "font-size": 12, fill: "rgba(255,255,255,0.5)", "text-anchor": "middle", "font-family": "'Malgun Gothic', sans-serif" }, svg);
     hint.textContent = "더블클릭: 최소화";
 
     /* ---------- 화면에 넣기 ---------- */
@@ -184,6 +191,23 @@
         restartTimer(window);
     }
 
+    /* 떠 있는 창 크기를 바꾸면 시계 비율대로 가로·세로를 같이 맞춰요.
+       (브라우저가 막으면, 크기를 바꾼 뒤 시계를 한 번 클릭하면 맞춰져요) */
+    function keepRatio(w) {
+        var ratio = VB_W / VB_H, lastW = w.innerWidth, lastH = w.innerHeight, t = null;
+        function fit() {
+            var iw = w.innerWidth, ih = w.innerHeight;
+            if (Math.abs(iw / ih - ratio) < 0.02) { lastW = iw; lastH = ih; return; }
+            var tw, th;
+            if (Math.abs(ih - lastH) / lastH > Math.abs(iw - lastW) / lastW) { th = ih; tw = Math.round(ih * ratio); }
+            else { tw = iw; th = Math.round(iw / ratio); }
+            try { w.resizeTo(tw + (w.outerWidth - iw), th + (w.outerHeight - ih)); } catch (e) {}
+            lastW = tw; lastH = th;
+        }
+        w.addEventListener("resize", function () { w.clearTimeout(t); t = w.setTimeout(fit, 250); });
+        w.document.addEventListener("click", fit);
+    }
+
     async function popOut() {
         if (pipWin) { pipWin.close(); return; }                       // 떠 있는 창 → 원래대로
         if (wrap.classList.contains("dc-float")) { backHome(); return; }
@@ -195,7 +219,7 @@
                 if (font) w.document.head.appendChild(font.cloneNode());
                 var st = w.document.createElement("style");
                 st.textContent = "html,body{margin:0;height:100%;background:#16181d;overflow:hidden}" +
-                    "body{display:flex;align-items:center;justify-content:center}" +
+                    "body{display:block}" +
                     ".dc-wrap{width:100%;height:100%;cursor:pointer;user-select:none;-webkit-user-select:none}" +
                     ".dc-svg{display:block;width:100%;height:100%}";
                 w.document.head.appendChild(st);
@@ -206,6 +230,7 @@
                 pipWin = w;
                 restartTimer(w);   // 떠 있는 창 기준으로 갱신 (탭이 가려져도 멈추지 않게)
                 w.addEventListener("pagehide", backHome);
+                keepRatio(w);
                 return;
             } catch (e) { /* 실패하면 아래 방식으로 */ }
         }
