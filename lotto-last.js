@@ -9,7 +9,7 @@
     var box = document.querySelector(".lotto-container");
     if (!box) return;
 
-    var WORKER_URL = "https://lottoinfo.sumerboy.workers.dev/";
+    var WORKER_URL = "https://twilight-rain-db97.sumerboy.workers.dev/";   // Cloudflare 로또 Worker 주소
     var OFFICIAL_URL = "https://www.dhlottery.co.kr/";
     var REFRESH_MS = 60 * 60 * 1000;        // 평소 1시간
     var REFRESH_FAST_MS = 5 * 60 * 1000;    // 토요일 추첨 직후 5분
