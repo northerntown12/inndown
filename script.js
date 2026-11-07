@@ -1,7 +1,12 @@
 /* ===== 계산기 버튼 소리 ===== */
 let calculatorAudioContext;
 
+/* 키소리 끄기 (스피커 버튼) - 이 기기에서 기억해요 */
+let calculatorMuted = false;
+try { calculatorMuted = localStorage.getItem("calcMuted.v1") === "1"; } catch (e) {}
+
 function playCalculatorSound(type) {
+    if (calculatorMuted) return;
     try {
         if (!calculatorAudioContext) {
             calculatorAudioContext = new (
@@ -204,6 +209,21 @@ if (calculatorElement && previousOperandElement && currentOperandElement) {
     });
 
     updateDisplay();
+
+    /* 스피커 버튼: 누르면 키소리 켜기/끄기 */
+    const soundButton = document.getElementById("calc-sound");
+    if (soundButton) {
+        const showSoundState = function () {
+            soundButton.setAttribute("aria-pressed", calculatorMuted ? "true" : "false");
+            soundButton.setAttribute("aria-label", calculatorMuted ? "키소리 켜기" : "키소리 끄기");
+        };
+        soundButton.addEventListener("click", function () {
+            calculatorMuted = !calculatorMuted;
+            try { localStorage.setItem("calcMuted.v1", calculatorMuted ? "1" : "0"); } catch (e) {}
+            showSoundState();
+        });
+        showSoundState();
+    }
 }
 
 

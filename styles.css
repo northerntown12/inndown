@@ -1584,3 +1584,18 @@ button:active {
     .lotto-container .slot-btn { --btn-drop: 0.9rem; }    /* 폰: 버튼은 그대로 */
     .lotto-container .slot-btn[style*="28px"] { top: calc(var(--btn-drop) - 0.55rem); }   /* 폰: 엄지척 */
 }
+
+
+/* ===== 계산기 스피커 버튼 (= 옆) ===== */
+/* 반 칸 단위로 나누기 위해 8칸 격자로 바꾸고, 버튼은 기본 2칸(= 예전 1칸)씩 차지해요 */
+.calculator { grid-template-columns: repeat(8, 1fr); }
+.calculator > button { grid-column: span 2; }
+.calculator > button.span-two { grid-column: span 4; }
+.calculator > button.calc-equals { grid-column: span 3; }   /* = : 1칸 반 */
+.calculator > button.calc-sound { grid-column: span 1; }    /* 스피커 : 반 칸 */
+.calculator button.calc-sound { display: flex; align-items: center; justify-content: center; color: #fff; }
+.calculator .calc-sound svg { width: 1.25em; height: 1.25em; display: block; }
+.calculator .calc-sound .calc-ico-off { display: none; }
+.calculator .calc-sound[aria-pressed="true"] .calc-ico-on { display: none; }
+.calculator .calc-sound[aria-pressed="true"] .calc-ico-off { display: block; }
+.calculator .calc-sound[aria-pressed="true"] { color: rgba(255, 255, 255, 0.6); }

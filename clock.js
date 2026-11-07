@@ -21,7 +21,8 @@
     var VB_W = 618, VB_H = 801;      // 시계 그림 기준 크기 (비율 유지용)
 
     var NOTE_TEXT = "Everything will be okay.";  // 시계 옆 파란 칸 글씨
-    var NOTE_HOLD = 1;                          // 다 쓴 뒤 다시 쓰기까지 기다리는 시간(초)
+    var NOTE_HOLD = 1;                          // 다 쓴 뒤 다시 쓰기까지 기다리는 시간(초) - PC
+    var NOTE_HOLD_MOBILE = 5;                   // 같은 시간 - 폰
 
     var NS = "http://www.w3.org/2000/svg";
     var CYAN = "#3fd4ff";
@@ -252,7 +253,7 @@
                 setTimeout(function () {
                     noteText.classList.add("dc-fade");        // 잠시 뒤 지우고 다시 쓰기
                     setTimeout(run, 350);
-                }, NOTE_HOLD * 1000);
+                }, (window.matchMedia(MOBILE_QUERY).matches ? NOTE_HOLD_MOBILE : NOTE_HOLD) * 1000);
             });
         }
         var ready = document.fonts && document.fonts.load ? document.fonts.load("28px 'Great Vibes'").catch(function () {}) : Promise.resolve();
