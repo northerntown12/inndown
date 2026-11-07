@@ -1582,7 +1582,8 @@ button:active {
 @media screen and (max-width: 768px), screen and (hover: none) and (pointer: coarse) and (max-width: 1000px) {
     .lotto-container { --balls-drop: 1.3rem; }            /* 폰: 공만 내려요 */
     .lotto-container .slot-btn { --btn-drop: 1.2rem; }    /* 폰: 버튼은 그대로 */
-    .lotto-container .slot-btn[style*="28px"] { top: calc(var(--btn-drop) - 0.55rem); }   /* 폰: 엄지척 */
+    /* 폰: 엄지척 - 위아래 여백을 줄여 키가 커지지 않게 하고, 공과 닿지 않게 살짝만 올려요 */
+    .lotto-container .slot-btn[style*="28px"] { top: calc(var(--btn-drop) - 0.1rem); padding-top: 1px; padding-bottom: 1px; line-height: 1.2; }
 }
 
 
