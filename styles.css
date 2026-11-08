@@ -1811,3 +1811,55 @@ button:active {
     font-weight: 700;
 }
 .memo-pad .mc-btn-main.danger { background: #c0392b; border-color: #c0392b; color: #fff; }
+
+
+/* ===== 유리 버튼 (반투명): 배너 재생/정지, 로또 소리 끄기·켜기 ===== */
+.glass-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    border-radius: 50%;
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.42) 0%, rgba(255, 255, 255, 0.14) 55%, rgba(255, 255, 255, 0.24) 100%);
+    -webkit-backdrop-filter: blur(6px) saturate(150%);
+    backdrop-filter: blur(6px) saturate(150%);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.7), inset 0 -1px 2px rgba(0, 0, 0, 0.12);
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+}
+.glass-btn:hover { background: linear-gradient(145deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0.22) 55%, rgba(255, 255, 255, 0.32) 100%); }
+.glass-btn:active { transform: scale(0.94); }
+.glass-btn svg { display: block; width: 58%; height: 58%; filter: drop-shadow(0 1px 1.5px rgba(0, 0, 0, 0.55)); }
+
+/* 맨 위 배너: 오른쪽 위 끝 */
+.main-banner .banner-play {
+    position: absolute;
+    z-index: 4;
+    top: clamp(6px, 1.1vw, 16px);
+    right: clamp(6px, 1.1vw, 16px);
+    width: clamp(30px, 3vw, 44px);
+    height: clamp(30px, 3vw, 44px);
+}
+.main-banner .banner-play {             /* 밝은 하늘 위에서도 보이게 살짝 어둡게 */
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.40) 0%, rgba(20, 40, 70, 0.18) 60%, rgba(255, 255, 255, 0.22) 100%);
+}
+.main-banner .banner-play svg { width: 54%; height: 54%; }
+
+/* 로또 칸 아래 작은 창: '원' 글자 바로 위 (가로 위치는 lotto-last.js가 정해요) */
+.lotto-last .ll-mute {
+    position: absolute;
+    z-index: 3;
+    bottom: calc(100% + 3px);
+    left: calc(100% - 16px);
+    width: 24px;
+    height: 24px;
+    transform: translateX(-50%);
+}
+.lotto-last .ll-mute {                   /* 아래 작은 창과 같은 파란 유리 */
+    border-color: rgba(190, 220, 255, 0.8);
+    background: linear-gradient(160deg, rgba(255, 255, 255, 0.35) 0%, rgba(40, 110, 240, 0.40) 45%, rgba(8, 50, 160, 0.55) 100%);
+}
+.lotto-last .ll-mute:hover { background: linear-gradient(160deg, rgba(255, 255, 255, 0.45) 0%, rgba(40, 110, 240, 0.50) 45%, rgba(8, 50, 160, 0.65) 100%); }
+.lotto-last .ll-mute:active { transform: translateX(-50%) scale(0.94); }

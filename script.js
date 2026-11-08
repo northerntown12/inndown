@@ -232,6 +232,22 @@ const audioCtx = new (
     window.AudioContext || window.webkitAudioContext
 )();
 
+/* 로또 소리 끄기·켜기 (로또 칸 아래 유리 버튼) - 이 기기에서 기억해요.
+   로또 소리는 모두 lottoOut을 거쳐 나가요. 음소거면 크기를 0으로 만들어요. (팡파레가 끝나는 시점은 그대로) */
+const lottoOut = audioCtx.createGain();
+lottoOut.connect(audioCtx.destination);
+let lottoMuted = false;
+try { lottoMuted = localStorage.getItem("lottoMuted.v1") === "1"; } catch (e) {}
+lottoOut.gain.value = lottoMuted ? 0 : 1;
+window.lottoSound = {
+    isMuted: function () { return lottoMuted; },
+    setMuted: function (m) {
+        lottoMuted = !!m;
+        lottoOut.gain.setValueAtTime(lottoMuted ? 0 : 1, audioCtx.currentTime);
+        try { localStorage.setItem("lottoMuted.v1", lottoMuted ? "1" : "0"); } catch (e) {}
+    }
+};
+
 function playFlipSound() {
     if (audioCtx.state === 'suspended') {
         audioCtx.resume();
@@ -259,7 +275,7 @@ function playFlipSound() {
 
     osc.connect(filter);
     filter.connect(gain);
-    gain.connect(audioCtx.destination);
+    gain.connect(lottoOut);
 
     osc.start();
     osc.stop(audioCtx.currentTime + 0.015);
@@ -305,7 +321,7 @@ function playOlympicsFanfare(onComplete) {
 
         osc.connect(filter);
         filter.connect(gain);
-        gain.connect(audioCtx.destination);
+        gain.connect(lottoOut);
 
         // 마지막 음이 끝나는 순간 완료 처리를 실행해요.
         if (
@@ -645,4 +661,49 @@ document.addEventListener("DOMContentLoaded", () => {
         win.document.close();
         win.focus();
     });
+})();
+
+
+/* ===== 맨 위 배너 동영상: 오른쪽 위 재생/정지 버튼 (유리 버튼) - 이 기기에서 기억해요 ===== */
+(function () {
+    const banner = document.querySelector(".main-banner");
+    const video = banner && banner.querySelector("video");
+    if (!video) return;
+
+    const PLAY_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l11-6.5z" fill="currentColor"/></svg>';
+    const PAUSE_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6.5" y="5" width="4" height="14" rx="1.2" fill="currentColor"/><rect x="13.5" y="5" width="4" height="14" rx="1.2" fill="currentColor"/></svg>';
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "glass-btn banner-play";
+    banner.appendChild(btn);
+
+    function show() {
+        const paused = video.paused;
+        btn.innerHTML = paused ? PLAY_SVG : PAUSE_SVG;
+        btn.setAttribute("aria-label", paused ? "배너 동영상 재생" : "배너 동영상 정지");
+        btn.title = paused ? "재생" : "정지";
+    }
+
+    let wantPaused = false;
+    try { wantPaused = localStorage.getItem("bannerPaused.v1") === "1"; } catch (e) {}
+    if (wantPaused) {
+        video.removeAttribute("autoplay");
+        video.autoplay = false;
+        video.pause();
+    }
+
+    btn.addEventListener("click", function () {
+        if (video.paused) {
+            const p = video.play();
+            if (p && p.catch) p.catch(function () {});
+        } else {
+            video.pause();
+        }
+        try { localStorage.setItem("bannerPaused.v1", video.paused ? "1" : "0"); } catch (e) {}
+        show();
+    });
+    video.addEventListener("play", show);
+    video.addEventListener("pause", show);
+    show();
 })();
