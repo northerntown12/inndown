@@ -26,7 +26,7 @@ function playCalculatorSound(type) {
         const sounds = {
             number:   { frequency: 1200, duration: 0.045, volume: 0.07 },
             operator: { frequency: 720,  duration: 0.075, volume: 0.08 },
-            equals:   { frequency: 1250, duration: 0.19,  volume: 0.09 },
+            equals:   { frequency: 1350, duration: 0.19,  volume: 0.09 },
             clear:    { frequency: 420,  duration: 0.10,  volume: 0.07 },
             delete:   { frequency: 560,  duration: 0.06,  volume: 0.06 }
         };
