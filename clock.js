@@ -11,7 +11,7 @@
     var POPUP_W = 240, POPUP_H = 311; // 떠 있는 창 크기(px) - 시계 비율과 같게
     var VB_W = 618, VB_H = 801;      // 시계 그림 기준 크기 (비율 유지용)
 
-    var NOTE_TEXT = "Everything will be okay.";  // 시계 옆 파란 칸 글씨
+    var NOTE_TEXT = "Everything will be fine...";  // 시계 옆 종이 칸 글씨 (fine 뒤에 바로 이어서 마침표 세 개)
     var NOTE_HOLD = 5;                          // 다 쓴 뒤 다시 쓰기까지 기다리는 시간(초) - PC
     var NOTE_HOLD_MOBILE = 5;                   // 같은 시간 - 폰
 
@@ -19,6 +19,8 @@
     var CYAN = "#3fd4ff";
     var DAYS = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
     var MONTHS = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+
+    var NOTE_PAPER = new URL("note-paper.webp?v=1", document.baseURI).href;   // 종이 칸 바탕 그림
 
     /* ---------- 스타일 ---------- */
     var style = document.createElement("style");
@@ -33,10 +35,10 @@
         ".dc-wrap.dc-float { position: fixed; right: 16px; bottom: 16px; width: 170px; z-index: 2147483000; }",
         ".dc-ph { display: none; padding: 6px 2px; font-size: 10px; line-height: 1.4; color: #888; cursor: pointer; }",
         ".dc-home.dc-away .dc-ph { display: block; }",
-        /* 시계 옆 파란 칸: 깃털 펜으로 쓰는 필기체 글씨 */
-        ".dc-note { position: relative; flex: 1 1 auto; min-width: 0; background: #1f5fc4; border: 1px solid #164a9c; overflow: hidden; container-type: inline-size; }",
-        ".dc-note-text { position: absolute; left: 0; right: 0; top: 0; margin: 0; padding: 10px 6px 0 10px;",
-        "    color: #fff; font: 400 min(28px, 19cqw)/1.05 'Great Vibes', 'Segoe Script', 'Brush Script MT', cursive; }",
+        /* 시계 옆 종이 칸: 낡은 종이(note-paper.webp, 원본 paper.webp) 위에 깃털 펜으로 쓰는 필기체 글씨 */
+        ".dc-note { position: relative; flex: 1 1 auto; min-width: 0; background: #3a2617 url('" + NOTE_PAPER + "') center / cover no-repeat; overflow: hidden; container-type: inline-size; }",
+        ".dc-note-text { position: absolute; left: 0; right: 0; top: 0; margin: 0; padding: 13% 6px 0 13%;",
+        "    color: #2a1a0c; text-shadow: 0 0 1px rgba(42,26,12,.35); font: 400 min(28px, 17cqw)/1.05 'Great Vibes', 'Segoe Script', 'Brush Script MT', cursive; }",
         ".dc-line { font: inherit; display: block; width: max-content; padding: 0 8px 4px 2px; margin-left: -2px; clip-path: inset(0 100% 0 0); }",
         ".dc-quill { position: absolute; left: 0; top: 0; width: 34px; height: 48px; pointer-events: none; opacity: 0;",
         "    transform-origin: 0 100%; filter: drop-shadow(1px 2px 1.5px rgba(0,0,0,.35)); transition: opacity .4s; }",
@@ -44,7 +46,7 @@
         /* 폰: 제목(밑줄) 아래에 시계와 파란 칸을 작게 나란히 (다른 위젯에는 영향 없음) */
         ".dc-mobile { --dc-w: " + MOBILE_CLOCK_WIDTH + "px; --dc-h: calc(var(--dc-w) * " + (VB_H / VB_W) + "); margin: 0 0 20px; position: relative; z-index: 1; }",
         ".dc-mobile .dc-home { position: relative; right: auto; width: 100%; gap: 8px; }",
-        ".dc-mobile .dc-note-text { font-size: min(21px, 14cqw); padding: 7px 5px 0 8px; }"
+        ".dc-mobile .dc-note-text { font-size: min(21px, 13cqw); padding: 8% 5px 0 12%; }"
     ].join("\n");
     document.head.appendChild(style);
 
@@ -189,7 +191,7 @@
     placeHome();
     if (mq.addEventListener) mq.addEventListener("change", placeHome); else mq.addListener(placeHome);
 
-    /* ---------- 파란 칸 글씨: 깃털 펜으로 위에서부터 한 줄씩 ---------- */
+    /* ---------- 종이 칸 글씨: 깃털 펜으로 위에서부터 한 줄씩 ---------- */
     (function writeNote() {
         if (!document.querySelector('link[href*="Great+Vibes"]')) {
             var fl = document.createElement("link");
