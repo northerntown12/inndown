@@ -25,7 +25,7 @@
     var tipTimer = null;
     var tipOwner = null;
     var DEFAULT_NOTE = "업데이트 주기: 10분";
-    var INPUT_HINT = "도시 입력 (예, 뉴욕)";
+    var INPUT_HINT = "도시 입력 (예: 뉴욕)";
 
     // 검색창이 비어 있을 때는 항상 이 안내문이 보여요.
     inputEl.placeholder = INPUT_HINT;
@@ -288,7 +288,7 @@
         });
     }
 
-    /* 3시간 후 / 6시간 후 / 12시간 후 예보 (현재 시각의 정시 기준, 지역 현지 시각)
+    /* 3시간 후 / 6시간 후 / 9시간 후 예보 (현재 시각의 정시 기준, 지역 현지 시각)
        - 해당 시각을 못 찾으면 "--"로 보여줘요. */
     function renderLater(current, hourly) {
         if (!laterEl) return;
@@ -298,7 +298,7 @@
         var m = nowText.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2})/);
         if (!m) return;
 
-        [3, 6, 12].forEach(function (h) {
+        [3, 6, 9].forEach(function (h) {
             var d = new Date(Date.UTC(+m[1], +m[2] - 1, +m[3], +m[4] + h));
             var key = d.getUTCFullYear() + "-" + pad2(d.getUTCMonth() + 1) + "-" + pad2(d.getUTCDate()) +
                       "T" + pad2(d.getUTCHours()) + ":00";
