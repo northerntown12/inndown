@@ -63,117 +63,15 @@
     keyBtn.innerHTML = KEY_SVG;
     tabs.appendChild(keyBtn);
 
-    /* 표지 배경: 외국 신문 기사를 오려 붙인 스크랩 (가상의 신문·기사) */
-    function collageSVG() {
-        var WORDS = ("the of and in a to was for on with as by at from city new year it is that this an "
-            + "market river garden harbour council morning evening weekend season local visitors "
-            + "spring autumn museum festival rail station bridge square street old music art rain "
-            + "le la les de du et un une dans pour sur avec der die das und im mit von zu il di "
-            + "del che per nel").split(" ");
-        var seed = 7;
-        function rnd() { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }
-        function words(n) {
-            var out = [];
-            for (var i = 0; i < n; i++) out.push(WORDS[Math.floor(rnd() * WORDS.length)]);
-            return out.join(" ");
-        }
-        function esc(t) { return t.replace(/&/g, "&amp;").replace(/</g, "&lt;"); }
-        function body(x, y, w, h, cols, fs) {
-            var g = "", lh = fs * 1.35, cw = (w - (cols - 1) * 3) / cols;
-            for (var c = 0; c < cols; c++) {
-                var cx = x + c * (cw + 3);
-                for (var yy = y + fs; yy < y + h; yy += lh) {
-                    var chars = Math.floor(cw / (fs * 0.5));
-                    var line = words(12).slice(0, chars);
-                    g += '<text x="' + cx.toFixed(1) + '" y="' + yy.toFixed(1) + '" font-size="' + fs +
-                         '" textLength="' + (rnd() < 0.15 ? (cw * 0.6).toFixed(1) : cw.toFixed(1)) +
-                         '" lengthAdjust="spacingAndGlyphs">' + esc(line) + '</text>';
-                }
-                if (c < cols - 1) g += '<line x1="' + (cx + cw + 1.5).toFixed(1) + '" y1="' + y + '" x2="' + (cx + cw + 1.5).toFixed(1) + '" y2="' + (y + h) + '" stroke="#999" stroke-width=".3"/>';
-            }
-            return '<g fill="#3d3a33" font-family="Georgia, \'Times New Roman\', serif">' + g + '</g>';
-        }
-        function photo(x, y, w, h, kind) {
-            var id = "mcp" + Math.floor(rnd() * 1e6);
-            var g = '<clipPath id="' + id + '"><rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '"/></clipPath>';
-            g += '<g clip-path="url(#' + id + ')"><rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" fill="#9b968a"/>';
-            if (kind === 0) {        // 산과 하늘
-                g += '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h * 0.55 + '" fill="#c9c4b6"/>';
-                g += '<path d="M' + x + ' ' + (y + h * 0.7) + ' L' + (x + w * 0.3) + ' ' + (y + h * 0.35) + ' L' + (x + w * 0.5) + ' ' + (y + h * 0.55) + ' L' + (x + w * 0.75) + ' ' + (y + h * 0.25) + ' L' + (x + w) + ' ' + (y + h * 0.6) + ' V' + (y + h) + ' H' + x + 'Z" fill="#6e6a60"/>';
-            } else if (kind === 1) { // 건물들
-                for (var i = 0; i < 6; i++) {
-                    var bw = w / 6, bh = h * (0.35 + rnd() * 0.5);
-                    g += '<rect x="' + (x + i * bw).toFixed(1) + '" y="' + (y + h - bh).toFixed(1) + '" width="' + (bw - 0.6).toFixed(1) + '" height="' + bh.toFixed(1) + '" fill="' + (i % 2 ? "#5f5b52" : "#77736a") + '"/>';
-                }
-            } else {                 // 사람 실루엣
-                g += '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" fill="#b5b0a3"/>';
-                g += '<circle cx="' + (x + w * 0.5) + '" cy="' + (y + h * 0.38) + '" r="' + (h * 0.16) + '" fill="#4f4b44"/>';
-                g += '<path d="M' + (x + w * 0.22) + ' ' + (y + h) + ' Q' + (x + w * 0.5) + ' ' + (y + h * 0.45) + ' ' + (x + w * 0.78) + ' ' + (y + h) + 'Z" fill="#4f4b44"/>';
-            }
-            g += '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" fill="url(#mcDots)" opacity=".55"/></g>';
-            return g;
-        }
-        function clip(x, y, w, h, rot, paper, inner) {
-            return '<g transform="translate(' + x + ' ' + y + ') rotate(' + rot + ')" filter="url(#mcShadow)">' +
-                   '<rect width="' + w + '" height="' + h + '" fill="' + paper + '"/>' + inner + '</g>';
-        }
-        function head(t, x, y, fs, w, italic) {
-            return '<text x="' + x + '" y="' + y + '" font-size="' + fs + '" font-weight="bold"' + (italic ? ' font-style="italic"' : "") +
-                   ' fill="#1f1d19" font-family="Georgia, \'Times New Roman\', serif"' +
-                   (w ? ' textLength="' + w + '" lengthAdjust="spacingAndGlyphs"' : "") + '>' + esc(t) + '</text>';
-        }
-        function masthead(t, x, y, w) {
-            return '<text x="' + x + '" y="' + y + '" font-size="11" fill="#141210" font-family="\'Old English Text MT\', \'UnifrakturMaguntia\', Georgia, serif"' +
-                   ' textLength="' + w + '" lengthAdjust="spacingAndGlyphs">' + esc(t) + '</text>' +
-                   '<line x1="' + x + '" y1="' + (y + 3) + '" x2="' + (x + w) + '" y2="' + (y + 3) + '" stroke="#222" stroke-width=".6"/>' +
-                   '<line x1="' + x + '" y1="' + (y + 4.4) + '" x2="' + (x + w) + '" y2="' + (y + 4.4) + '" stroke="#222" stroke-width=".3"/>';
-        }
-        function tape(x, y, w, rot) {
-            return '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="9" fill="#efe6c8" opacity=".75" transform="rotate(' + rot + ' ' + (x + w / 2) + ' ' + (y + 4.5) + ')"/>';
-        }
-
-        var s = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" preserveAspectRatio="xMidYMid slice">' +
-            '<defs><pattern id="mcDots" width="2.2" height="2.2" patternUnits="userSpaceOnUse"><circle cx="1.1" cy="1.1" r=".55" fill="#2a2824"/></pattern>' +
-            '<filter id="mcShadow" x="-10%" y="-10%" width="120%" height="120%"><feDropShadow dx="1.2" dy="1.6" stdDeviation="1.2" flood-opacity=".45"/></filter></defs>' +
-            '<rect width="300" height="300" fill="#2b2a27"/>';
-
-        s += clip(-12, -10, 150, 120, -4, "#ece4cf",
-            masthead("The Elmbridge Chronicle", 8, 18, 132) +
-            head("City Garden Opens Its Gates", 8, 34, 10, 130) +
-            photo(8, 40, 60, 42, 0) + body(72, 40, 66, 70, 2, 3.4) + body(8, 86, 60, 24, 1, 3.4));
-        s += clip(150, -14, 165, 112, 3, "#f1ede2",
-            head("Le Matin Bleu", 10, 18, 13, 90, true) +
-            '<line x1="10" y1="22" x2="155" y2="22" stroke="#333" stroke-width=".5"/>' +
-            head("Une nouvelle saison commence au port", 10, 34, 8, 145) +
-            body(10, 38, 95, 66, 3, 3.2) + photo(110, 40, 46, 40, 1) + body(110, 84, 46, 22, 1, 3.2));
-        s += clip(-16, 112, 112, 118, 5, "#e6dcc2",
-            head("Kunst im Park", 10, 18, 12, 80) +
-            head("Nordstadt Zeitung · Sonntag", 10, 27, 4.2, 90, true) +
-            photo(10, 32, 90, 38, 2) + body(10, 74, 92, 42, 2, 3.2));
-        s += clip(205, 96, 110, 140, -6, "#efe9da",
-            head("RAIN EXPECTED", 10, 18, 11, 92) + head("THROUGH THE WEEKEND", 10, 28, 6.5, 92) +
-            body(10, 32, 92, 104, 2, 3.2));
-        s += clip(-10, 222, 150, 96, -3, "#f3efe4",
-            head("La Gazzetta del Porto", 8, 15, 10, 120, true) +
-            head("Il mercato del sabato torna in piazza", 8, 26, 7, 136) +
-            body(8, 30, 90, 60, 3, 3.2) + photo(102, 30, 42, 34, 0));
-        s += clip(135, 218, 175, 100, 4, "#e9e1cb",
-            head("Notes from the Old Harbour", 10, 17, 9.5, 155) +
-            body(10, 22, 155, 72, 4, 3.2));
-        s += clip(96, 160, 90, 70, -9, "#f4f0e6",
-            head("WEATHER", 8, 14, 7, 40) + body(8, 18, 74, 46, 2, 3));
-        s += tape(30, -4, 40, -8) + tape(210, -6, 44, 10) + tape(-6, 120, 36, 70) + tape(250, 100, 40, -20) +
-             tape(30, 228, 44, 6) + tape(190, 222, 40, -12) + tape(120, 160, 30, 30);
-        s += '<rect width="300" height="300" fill="#6b4a1f" opacity=".12"/></svg>';   // 살짝 바랜 색
-        return "url(\"data:image/svg+xml;charset=utf-8," + encodeURIComponent(s) + "\")";
-    }
+    /* 표지 배경: 옛날 광고 스크랩 그림 (memo-cover.webp, 원본은 ads.webp) */
+    var COVER_IMG = "memo-cover.webp?v=1";
 
     // 커버 (노트 표지)
     var cover = mk("div", "memo-cover");
     cover.setAttribute("aria-hidden", "true");
     var face = mk("div", "mc-face");
-    face.style.backgroundImage = collageSVG();
-    var plate = mk("div", "mc-plate");          // 글씨 영역 (신문 스크랩 위의 남색 이름표)
+    face.style.backgroundImage = 'url("' + COVER_IMG + '")';
+    var plate = mk("div", "mc-plate");          // 글씨 영역 (광고 스크랩 위의 남색 이름표)
     var emblem = mk("div", "mc-emblem"); emblem.innerHTML = LOCK_SVG;
     var title = mk("div", "mc-title", "커버 씌워짐");
     var sub = mk("div", "mc-sub", "비밀번호 3자리로 열 수 있어요");
@@ -363,6 +261,15 @@
     });
     pinInput.addEventListener("keydown", function (e) { if (e.key === "Escape") hidePin(); });
     pinCancel.addEventListener("click", hidePin);
+
+    // 이름표의 자물쇠·"커버 씌워짐" 글씨를 눌러도 비밀번호 칸이 떠요
+    [emblem, title, sub].forEach(function (el) {
+        el.classList.add("mc-tap");
+        el.addEventListener("click", function () {
+            if (busy || !st.covered || !pinBox.hidden) return;
+            showPin();
+        });
+    });
     pinForgot.addEventListener("click", function () { openDialog("forgot"); });
 
     /* ---------- 대화창 ---------- */

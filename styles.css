@@ -1686,7 +1686,7 @@ button:active {
     padding: calc(var(--u) * 3);
     border-radius: calc(var(--u) * 1) calc(var(--u) * 3) calc(var(--u) * 3) calc(var(--u) * 1);
     background-color: #2b2a27;
-    background-size: cover;            /* 신문 스크랩 그림은 memo-cover.js 에서 넣어요 */
+    background-size: cover;            /* 광고 스크랩 그림(memo-cover.webp)은 memo-cover.js 에서 넣어요 */
     background-position: center;
     box-shadow: inset calc(var(--u) * 1.2) 0 calc(var(--u) * 1.5) rgba(0, 0, 0, 0.45), 3px 4px 12px rgba(0, 0, 0, 0.45);
     color: #f3d27a;
@@ -1737,6 +1737,8 @@ button:active {
 }
 .mc-pin-msg { min-height: 1.3em; }
 .mc-pin-msg.bad { color: #ffb3b3; }
+.mc-tap { cursor: pointer; }                      /* 눌러서 비밀번호 칸 열기 */
+.mc-tap:hover { filter: brightness(1.15); }
 .mc-sub[hidden], .mc-pin[hidden], .mc-dlg[hidden], .mc-pin-input[hidden], .mc-btn[hidden] { display: none; }
 
 .mc-pin { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: calc(var(--u) * 1.2); }
