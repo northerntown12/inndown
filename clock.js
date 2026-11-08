@@ -20,7 +20,7 @@
     var DAYS = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
     var MONTHS = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
 
-    var NOTE_PAPER = new URL("note-paper.webp?v=2", document.baseURI).href;   // 종이 칸 바탕 그림
+    var NOTE_PAPER = new URL("note-paper.webp?v=3", document.baseURI).href;   // 종이 칸 바탕 그림
 
     /* ---------- 스타일 ---------- */
     var style = document.createElement("style");
