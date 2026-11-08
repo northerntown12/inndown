@@ -20,7 +20,7 @@
     var DAYS = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
     var MONTHS = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
 
-    var NOTE_PAPER = new URL("note-paper.webp?v=1", document.baseURI).href;   // 종이 칸 바탕 그림
+    var NOTE_PAPER = new URL("note-paper.webp?v=2", document.baseURI).href;   // 종이 칸 바탕 그림
 
     /* ---------- 스타일 ---------- */
     var style = document.createElement("style");
@@ -43,6 +43,8 @@
         ".dc-quill { position: absolute; left: 0; top: 0; width: 34px; height: 48px; pointer-events: none; opacity: 0;",
         "    transform-origin: 0 100%; filter: drop-shadow(1px 2px 1.5px rgba(0,0,0,.35)); transition: opacity .4s; }",
         ".dc-note-text.dc-fade { transition: opacity .3s; opacity: 0; }",
+        ".dc-dot { opacity: 0; transition: opacity .1s; }",
+        ".dc-dot.on { opacity: 1; }",
         /* 폰: 제목(밑줄) 아래에 시계와 파란 칸을 작게 나란히 (다른 위젯에는 영향 없음) */
         ".dc-mobile { --dc-w: " + MOBILE_CLOCK_WIDTH + "px; --dc-h: calc(var(--dc-w) * " + (VB_H / VB_W) + "); margin: 0 0 20px; position: relative; z-index: 1; }",
         ".dc-mobile .dc-home { position: relative; right: auto; width: 100%; gap: 8px; }",
@@ -199,12 +201,25 @@
             fl.href = "https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap";
             document.head.appendChild(fl);
         }
-        var lines = NOTE_TEXT.split(" ").map(function (w) {      // 한 단어씩 한 줄
+        /* 한 단어씩 한 줄. 끝에 점이 여러 개 있으면(fine...) 점은 따로 하나씩 찍어요 */
+        var lines = NOTE_TEXT.split(" ").map(function (w) {
             var sp = document.createElement("span");
             sp.className = "dc-line";
-            sp.textContent = w;
+            var m = /^(.*?)(\.{2,})$/.exec(w);
+            var word = document.createTextNode(m ? m[1] : w);
+            sp.appendChild(word);
+            var dots = [];
+            if (m) {
+                for (var k = 0; k < m[2].length; k++) {
+                    var dt = document.createElement("span");
+                    dt.className = "dc-dot";
+                    dt.textContent = ".";
+                    sp.appendChild(dt);
+                    dots.push(dt);
+                }
+            }
             noteText.appendChild(sp);
-            return sp;
+            return { el: sp, word: word, dots: dots };
         });
         var quill = document.createElementNS(NS, "svg");
         quill.setAttribute("class", "dc-quill");
@@ -219,32 +234,77 @@
         note.appendChild(quill);
 
         var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-        if (reduce) { lines.forEach(function (l) { l.style.clipPath = "none"; }); return; }
+        if (reduce) {
+            lines.forEach(function (l) { l.el.style.clipPath = "none"; l.dots.forEach(function (d) { d.classList.add("on"); }); });
+            return;
+        }
 
         var SPEED = 55;                 // 글씨 쓰는 속도 (px/초)
-        function place(line, p, t) {
-            var nr = note.getBoundingClientRect(), lr = line.getBoundingClientRect();
-            var x = lr.left - nr.left + 2 + p * (lr.width - 10);
-            var y = lr.top - nr.top + lr.height * 0.62 + Math.sin(t / 55) * 3.5;
+        var DOT_WAIT = 1000;            // 마지막 글자(fine의 e)를 쓰고 첫 점까지 (ms)
+        var DOT_GAP = 500;              // 점과 점 사이 (ms)
+        var pen = { x: 0, y: 0 };
+        function penAt(x, y, t) {
+            pen.x = x; pen.y = y;
             quill.style.transform = "translate(" + x + "px," + (y - 48) + "px) rotate(" + (Math.sin(t / 90) * 4) + "deg)";
+        }
+        function rel(r) { var nr = note.getBoundingClientRect(); return { left: r.left - nr.left, top: r.top - nr.top, width: r.width, height: r.height }; }
+        // 단어(점 빼고)가 끝나는 위치 (줄 왼쪽 기준 px)
+        function wordEnd(item) {
+            var lr = item.el.getBoundingClientRect();
+            if (!item.dots.length || !document.createRange) return lr.width;
+            var r = document.createRange();
+            r.selectNodeContents(item.word);
+            return r.getBoundingClientRect().right - lr.left + 2;
         }
         function writeLine(i, done) {
             if (i >= lines.length) { done(); return; }
-            var line = lines[i], w = line.getBoundingClientRect().width || 60;
-            var dur = Math.max(500, w / SPEED * 1000), start = null;
+            var item = lines[i], line = item.el;
+            var W = line.getBoundingClientRect().width || 60, end = wordEnd(item);
+            var dur = Math.max(500, end / SPEED * 1000), start = null;
             function frame(t) {
                 if (start === null) start = t;
                 var p = Math.min(1, (t - start) / dur);
-                line.style.clipPath = "inset(0 " + ((1 - p) * 100).toFixed(2) + "% 0 0)";
-                place(line, p, t);
-                if (p < 1) requestAnimationFrame(frame);
-                else setTimeout(function () { writeLine(i + 1, done); }, 260);   // 다음 줄로
+                line.style.clipPath = "inset(0 " + Math.max(0, W - p * end).toFixed(1) + "px 0 0)";
+                var lr = rel(line.getBoundingClientRect());
+                penAt(lr.left + 2 + p * (end - 10), lr.top + lr.height * 0.62 + Math.sin(t / 55) * 3.5, t);
+                if (p < 1) { requestAnimationFrame(frame); return; }
+                if (item.dots.length) {
+                    line.style.clipPath = "none";        // 점은 아직 안 보여요 (투명)
+                    writeDots(item, function () { setTimeout(function () { writeLine(i + 1, done); }, 260); });
+                } else {
+                    setTimeout(function () { writeLine(i + 1, done); }, 260);   // 다음 줄로
+                }
             }
             requestAnimationFrame(frame);
         }
+        // 펜을 점 자리로 살짝 옮겨서 콕 찍어요: e를 쓰고 1초, 1.5초, 2초 뒤에 점이 하나씩 생겨요
+        function writeDots(item, done) {
+            var MOVE = 180;
+            item.dots.forEach(function (dot, k) {
+                var at = DOT_WAIT + k * DOT_GAP;
+                setTimeout(function () {
+                    var dr = rel(dot.getBoundingClientRect()), lr = rel(item.el.getBoundingClientRect());
+                    var fx = pen.x, fy = pen.y, tx = dr.left + dr.width * 0.3, ty = lr.top + lr.height * 0.74, s0 = null;
+                    function glide(t) {
+                        if (s0 === null) s0 = t;
+                        var q = Math.min(1, (t - s0) / MOVE), e = q * (2 - q);
+                        penAt(fx + (tx - fx) * e, fy + (ty - fy) * e - Math.sin(q * Math.PI) * 6, t);
+                        if (q < 1) requestAnimationFrame(glide);
+                        else {
+                            dot.classList.add("on");
+                            if (k === item.dots.length - 1) done();
+                        }
+                    }
+                    requestAnimationFrame(glide);
+                }, Math.max(0, at - MOVE));
+            });
+        }
         function run() {
             noteText.classList.remove("dc-fade");
-            lines.forEach(function (l) { l.style.clipPath = "inset(0 100% 0 0)"; });
+            lines.forEach(function (l) {
+                l.el.style.clipPath = "inset(0 100% 0 0)";
+                l.dots.forEach(function (d) { d.classList.remove("on"); });
+            });
             quill.style.opacity = "1";
             writeLine(0, function () {
                 quill.style.opacity = "0";                     // 다 쓰면 펜이 사라져요
