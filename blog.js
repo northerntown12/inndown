@@ -282,7 +282,7 @@
             var dateEl = document.getElementById("post-date");
             if (dateEl) dateEl.textContent = fullDate(me.date);
 
-            if (me.cat === "stock") {
+            if (me.cat === "stock") {   // 주식 카테고리를 다시 만들면 자동으로 붙는 안내 (지금은 없음)
                 var art = document.querySelector(".post-body");
                 if (art) {
                     var note = h("p", "post-disclaimer",
