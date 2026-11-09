@@ -185,14 +185,11 @@
     line-height: 1;
 }
 
-/* 구글: 흰 바탕 + 네 가지 색 G (예전 칸과 같은 모양) */
+/* 구글: 흰 바탕 + 한 가지 색 G (2026-11-09 네 가지 색 로고 느낌 → 단색으로) */
 .ql-google { background: #fff; border: 1px solid #e3e3e3; }
 .ql-google span {
     font-size: 1.45rem;
-    background: conic-gradient(from -45deg, #4285F4 0deg 90deg, #34A853 90deg 180deg, #FBBC05 180deg 250deg, #EA4335 250deg 315deg, #4285F4 315deg 360deg);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
+    color: #3b6fd8;
 }
 
 /* 네이버: 슬레이트 바탕 + 민트 N (예전 칸과 같은 모양) */
