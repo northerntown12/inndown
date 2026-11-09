@@ -1,0 +1,465 @@
+/* =========================================================
+   블로그 "퇴근 후의 기록"
+   1) 홈 왼쪽 칸(시계 아래, 예전 컨버터블 사진 자리)의 슬라이드 메뉴
+   2) blog.html 글 목록, 3) 글 페이지
+   색: 남색 막대 + 로즈골드 + 크림 종이 (시계 날짜 창과 같은 계열)
+   ========================================================= */
+
+:root {
+    --bb-navy: #1e2942;
+    --bb-navy2: #2b3a5c;
+    --bb-gold: #c9a27e;
+    --bb-cream: #fbf7ef;
+    --bb-paper: #f4ecdd;
+    --bb-ink: #2c2418;
+    --bb-mute: #8a7d68;
+}
+
+/* ---------------- 1) 홈 왼쪽 칸 ---------------- */
+/* 시계 줄(clock.js) 아래를 꽉 채워요. 시계 높이 = --dc-h (clock.js 가 정함) */
+.blog-box {
+    position: absolute;
+    top: calc(var(--dc-h, 0px) + 12px);
+    left: 0;
+    right: 24px;           /* 오른쪽 구분선과 24px 간격 */
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid #d8ccb4;
+    border-radius: 4px;
+    background: var(--bb-cream);
+    color: var(--bb-ink);
+    font-size: 0.8rem;
+}
+
+.bb-cover {
+    position: relative;
+    flex: none;
+    height: 92px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 8px 10px;
+    background:
+        linear-gradient(to top, rgba(20, 28, 48, 0.92) 0%, rgba(20, 28, 48, 0.35) 70%, rgba(20, 28, 48, 0.15) 100%),
+        url("convertible.jpg") center 60% / cover no-repeat;
+    color: #fff;
+    text-decoration: none;
+}
+.bb-cover-title {
+    margin: 0;
+    font-size: 1.05rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+}
+.bb-cover-tag {
+    margin-top: 2px;
+    font-size: 0.66rem;
+    letter-spacing: 0.12em;
+    color: #e9c9a6;
+}
+.bb-cover-all {
+    position: absolute;
+    top: 7px;
+    right: 8px;
+    padding: 2px 8px;
+    border: 1px solid rgba(233, 201, 166, 0.7);
+    border-radius: 999px;
+    background: rgba(20, 28, 48, 0.45);
+    color: #f3e3cf;
+    font-size: 0.62rem;
+    text-decoration: none;
+    backdrop-filter: blur(2px);
+}
+.bb-cover-all:hover { background: rgba(201, 162, 126, 0.45); }
+
+.bb-acc {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    padding: 8px 7px 10px;
+    scrollbar-width: thin;
+    scrollbar-color: #d2c3a6 transparent;
+}
+
+/* 막대 + 펼침 */
+.bb-sec { margin-bottom: 6px; }
+.bb-bar {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    border: 0;
+    cursor: pointer;
+    font: inherit;
+    text-align: left;
+    transition: background 0.2s, border-radius 0.2s;
+}
+.bb-l1 > .bb-bar {
+    height: 32px;
+    padding: 0 10px;
+    border-radius: 7px;
+    background: linear-gradient(180deg, var(--bb-navy2), var(--bb-navy));
+    color: #f3e9d8;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    box-shadow: 0 1px 2px rgba(20, 28, 48, 0.25);
+}
+.bb-l1 > .bb-bar:hover { background: linear-gradient(180deg, #34466e, #24304d); }
+.bb-l1.open > .bb-bar { border-radius: 7px 7px 0 0; }
+
+.bb-dot {
+    flex: none;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.15);
+}
+.bb-name { flex: 1 1 auto; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bb-cnt {
+    flex: none;
+    min-width: 18px;
+    padding: 0 5px;
+    border-radius: 999px;
+    background: var(--bb-gold);
+    color: var(--bb-navy);
+    font-size: 0.62rem;
+    font-weight: 700;
+    line-height: 16px;
+    text-align: center;
+}
+.bb-chev { flex: none; width: 10px; height: 6px; display: grid; transition: transform 0.25s; }
+.bb-chev svg { width: 10px; height: 6px; }
+.bb-sec.open > .bb-bar .bb-chev { transform: rotate(180deg); }
+
+/* 부드럽게 펼쳐지는 부분 */
+.bb-body {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.3s ease;
+}
+.bb-sec.open > .bb-body { grid-template-rows: 1fr; }
+.bb-body-in { min-height: 0; overflow: hidden; }
+
+.bb-l1 > .bb-body > .bb-body-in {
+    border-radius: 0 0 7px 7px;
+    background: #fff;
+}
+.bb-l1.open > .bb-body > .bb-body-in {
+    padding: 6px 7px 7px;
+    border: 1px solid #e2d6c0;
+    border-top: 0;
+}
+
+/* 작은 막대 (카테고리 안의 작은 분류) */
+.bb-subs { display: flex; flex-direction: column; gap: 4px; }
+.bb-l2 { margin: 0; }
+.bb-l2 > .bb-bar {
+    height: 26px;
+    padding: 0 8px 0 10px;
+    border-radius: 5px;
+    background: var(--bb-paper);
+    color: #4a3d2a;
+    font-size: 0.72rem;
+    font-weight: 600;
+    border-left: 3px solid var(--bb-gold);
+}
+.bb-l2 > .bb-bar:hover { background: #ece0c8; }
+.bb-l2 > .bb-bar .bb-cnt { background: #fff; color: #6b5a3a; }
+.bb-l2.open > .bb-body > .bb-body-in { padding: 3px 0 2px 8px; }
+
+/* 글 목록 */
+.bb-posts { list-style: none; margin: 0; padding: 0; }
+.bb-posts li + li { border-top: 1px dashed #e6dcc8; }
+.bb-post {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    padding: 5px 2px;
+    color: var(--bb-ink);
+    text-decoration: none;
+}
+.bb-post:hover .bb-title { color: #9a6a3f; text-decoration: underline; text-underline-offset: 2px; }
+.bb-date {
+    flex: none;
+    font-size: 0.62rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--bb-mute);
+}
+.bb-title {
+    min-width: 0;
+    font-size: 0.75rem;
+    line-height: 1.35;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.bb-empty { margin: 4px 2px; font-size: 0.7rem; color: var(--bb-mute); }
+.bb-more {
+    display: block;
+    margin-top: 5px;
+    font-size: 0.66rem;
+    text-align: right;
+    color: #9a6a3f;
+    text-decoration: none;
+}
+.bb-more:hover { text-decoration: underline; }
+
+/* 폰: 왼쪽 칸이 원래 숨겨지는데, 블로그는 뉴스 줄 아래(바로가기 위)에 보여요 */
+@media screen and (max-width: 768px), screen and (hover: none) and (pointer: coarse) and (max-width: 1000px) {
+    .page-layout { display: flex; flex-direction: column; }
+    .page-layout > .center-panel { order: 1; }
+    .page-layout > .tree-panel  { order: 2; }
+    .page-layout > .ad-sidebar  { order: 3; }
+
+    .page-layout .tree-panel {
+        display: block;
+        margin-top: 14px;
+        border-right: 0;
+        overflow: visible;
+    }
+    .blog-box { position: static; border-radius: 8px; font-size: 0.9rem; }
+    .bb-cover { height: 120px; padding: 12px 14px; }
+    .bb-cover-title { font-size: 1.25rem; }
+    .bb-cover-tag { font-size: 0.75rem; }
+    .bb-cover-all { font-size: 0.75rem; padding: 4px 11px; top: 10px; right: 10px; }
+    .bb-acc { overflow: visible; padding: 10px; }
+    .bb-l1 > .bb-bar { height: 44px; font-size: 0.95rem; padding: 0 14px; }
+    .bb-l2 > .bb-bar { height: 38px; font-size: 0.85rem; }
+    .bb-cnt { font-size: 0.72rem; line-height: 19px; min-width: 22px; }
+    .bb-post { padding: 9px 2px; }
+    .bb-date { font-size: 0.72rem; }
+    .bb-title { font-size: 0.9rem; }
+    .bb-more { font-size: 0.8rem; padding: 4px 0; }
+}
+
+/* ---------------- 2) 3) 블로그 페이지 공통 ---------------- */
+body.blog-page {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    background: #f6f1e7;
+    color: var(--bb-ink);
+    font-family: 'Noto Sans KR', 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+}
+.bp-top {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: linear-gradient(180deg, var(--bb-navy2), var(--bb-navy));
+    box-shadow: 0 2px 8px rgba(20, 28, 48, 0.25);
+}
+.bp-top-in {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 0 16px;
+    height: 54px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+.bp-brand {
+    color: #f3e9d8;
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 1.05rem;
+    letter-spacing: 0.05em;
+}
+.bp-brand small { margin-left: 8px; font-size: 0.68rem; font-weight: 400; letter-spacing: 0.1em; color: #e9c9a6; }
+.bp-home {
+    margin-left: auto;
+    padding: 5px 12px;
+    border: 1px solid rgba(233, 201, 166, 0.6);
+    border-radius: 999px;
+    color: #f3e3cf;
+    font-size: 0.78rem;
+    text-decoration: none;
+    white-space: nowrap;
+}
+.bp-home:hover { background: rgba(201, 162, 126, 0.3); }
+
+.bp-main { max-width: 860px; margin: 0 auto; padding: 26px 16px 50px; }
+.bp-foot {
+    border-top: 1px solid #ddd0b8;
+    padding: 18px 16px 28px;
+    text-align: center;
+    font-size: 0.78rem;
+    color: var(--bb-mute);
+}
+.bp-foot a { color: var(--bb-mute); margin: 0 6px; }
+
+/* 목록 페이지 */
+.bl-head h1 { margin: 0 0 4px; font-size: 1.6rem; letter-spacing: 0.03em; }
+.bl-head p { margin: 0 0 18px; color: var(--bb-mute); font-size: 0.9rem; }
+
+.bt-tabs {
+    position: relative;
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+    border-bottom: 1px solid #ddd0b8;
+    scrollbar-width: none;
+}
+.bt-tab {
+    flex: none;
+    padding: 10px 16px 11px;
+    border: 0;
+    background: none;
+    color: #6b5d48;
+    font: inherit;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+.bt-tab.on { color: var(--bb-navy); }
+.bt-ink {
+    position: absolute;
+    left: 0;
+    bottom: -1px;
+    height: 3px;
+    border-radius: 3px 3px 0 0;
+    background: var(--bb-navy);
+    transition: transform 0.3s ease, width 0.3s ease, background 0.3s;
+}
+.bt-tab:not([style]) { --c: #1e2942; }
+
+.bc-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 14px 0 0; }
+.bc-chip {
+    padding: 5px 12px;
+    border: 1px solid #d8ccb4;
+    border-radius: 999px;
+    background: #fff;
+    color: #5b4d38;
+    font: inherit;
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+.bc-chip.on { background: var(--bb-navy); border-color: var(--bb-navy); color: #f3e9d8; }
+
+.bl-list { display: flex; flex-direction: column; gap: 12px; margin-top: 18px; }
+.bl-card {
+    display: flex;
+    gap: 14px;
+    padding: 16px 18px;
+    border: 1px solid #e3d8c4;
+    border-radius: 10px;
+    background: #fff;
+    color: inherit;
+    text-decoration: none;
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+.bl-card:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(60, 45, 20, 0.1); }
+.bl-thumb {
+    flex: none;
+    width: 120px;
+    height: 84px;
+    border-radius: 7px;
+    background: #eee center / cover no-repeat;
+}
+.bl-text { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.bl-meta { display: flex; align-items: center; gap: 10px; font-size: 0.75rem; color: var(--bb-mute); }
+.bl-cat, .post-cat {
+    padding: 2px 9px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--c, #888) 14%, white);
+    color: color-mix(in srgb, var(--c, #888) 80%, black);
+    font-weight: 600;
+}
+.bl-title { font-size: 1.08rem; line-height: 1.4; }
+.bl-sum { font-size: 0.86rem; line-height: 1.55; color: #5e5242; }
+.bl-empty { padding: 40px 0; text-align: center; color: var(--bb-mute); }
+
+/* 글 페이지 */
+.post-crumb { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 0.78rem; }
+.post-crumb a { color: var(--bb-mute); text-decoration: none; }
+.post-crumb a:hover { text-decoration: underline; }
+.pc-sep { color: #c4b59a; }
+
+.post-article {
+    margin-top: 14px;
+    padding: 34px 38px 30px;
+    border: 1px solid #e3d8c4;
+    border-radius: 12px;
+    background: #fff;
+}
+.post-head { padding-bottom: 18px; margin-bottom: 24px; border-bottom: 1px solid #eee3d0; }
+.post-head h1 { margin: 10px 0 8px; font-size: 1.75rem; line-height: 1.35; letter-spacing: -0.01em; }
+.post-meta { display: flex; align-items: center; gap: 10px; font-size: 0.8rem; color: var(--bb-mute); }
+
+.post-body { font-size: 1.02rem; line-height: 1.85; color: #2f281e; word-break: keep-all; }
+.post-body h2 {
+    margin: 2em 0 0.7em;
+    padding-left: 12px;
+    border-left: 4px solid var(--bb-gold);
+    font-size: 1.28rem;
+    line-height: 1.4;
+}
+.post-body h3 { margin: 1.6em 0 0.5em; font-size: 1.08rem; }
+.post-body p { margin: 0 0 1.1em; }
+.post-body a { color: #9a6a3f; }
+.post-body ul, .post-body ol { padding-left: 1.4em; margin: 0 0 1.1em; }
+.post-body li { margin: 0.25em 0; }
+.post-body blockquote {
+    margin: 1.4em 0;
+    padding: 12px 18px;
+    border-left: 4px solid var(--bb-navy2);
+    border-radius: 0 8px 8px 0;
+    background: #f7f2e8;
+    color: #4a3f30;
+}
+.post-body figure { margin: 1.6em 0; }
+.post-body figure img { display: block; max-width: 100%; max-height: 560px; width: auto; height: auto; margin: 0 auto; border-radius: 10px; }   /* 세로로 긴 사진은 높이 560px까지 */
+.post-body figcaption { margin-top: 6px; font-size: 0.8rem; text-align: center; color: var(--bb-mute); }
+.post-body table { width: 100%; margin: 1.2em 0; border-collapse: collapse; font-size: 0.92rem; }
+.post-body th, .post-body td { padding: 8px 10px; border: 1px solid #e3d8c4; text-align: left; }
+.post-body th { background: #f4ecdd; }
+.post-disclaimer {
+    margin-top: 2em !important;
+    padding: 12px 14px;
+    border-radius: 8px;
+    background: #fbf3e2;
+    font-size: 0.82rem;
+    line-height: 1.6;
+    color: #7a6340;
+}
+
+.post-nav {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 10px;
+    margin-top: 18px;
+}
+.pn-link, .pn-list {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 12px 14px;
+    border: 1px solid #e3d8c4;
+    border-radius: 10px;
+    background: #fff;
+    color: inherit;
+    text-decoration: none;
+    min-width: 0;
+}
+.pn-next { text-align: right; }
+.pn-list { justify-content: center; align-items: center; font-weight: 600; color: var(--bb-navy); }
+.pn-link:hover, .pn-list:hover { border-color: var(--bb-gold); }
+.pn-link.off { opacity: 0.45; pointer-events: none; }
+.pn-label { font-size: 0.72rem; color: var(--bb-mute); }
+.pn-title { font-size: 0.88rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+@media (max-width: 640px) {
+    .bp-brand small { display: none; }
+    .bp-main { padding: 18px 12px 40px; }
+    .post-article { padding: 22px 18px 20px; }
+    .post-head h1 { font-size: 1.4rem; }
+    .post-body { font-size: 1rem; }
+    .bl-card { padding: 14px; }
+    .bl-thumb { width: 88px; height: 66px; }
+    .post-nav { grid-template-columns: 1fr 1fr; }
+    .pn-list { grid-column: 1 / -1; grid-row: 2; }
+}

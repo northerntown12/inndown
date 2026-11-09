@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="stock.css?v=3">
     <link rel="stylesheet" href="news.css?v=3">
     <link rel="stylesheet" href="tools.css?v=5">
+    <link rel="stylesheet" href="blog.css?v=1">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Gaegu:wght@400;700&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
@@ -27,8 +28,16 @@
     </header>
 
     <div class="page-layout">
-        <aside class="tree-panel" aria-label="나무 이미지">
-            <img src="convertible.jpg" alt="해안도로를 달리는 빨간 클래식 컨버터블">
+        <aside class="tree-panel" aria-label="시계와 블로그">
+            <!-- 시계 아래: 블로그 "퇴근 후의 기록" 슬라이드 메뉴 (blog.js, blog.css, 글 목록은 posts.js) -->
+            <div class="blog-box">
+                <a class="bb-cover" href="blog.html">
+                    <span class="bb-cover-title">퇴근 후의 기록</span>
+                    <span class="bb-cover-tag">여행 · 음악 · 주식 · 일상</span>
+                    <span class="bb-cover-all">전체 글</span>
+                </a>
+                <nav class="bb-acc" id="bb-acc" aria-label="블로그 메뉴"></nav>
+            </div>
         </aside>
 
         <!-- 가운데: 기존 홈페이지 기능 -->
@@ -253,5 +262,7 @@
     <script src="memo.js"></script>
     <script src="memo-cover.js?v=5"></script>
     <script src="clock.js?v=13"></script>
+    <script src="posts.js?v=1"></script>
+    <script src="blog.js?v=1"></script>
 </body>
 </html>
