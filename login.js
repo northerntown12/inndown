@@ -1,8 +1,10 @@
+/* 로그인 화면 (index.html 에서 login.css, 잠금 스크립트와 함께 연결해야 동작해요)
 
+   ★ 아래 LOGIN_URL 을 로그인 Worker 주소로 바꿔 주세요. (예: https://login.내이름.workers.dev) */
 (function () {
     "use strict";
 
-    var LOGIN_URL = "https://homelogin.sumerboy.workers.dev";
+    var LOGIN_URL = "https://homelogin.sumerboy.workers.dev/";
     var KEY = "loginAuth.v1";
     var TIMEOUT_MS = 10 * 1000;
     var html = document.documentElement;
