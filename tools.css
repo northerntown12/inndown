@@ -206,3 +206,49 @@
 /* 빙: 직접 그린 아이콘 (돋보기 + 반짝임) */
 .ql-bing { background: none; }
 .ql-bing svg { width: 100%; height: 100%; display: block; }
+
+/* ==========================================================
+   모바일: 오른쪽 광고 영역은 원래 숨겨지지만,
+   바로가기 → 단위 환산 순서로 맨 끝(뉴스 줄 아래)에 보이게 해요. (2026-11-09)
+   ========================================================== */
+@media screen and (max-width: 768px), screen and (hover: none) and (pointer: coarse) and (max-width: 1000px) {
+    .page-layout .ad-sidebar {
+        display: block;
+        margin-top: 14px;
+    }
+    .ad-sidebar .ad-grid {
+        height: auto;
+        grid-template-columns: 1fr;
+        grid-template-rows: none;
+        gap: 14px;
+    }
+    /* 환율·우편번호·졸라맨·주식은 모바일에서 그대로 숨김 */
+    .ad-sidebar .ad-grid > :not(.unit-widget):not(.quick-links) { display: none; }
+
+    .ad-grid .unit-widget,
+    .ad-grid .quick-links {
+        grid-column: 1;
+        grid-row: auto;
+        border-radius: 8px;
+    }
+    /* 폰에서는 바로가기 → 단위 환산 순서 */
+    .ad-grid .quick-links { order: 1; }
+    .ad-grid .unit-widget { order: 2; }
+
+    .ad-grid .unit-widget { gap: 7px; padding: 12px 14px 10px; }
+    .uc-title  { font-size: 1.05rem; }
+    .uc-select { height: 38px; font-size: 0.95rem; padding-left: 10px; }
+    .uc-in     { height: 44px; border-radius: 8px; }
+    .uc-in input { font-size: 16px; padding: 0 10px; }   /* 16px 미만이면 아이폰이 확대해 버려요 */
+    .uc-unit   { font-size: 0.85rem; padding: 0 12px; min-width: 96px; }
+    .uc-link   { height: 14px; }
+    .uc-link svg { width: 13px; height: 13px; }
+    .uc-hint   { font-size: 0.75rem; margin-top: 2px; }
+
+    .ad-grid .quick-links { gap: 9px; padding: 10px 14px 14px; }
+    .ql-title  { font-size: 0.75rem; }
+    .ql-row    { grid-template-columns: repeat(4, minmax(0, 56px)); }
+    .ql-item   { border-radius: 12px; }
+    .ql-google span { font-size: 2rem; }
+    .ql-naver span  { font-size: 1.8rem; }
+}
