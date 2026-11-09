@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="styles.css?v=14">
     <link rel="stylesheet" href="stock.css?v=3">
     <link rel="stylesheet" href="news.css?v=3">
+    <link rel="stylesheet" href="tools.css?v=2">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Gaegu:wght@400;700&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
@@ -191,25 +192,32 @@
                 <a href="https://www.exchangerate-api.com" target="_blank" rel="noopener noreferrer">Rates By Exchange Rate API</a>
             </div>
         </div>
-        <!-- 오른쪽: 구글(위) → 네이버(아래) → 빈 배너 -->
-        <a class="ad-banner google-favicon-banner"
-           href="https://www.google.com/"
-           target="_blank"
-           rel="noopener noreferrer"
-           aria-label="구글">
-        </a>
-        <a class="ad-banner favicon-banner naver-ad"
-           href="https://www.naver.com/"
-           target="_blank"
-           rel="noopener noreferrer"
-           aria-label="네이버">
-        </a>
-        <a class="ad-banner netflix-ad"
-           href="https://www.netflix.com/"
-           target="_blank"
-           rel="noopener noreferrer"
-           aria-label="넷플릭스">
-        </a>
+        <!-- 오른쪽 위 2칸 합침: 단위 환산 (units.js, tools.css) -->
+        <div class="ad-banner unit-widget" id="unit-widget" aria-label="단위 환산">
+            <div class="uc-head">
+                <h3 class="uc-title">단위 환산</h3>
+                <button type="button" class="uc-swap" id="uc-swap" aria-label="방향 바꾸기" title="방향 바꾸기">
+                    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 5h9M9.5 2.5L12 5 9.5 7.5M13 11H4M6.5 8.5L4 11l2.5 2.5"/></svg>
+                </button>
+            </div>
+            <select id="uc-pair" class="uc-select" aria-label="환산할 단위"></select>
+            <label class="uc-in">
+                <input type="text" id="uc-input" value="1" inputmode="decimal" autocomplete="off" aria-label="환산할 값">
+                <span class="uc-unit" id="uc-from">평</span>
+            </label>
+            <div class="uc-out" aria-live="polite"><b id="uc-result">-</b><span class="uc-unit" id="uc-to">㎡</span></div>
+            <div class="uc-hint" id="uc-hint"></div>
+        </div>
+        <!-- 바로가기: 구글 · 네이버 · 유튜브 · 빙 (tools.css) -->
+        <nav class="ad-banner quick-links" aria-label="바로가기">
+            <h3 class="ql-title">바로가기</h3>
+            <div class="ql-row">
+                <a class="ql-item ql-google" href="https://www.google.com/" target="_blank" rel="noopener noreferrer" title="구글" aria-label="구글"><span aria-hidden="true">G</span></a>
+                <a class="ql-item ql-naver" href="https://www.naver.com/" target="_blank" rel="noopener noreferrer" title="네이버" aria-label="네이버"><span aria-hidden="true">N</span></a>
+                <a class="ql-item ql-youtube" href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer" title="유튜브" aria-label="유튜브"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M6 3.5v13a.8.8 0 0 0 1.2.7l10.4-6.5a.8.8 0 0 0 0-1.4L7.2 2.8A.8.8 0 0 0 6 3.5z" fill="#e50914"/></svg></a>
+                <a class="ql-item ql-bing" href="https://www.bing.com/" target="_blank" rel="noopener noreferrer" title="빙 (Bing)" aria-label="빙"><svg viewBox="0 0 40 40" aria-hidden="true"><defs><linearGradient id="ql-bing-bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffb347"/><stop offset="1" stop-color="#f2545b"/></linearGradient></defs><rect width="40" height="40" rx="9" fill="url(#ql-bing-bg)"/><circle cx="17.5" cy="17.5" r="7.5" fill="none" stroke="#fff" stroke-width="3.2"/><path d="M23 23l7 7" stroke="#fff" stroke-width="3.6" stroke-linecap="round"/><path d="M30 6.5l1.1 2.9 2.9 1.1-2.9 1.1-1.1 2.9-1.1-2.9-2.9-1.1 2.9-1.1z" fill="#fff" opacity="0.9"/></svg></a>
+            </div>
+        </nav>
         <!-- 환율 위젯 아래 왼쪽: 전국 우편번호 검색 자리 -->
         <div class="pst-col">
             <div class="ad-banner postal-widget" id="postal-widget" aria-label="전국 우편번호 검색"></div>
@@ -239,6 +247,7 @@
     <script src="lotto-last.js?v=8"></script>
     <script src="weather.js?v=5"></script>
     <script src="fx.js"></script>
+    <script src="units.js?v=1"></script>
     <script src="stock.js?v=3"></script>
     <script src="postal.js"></script>
     <script src="spare.js?v=3"></script>

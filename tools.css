@@ -1,0 +1,235 @@
+/* ==========================================================
+   오른쪽 광고 영역 2열: 위 = 단위 환산(2칸 합침), 아래 = 바로가기(1칸)
+   색: 에메랄드 + 샴페인 골드 / 아이보리 (보라·청록 계열과 겹치지 않게)
+   ========================================================== */
+
+/* ---------- 단위 환산 (units.js) ---------- */
+.ad-grid .unit-widget {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 7px 8px 6px;
+    overflow: hidden;
+    background:
+        radial-gradient(120% 70% at 100% 0%, rgba(216, 192, 138, 0.18), transparent 60%),
+        linear-gradient(160deg, #10372f 0%, #1b5245 58%, #286654 100%);
+    border: 1px solid #0d2f28;
+    color: #f3ead4;
+    font-size: 0.8rem;
+    box-shadow: inset 0 0 0 1px rgba(216, 192, 138, 0.22);
+}
+
+.uc-head {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    min-height: 18px;
+}
+
+.uc-title {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: #f3ead4;
+}
+
+.uc-swap {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 22px;
+    height: 20px;
+    padding: 0;
+    display: grid;
+    place-items: center;
+    border: 1px solid rgba(216, 192, 138, 0.55);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.06);
+    color: #d8c08a;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.25s;
+}
+.uc-swap:hover { background: rgba(216, 192, 138, 0.2); }
+.uc-swap.spin svg { transform: rotate(180deg); }
+.uc-swap svg { width: 13px; height: 13px; transition: transform 0.25s; }
+
+.uc-select {
+    width: 100%;
+    min-width: 0;
+    height: 24px;
+    padding: 0 22px 0 7px;
+    border: 1px solid rgba(216, 192, 138, 0.5);
+    border-radius: 6px;
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23d8c08a' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 7px center / 9px 6px,
+        rgba(0, 0, 0, 0.22);
+    color: #f3ead4;
+    font: inherit;
+    font-size: 0.78rem;
+    -webkit-appearance: none;
+    appearance: none;
+    cursor: pointer;
+}
+.uc-select:focus { outline: none; border-color: #d8c08a; }
+.uc-select option { color: #1b2b26; background: #faf6ee; }
+
+.uc-in {
+    display: flex;
+    align-items: center;
+    height: 26px;
+    border-radius: 6px;
+    background: #f7f1e1;
+    overflow: hidden;
+}
+.uc-in input {
+    flex: 1 1 auto;
+    min-width: 0;
+    height: 100%;
+    padding: 0 6px;
+    border: 0;
+    background: transparent;
+    color: #17312a;
+    font: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-align: right;
+}
+.uc-in input:focus { outline: none; }
+.uc-in:focus-within { box-shadow: 0 0 0 2px rgba(216, 192, 138, 0.8); }
+.uc-unit {
+    flex: none;
+    min-width: 30px;
+    padding: 0 7px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #6b5a3a;
+    text-align: center;
+}
+.uc-in .uc-unit { align-self: stretch; display: grid; place-items: center; background: #ece2c8; }
+
+.uc-out {
+    display: flex;
+    align-items: baseline;
+    justify-content: flex-end;
+    gap: 5px;
+    min-width: 0;
+    padding: 1px 2px 0;
+    border-top: 1px solid rgba(216, 192, 138, 0.35);
+}
+.uc-out b {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #e6cf98;
+    letter-spacing: 0.01em;
+}
+.uc-out .uc-unit { min-width: 0; padding: 0; color: #d8c08a; }
+
+.uc-hint {
+    margin-top: auto;
+    font-size: 0.6rem;
+    text-align: center;
+    color: rgba(243, 234, 212, 0.62);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ---------- 바로가기 (구글 · 네이버 · 유튜브 · 빙) ---------- */
+.ad-grid .quick-links {
+    grid-column: 2;
+    grid-row: 3;
+    height: auto;
+    min-height: 72px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    padding: 5px 8px 6px;
+    background: linear-gradient(180deg, #fbf8f1 0%, #f1e9d9 100%);
+    border: 1px solid #d9c9a8;
+    color: #5b4636;
+    font-size: 0.8rem;
+}
+
+.ql-title {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.32em;
+    text-indent: 0.32em;     /* 글자 간격 때문에 생기는 오른쪽 쏠림 보정 */
+    color: #6d5641;
+    white-space: nowrap;
+}
+.ql-title::before,
+.ql-title::after {
+    content: "";
+    flex: 1 1 auto;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #c6ab78);
+}
+.ql-title::after { background: linear-gradient(90deg, #c6ab78, transparent); }
+
+.ql-row {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 38px));
+    justify-content: space-evenly;
+    gap: 6px;
+}
+
+.ql-item {
+    position: relative;
+    aspect-ratio: 1;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    border-radius: 9px;
+    text-decoration: none;
+    box-shadow: 0 1px 2px rgba(60, 40, 20, 0.18), 0 2px 6px rgba(60, 40, 20, 0.10);
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+.ql-item:hover,
+.ql-item:focus-visible {
+    transform: translateY(-2px);
+    box-shadow: 0 3px 5px rgba(60, 40, 20, 0.22), 0 6px 12px rgba(60, 40, 20, 0.14);
+    outline: none;
+}
+.ql-item span {
+    font-family: Arial, sans-serif;
+    font-weight: 900;
+    line-height: 1;
+}
+
+/* 구글: 흰 바탕 + 네 가지 색 G (예전 칸과 같은 모양) */
+.ql-google { background: #fff; border: 1px solid #e3e3e3; }
+.ql-google span {
+    font-size: 1.45rem;
+    background: conic-gradient(from -45deg, #4285F4 0deg 90deg, #34A853 90deg 180deg, #FBBC05 180deg 250deg, #EA4335 250deg 315deg, #4285F4 315deg 360deg);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+/* 네이버: 슬레이트 바탕 + 민트 N (예전 칸과 같은 모양) */
+.ql-naver { background: #576574; }
+.ql-naver span { font-size: 1.3rem; color: #00d2d3; text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5); }
+
+/* 유튜브: 검정 바탕 + 빨간 재생 표시 (2026-11-09 넷플릭스→유튜브) */
+.ql-youtube { background: #141414; }
+.ql-youtube svg { width: 52%; height: 52%; }
+
+/* 빙: 직접 그린 아이콘 (돋보기 + 반짝임) */
+.ql-bing { background: none; }
+.ql-bing svg { width: 100%; height: 100%; display: block; }
