@@ -7,6 +7,9 @@
    ========================================================= */
 
 :root {
+    --bb-lav: #dad9ff;       /* 메뉴 막대 색 (사용자 지정 #DAD9FF) */
+    --bb-lav2: #e6e5ff;      /* 막대 위쪽 살짝 밝게 */
+    --bb-plum: #36347a;      /* 막대 글씨: 진한 남보라 */
     --bb-navy: #1e2942;
     --bb-navy2: #2b3a5c;
     --bb-gold: #c9a27e;
@@ -73,9 +76,7 @@
     flex-direction: column;
     justify-content: flex-end;
     padding: 8px 10px;
-    background:
-        linear-gradient(to top, rgba(20, 28, 48, 0.92) 0%, rgba(20, 28, 48, 0.35) 70%, rgba(20, 28, 48, 0.15) 100%),
-        url("convertible.jpg") center 60% / cover no-repeat;
+    background: url("convertible.jpg") center 60% / cover no-repeat;   /* 그림 원래 밝기 그대로 (2026-11-09) */
     color: #fff;
     text-decoration: none;
 }
@@ -86,14 +87,17 @@
     font-weight: 400;
     line-height: 1.05;
     letter-spacing: 0.02em;
-    color: #ffe9a8;
-    text-shadow: 0 2px 0 rgba(20, 28, 48, 0.55), 0 0 10px rgba(0, 0, 0, 0.35);
+    color: #fff3c4;
+    /* 사진을 어둡게 하지 않아서, 글씨 테두리 그림자로 읽히게 해요 */
+    text-shadow: 0 0 2px rgba(40, 20, 50, 0.9), 0 2px 0 rgba(40, 20, 50, 0.7), 0 0 12px rgba(40, 20, 50, 0.55);
 }
 .bb-cover-tag {
     margin-top: 2px;
     font-size: 0.66rem;
+    font-weight: 600;
     letter-spacing: 0.12em;
-    color: #e9c9a6;
+    color: #fff;
+    text-shadow: 0 0 2px rgba(40, 20, 50, 0.95), 0 1px 4px rgba(40, 20, 50, 0.8);
 }
 .bb-cover-all {
     position: absolute;
@@ -136,14 +140,14 @@
     height: 32px;
     padding: 0 10px;
     border-radius: 7px;
-    background: linear-gradient(180deg, var(--bb-navy2), var(--bb-navy));
-    color: #f3e9d8;
+    background: linear-gradient(180deg, var(--bb-lav2), var(--bb-lav));
+    color: var(--bb-plum);
     font-size: 0.8rem;
-    font-weight: 600;
+    font-weight: 700;
     letter-spacing: 0.03em;
-    box-shadow: 0 1px 2px rgba(20, 28, 48, 0.25);
+    box-shadow: 0 1px 2px rgba(54, 52, 122, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.6);
 }
-.bb-l1 > .bb-bar:hover { background: linear-gradient(180deg, #34466e, #24304d); }
+.bb-l1 > .bb-bar:hover { background: linear-gradient(180deg, #dedcff, #cbc9fa); }
 .bb-l1.open > .bb-bar { border-radius: 7px 7px 0 0; }
 
 .bb-dot {
@@ -151,7 +155,7 @@
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.7);
 }
 .bb-name { flex: 1 1 auto; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .bb-cnt {
@@ -159,8 +163,8 @@
     min-width: 18px;
     padding: 0 5px;
     border-radius: 999px;
-    background: var(--bb-gold);
-    color: var(--bb-navy);
+    background: #fff;
+    color: var(--bb-plum);
     font-size: 0.62rem;
     font-weight: 700;
     line-height: 16px;
@@ -185,7 +189,7 @@
 }
 .bb-l1.open > .bb-body > .bb-body-in {
     padding: 6px 7px 7px;
-    border: 1px solid #e2d6c0;
+    border: 1px solid #dad9ff;
     border-top: 0;
 }
 
@@ -196,14 +200,14 @@
     height: 26px;
     padding: 0 8px 0 10px;
     border-radius: 5px;
-    background: var(--bb-paper);
-    color: #4a3d2a;
+    background: #f1f1ff;
+    color: #45438a;
     font-size: 0.72rem;
     font-weight: 600;
-    border-left: 3px solid var(--bb-gold);
+    border-left: 3px solid #b3b1f2;
 }
-.bb-l2 > .bb-bar:hover { background: #ece0c8; }
-.bb-l2 > .bb-bar .bb-cnt { background: #fff; color: #6b5a3a; }
+.bb-l2 > .bb-bar:hover { background: #e7e6ff; }
+.bb-l2 > .bb-bar .bb-cnt { background: #fff; color: #4e4c9a; }
 .bb-l2.open > .bb-body > .bb-body-in { padding: 3px 0 2px 8px; }
 
 /* 글 목록 */
@@ -217,7 +221,7 @@
     color: var(--bb-ink);
     text-decoration: none;
 }
-.bb-post:hover .bb-title { color: #9a6a3f; text-decoration: underline; text-underline-offset: 2px; }
+.bb-post:hover .bb-title { color: #5a57b5; text-decoration: underline; text-underline-offset: 2px; }
 .bb-date {
     flex: none;
     font-size: 0.62rem;
@@ -239,7 +243,7 @@
     margin-top: 5px;
     font-size: 0.66rem;
     text-align: right;
-    color: #9a6a3f;
+    color: #5a57b5;
     text-decoration: none;
 }
 .bb-more:hover { text-decoration: underline; }
