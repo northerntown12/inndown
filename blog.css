@@ -20,25 +20,25 @@
 }
 
 /* ---------------- 0) 소개 · 개인정보처리방침 · 연락처 ---------------- */
-/* 시계(clock.js, 높이 --dc-h) 바로 아래. 밝고 친근한 색 */
-.tree-panel { --ib-h: 28px; }
+/* 블로그 박스 맨 위에 가로 막대 3개를 나란히 (2026-11-09 알약 버튼 → 박스 안 막대로). 밝고 친근한 색 */
 .info-bar {
-    position: absolute;
-    top: calc(var(--dc-h, 0px) + 12px);
-    left: 0;
-    right: 24px;
-    height: var(--ib-h);
+    flex: none;
+    container-type: inline-size;   /* 칸이 좁으면 글씨가 같이 작아져요 */
     display: flex;
-    gap: 6px;
+    gap: 5px;
+    padding: 6px 6px 6px;
+    border-bottom: 1px solid #e6dcc8;
+    background: var(--bb-cream);
 }
 .info-bar a {
-    flex: 1 1 auto;
+    flex: 1 1 0;
     min-width: 0;
+    height: 26px;
     display: grid;
     place-items: center;
     padding: 0 6px;
-    border-radius: 999px;
-    font-size: 0.72rem;
+    border-radius: 5px;
+    font-size: clamp(0.6rem, 4.6cqw, 0.74rem);
     font-weight: 700;
     white-space: nowrap;
     text-decoration: none;
@@ -47,14 +47,14 @@
 }
 .info-bar a:hover { transform: translateY(-1px); filter: brightness(1.04) saturate(1.1); }
 .info-bar .ib-about   { background: #ffe08a; color: #7a4f00; }   /* 햇살 노랑 */
-.info-bar .ib-privacy { flex-grow: 1.6; background: #bdf0d8; color: #1d6b4c; }   /* 민트 */
+.info-bar .ib-privacy { flex-grow: 1.7; background: #bdf0d8; color: #1d6b4c; }   /* 민트 */
 .info-bar .ib-contact { background: #ffc9b5; color: #9a3b1c; }   /* 복숭아 */
 
 /* ---------------- 1) 홈 왼쪽 칸 ---------------- */
-/* 안내 줄 아래를 꽉 채워요. */
+/* 시계 줄(clock.js, 높이 --dc-h) 아래를 꽉 채워요. */
 .blog-box {
     position: absolute;
-    top: calc(var(--dc-h, 0px) + 12px + var(--ib-h, 0px) + 8px);
+    top: calc(var(--dc-h, 0px) + 12px);
     left: 0;
     right: 24px;           /* 오른쪽 구분선과 24px 간격 */
     bottom: 0;
@@ -261,8 +261,8 @@
         border-right: 0;
         overflow: visible;
     }
-    .info-bar { position: static; height: 40px; gap: 8px; margin-bottom: 10px; }
-    .info-bar a { font-size: 0.85rem; }
+    .info-bar { gap: 7px; padding: 8px; }
+    .info-bar a { height: 40px; font-size: 0.85rem; border-radius: 7px; }
     .blog-box { position: static; border-radius: 8px; font-size: 0.9rem; }
     .bb-cover { height: 120px; padding: 12px 14px; }
     .bb-cover-title { font-size: 1.8rem; }
