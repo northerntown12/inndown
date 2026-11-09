@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="stock.css?v=3">
     <link rel="stylesheet" href="news.css?v=3">
     <link rel="stylesheet" href="tools.css?v=5">
-    <link rel="stylesheet" href="blog.css?v=1">
+    <link rel="stylesheet" href="blog.css?v=2">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Gaegu:wght@400;700&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
@@ -29,10 +29,16 @@
 
     <div class="page-layout">
         <aside class="tree-panel" aria-label="시계와 블로그">
-            <!-- 시계 아래: 블로그 "퇴근 후의 기록" 슬라이드 메뉴 (blog.js, blog.css, 글 목록은 posts.js) -->
+            <!-- 시계 아래: 소개 · 개인정보처리방침 · 연락처 (blog.css) -->
+            <nav class="info-bar" aria-label="사이트 안내">
+                <a class="ib-about" href="about.html">소개</a>
+                <a class="ib-privacy" href="privacy.html">개인정보처리방침</a>
+                <a class="ib-contact" href="contact.html">연락처</a>
+            </nav>
+            <!-- 그 아래: 블로그 "Records after work" 슬라이드 메뉴 (blog.js, blog.css, 글 목록은 posts.js) -->
             <div class="blog-box">
                 <a class="bb-cover" href="blog.html">
-                    <span class="bb-cover-title">퇴근 후의 기록</span>
+                    <span class="bb-cover-title">Records after work</span>
                     <span class="bb-cover-tag">여행 · 영미문화 · 음악 · 일상</span>
                     <span class="bb-cover-all">전체 글</span>
                 </a>

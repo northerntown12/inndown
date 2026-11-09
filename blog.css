@@ -1,6 +1,7 @@
 /* =========================================================
    블로그 "퇴근 후의 기록"
-   1) 홈 왼쪽 칸(시계 아래, 예전 컨버터블 사진 자리)의 슬라이드 메뉴
+   0) 홈 왼쪽 칸: 소개 · 개인정보처리방침 · 연락처 줄 (시계 바로 아래)
+   1) 홈 왼쪽 칸(그 아래, 예전 컨버터블 사진 자리)의 슬라이드 메뉴
    2) blog.html 글 목록, 3) 글 페이지
    색: 남색 막대 + 로즈골드 + 크림 종이 (시계 날짜 창과 같은 계열)
    ========================================================= */
@@ -15,11 +16,42 @@
     --bb-mute: #8a7d68;
 }
 
-/* ---------------- 1) 홈 왼쪽 칸 ---------------- */
-/* 시계 줄(clock.js) 아래를 꽉 채워요. 시계 높이 = --dc-h (clock.js 가 정함) */
-.blog-box {
+/* ---------------- 0) 소개 · 개인정보처리방침 · 연락처 ---------------- */
+/* 시계(clock.js, 높이 --dc-h) 바로 아래. 밝고 친근한 색 */
+.tree-panel { --ib-h: 28px; }
+.info-bar {
     position: absolute;
     top: calc(var(--dc-h, 0px) + 12px);
+    left: 0;
+    right: 24px;
+    height: var(--ib-h);
+    display: flex;
+    gap: 6px;
+}
+.info-bar a {
+    flex: 1 1 auto;
+    min-width: 0;
+    display: grid;
+    place-items: center;
+    padding: 0 6px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    white-space: nowrap;
+    text-decoration: none;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08), inset 0 -2px 0 rgba(0, 0, 0, 0.08);
+    transition: transform 0.15s, filter 0.15s;
+}
+.info-bar a:hover { transform: translateY(-1px); filter: brightness(1.04) saturate(1.1); }
+.info-bar .ib-about   { background: #ffe08a; color: #7a4f00; }   /* 햇살 노랑 */
+.info-bar .ib-privacy { flex-grow: 1.6; background: #bdf0d8; color: #1d6b4c; }   /* 민트 */
+.info-bar .ib-contact { background: #ffc9b5; color: #9a3b1c; }   /* 복숭아 */
+
+/* ---------------- 1) 홈 왼쪽 칸 ---------------- */
+/* 안내 줄 아래를 꽉 채워요. */
+.blog-box {
+    position: absolute;
+    top: calc(var(--dc-h, 0px) + 12px + var(--ib-h, 0px) + 8px);
     left: 0;
     right: 24px;           /* 오른쪽 구분선과 24px 간격 */
     bottom: 0;
@@ -49,10 +81,13 @@
 }
 .bb-cover-title {
     margin: 0;
-    font-size: 1.05rem;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+    font-family: 'Chewy', 'Comic Sans MS', cursive;   /* 친근한 손글씨 느낌 영문 */
+    font-size: 1.45rem;
+    font-weight: 400;
+    line-height: 1.05;
+    letter-spacing: 0.02em;
+    color: #ffe9a8;
+    text-shadow: 0 2px 0 rgba(20, 28, 48, 0.55), 0 0 10px rgba(0, 0, 0, 0.35);
 }
 .bb-cover-tag {
     margin-top: 2px;
@@ -222,9 +257,11 @@
         border-right: 0;
         overflow: visible;
     }
+    .info-bar { position: static; height: 40px; gap: 8px; margin-bottom: 10px; }
+    .info-bar a { font-size: 0.85rem; }
     .blog-box { position: static; border-radius: 8px; font-size: 0.9rem; }
     .bb-cover { height: 120px; padding: 12px 14px; }
-    .bb-cover-title { font-size: 1.25rem; }
+    .bb-cover-title { font-size: 1.8rem; }
     .bb-cover-tag { font-size: 0.75rem; }
     .bb-cover-all { font-size: 0.75rem; padding: 4px 11px; top: 10px; right: 10px; }
     .bb-acc { overflow: visible; padding: 10px; }
@@ -263,12 +300,14 @@ body.blog-page {
     gap: 14px;
 }
 .bp-brand {
-    color: #f3e9d8;
+    color: #ffe9a8;
     text-decoration: none;
-    font-weight: 700;
-    font-size: 1.05rem;
-    letter-spacing: 0.05em;
+    font-family: 'Chewy', 'Comic Sans MS', cursive;
+    font-weight: 400;
+    font-size: 1.4rem;
+    letter-spacing: 0.02em;
 }
+.bp-brand small { font-family: 'Noto Sans KR', 'Segoe UI', sans-serif; }
 .bp-brand small { margin-left: 8px; font-size: 0.68rem; font-weight: 400; letter-spacing: 0.1em; color: #e9c9a6; }
 .bp-home {
     margin-left: auto;
@@ -462,4 +501,70 @@ body.blog-page {
     .bl-thumb { width: 88px; height: 66px; }
     .post-nav { grid-template-columns: 1fr 1fr; }
     .pn-list { grid-column: 1 / -1; grid-row: 2; }
+}
+
+
+/* ---------------- 4) 소개 · 개인정보처리방침 · 연락처 페이지 ---------------- */
+/* 밝고 친근한 색. 페이지마다 --accent 만 달라요 */
+body.info-page { background: #fffaf0; }
+body.info-page.pg-about   { --accent: #f5b300; --accent-soft: #fff1c2; }
+body.info-page.pg-privacy { --accent: #2fae7a; --accent-soft: #d9f6e8; }
+body.info-page.pg-contact { --accent: #f07a52; --accent-soft: #ffe3d8; }
+
+.info-page .bp-top { background: linear-gradient(90deg, #ffd166 0%, #ffb4a2 55%, #9ee6c7 100%); box-shadow: 0 2px 10px rgba(240, 160, 90, 0.25); }
+.info-page .bp-brand { color: #3b2a1a; text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6); }
+.info-page .bp-brand small { color: #6b4a2f; }
+.info-page .bp-home { border-color: rgba(59, 42, 26, 0.35); color: #3b2a1a; background: rgba(255, 255, 255, 0.45); }
+.info-page .bp-home:hover { background: rgba(255, 255, 255, 0.75); }
+
+.ip-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+.ip-tabs a {
+    padding: 7px 16px;
+    border-radius: 999px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    text-decoration: none;
+    color: #5b4a38;
+    background: #fff;
+    border: 1px solid #f0e2c8;
+}
+.ip-tabs a.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+.ip-card {
+    padding: 32px 36px;
+    border-radius: 18px;
+    background: #fff;
+    border: 1px solid #f3e6cf;
+    box-shadow: 0 6px 22px rgba(240, 170, 90, 0.10);
+}
+.ip-card h1 {
+    display: inline-block;
+    margin: 0 0 6px;
+    padding: 2px 14px;
+    border-radius: 12px;
+    background: var(--accent-soft);
+    font-size: 1.6rem;
+}
+.ip-lead { margin: 6px 0 22px; color: #7a6a55; }
+.ip-card h2 { margin: 1.8em 0 0.6em; font-size: 1.12rem; color: #3b2a1a; }
+.ip-card h2::before { content: ""; display: inline-block; width: 10px; height: 10px; margin-right: 8px; border-radius: 50%; background: var(--accent); vertical-align: 1px; }
+.ip-card p, .ip-card li { line-height: 1.8; color: #3f3428; word-break: keep-all; }
+.ip-card ul { padding-left: 1.3em; }
+.ip-card a { color: var(--accent); font-weight: 600; }
+.ip-card table { width: 100%; border-collapse: collapse; margin: 0.6em 0 1em; font-size: 0.92rem; }
+.ip-card th, .ip-card td { padding: 9px 10px; border: 1px solid #f0e2c8; text-align: left; vertical-align: top; }
+.ip-card th { background: var(--accent-soft); width: 32%; }
+.ip-todo {
+    padding: 22px;
+    border: 2px dashed var(--accent);
+    border-radius: 14px;
+    background: var(--accent-soft);
+    text-align: center;
+    color: #5b4a38;
+}
+.ip-date { margin-top: 2em; font-size: 0.85rem; color: #8a7a64; }
+
+@media (max-width: 640px) {
+    .ip-card { padding: 22px 18px; }
+    .ip-card h1 { font-size: 1.35rem; }
 }
