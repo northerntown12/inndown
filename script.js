@@ -560,7 +560,7 @@ document.addEventListener("DOMContentLoaded", () => {
             scheduleFlip(ball, idx);
         });
 
-        // 4초 회전한 뒤 번호를 왼쪽부터 차례대로 공개해요.
+        // 6초 회전한 뒤 번호를 왼쪽부터 차례대로 공개해요. (2026-11-09 4초→6초)
         stopTimeout = setTimeout(() => {
             if (runId !== currentRunId || !isRolling) {
                 return;
@@ -570,7 +570,7 @@ document.addEventListener("DOMContentLoaded", () => {
             canStop = false;
 
         revealNumbersSequentially(currentRunId);
-        }, 4000);
+        }, 6000);
     }
 
     lottoBtn.addEventListener("click", () => {
