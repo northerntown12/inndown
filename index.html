@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="stock.css?v=3">
     <link rel="stylesheet" href="news.css?v=3">
     <link rel="stylesheet" href="tools.css?v=5">
-    <link rel="stylesheet" href="blog.css?v=5">
+    <link rel="stylesheet" href="blog.css?v=6">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Gaegu:wght@400;700&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
@@ -29,13 +29,14 @@
 
     <div class="page-layout">
         <aside class="tree-panel" aria-label="시계와 블로그">
-            <!-- 시계 아래 한 박스: 맨 위 소개 · 개인정보처리방침 · 연락처 가로 막대 3개, 그 밑 블로그 "Records after work" 슬라이드 메뉴 (blog.js, blog.css, 글 목록은 posts.js) -->
+            <!-- 시계 아래 박스: 소개 · 개인정보처리방침 · 연락처 막대 3개를 위에서 아래로 (blog.css) -->
+            <nav class="info-bar" aria-label="사이트 안내">
+                <a class="ib-about" href="about.html">소개</a>
+                <a class="ib-privacy" href="privacy.html">개인정보처리방침</a>
+                <a class="ib-contact" href="contact.html">연락처</a>
+            </nav>
+            <!-- 그 아래 박스: 블로그 "Records after work" 슬라이드 메뉴 (blog.js, blog.css, 글 목록은 posts.js) -->
             <div class="blog-box">
-                <nav class="info-bar" aria-label="사이트 안내">
-                    <a class="ib-about" href="about.html">소개</a>
-                    <a class="ib-privacy" href="privacy.html">개인정보처리방침</a>
-                    <a class="ib-contact" href="contact.html">연락처</a>
-                </nav>
                 <a class="bb-cover" href="blog.html">
                     <span class="bb-cover-title">Records after work</span>
                     <span class="bb-cover-tag">여행 · 영미문화 · 음악 · 일상</span>
