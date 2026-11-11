@@ -102,7 +102,7 @@
         face.setAttribute("opacity", 0);      // 얼굴은 주인공이 웃을 때만 보여요
         return { k: k, g: g, body: body, head: head, hair: hair, face: face };
     }
-    var wife = makeFig(1, "woman"), col = makeFig(1, "man"), kid = makeFig(0.55, "kid"), main = makeFig(1, "man");
+    var wife = makeFig(1, "woman"), col = makeFig(1, "none"), kid = makeFig(0.55, "kid"), main = makeFig(1, "none");   // 남자는 머리카락 없음 (곱슬 5가닥을 다시 쓰려면 "none" → "man")
 
     var boxEl = mk("rect", { x: 0, y: 0, width: 9, height: 9, "stroke-width": 1.5 }, root);   // 나르는 박스
     var phoneEl = mk("g", { "stroke-width": 1.2 }, root);                                       // 손에 든 폰
