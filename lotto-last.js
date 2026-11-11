@@ -138,6 +138,8 @@
         var btn = document.getElementById("lotto-btn");
         panel.classList.remove("ll-min", "ll-off");
         if (!btn) return;
+        // 로그인 화면이 떠 있는 동안처럼 칸이 안 보일 때는 재지 않아요 (재면 0이라 겹친다고 착각해서 숨겨 버려요)
+        if (!panel.getClientRects().length || !btn.getClientRects().length) return;
         function overlaps() {
             return panel.getBoundingClientRect().top < btn.getBoundingClientRect().bottom + 2;
         }
@@ -150,6 +152,11 @@
     function layout() { fit(); placeMute(); }
     window.addEventListener("load", function () { setTimeout(layout, 100); });
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { setTimeout(layout, 50); });
+    // 로그인해서 화면이 열리면(html의 locked가 빠지면) 다시 맞춰요.
+    if (typeof MutationObserver === "function") {
+        new MutationObserver(function () { setTimeout(layout, 50); })
+            .observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+    }
     var fitTimer = null;
     window.addEventListener("resize", function () {
         clearTimeout(fitTimer);
