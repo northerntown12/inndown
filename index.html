@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Main Page</title>
-    <link rel="stylesheet" href="styles.css?v=16">
+    <link rel="stylesheet" href="styles.css?v=17">
     <link rel="stylesheet" href="stock.css?v=3">
     <link rel="stylesheet" href="news.css?v=3">
     <link rel="stylesheet" href="tools.css?v=6">
-    <link rel="stylesheet" href="blog.css?v=8">
+    <link rel="stylesheet" href="blog.css?v=10">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
    <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Gaegu:wght@400;700&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
@@ -32,11 +32,11 @@
     <div class="page-layout">
         <aside class="tree-panel" aria-label="시계와 블로그">
             <!-- 시계 아래 박스: 막대 3개 (blog.css). 마우스를 대면 같은 크기 막대가 옆으로 불쑥 나와요.
-                 1 홈피 소개(자주) / 2 빈 막대(진청) / 3 빈 막대(아이보리). 개인정보처리방침·이메일은 맨 아래로 옮김 -->
+                 1 홈피 소개(자주) / 2 "빈칸"(진청) / 3 "빈칸"(연보라 #DAD9FF), 튀어나오는 막대에도 "빈칸". 개인정보처리방침·이메일은 맨 아래로 옮김 -->
             <nav class="info-bar" aria-label="사이트 안내">
                 <a class="ib-bar ib-about" href="about.html">홈피 소개</a>
-                <span class="ib-bar ib-navy" aria-hidden="true"></span>
-                <span class="ib-bar ib-ivory" aria-hidden="true"></span>
+                <span class="ib-bar ib-navy" aria-hidden="true">빈칸</span>
+                <span class="ib-bar ib-ivory" aria-hidden="true">빈칸</span>
             </nav>
             <!-- 그 아래 박스: 블로그 "Records after work" 슬라이드 메뉴 (blog.js, blog.css, 글 목록은 posts.js) -->
             <div class="blog-box">
@@ -247,14 +247,14 @@
         </aside>
     </div>
 
-    <!-- 페이지 하단: 저작권 문구(구분선 바로 위), 구분선, 개인정보처리방침, 이메일, 방문자 카운터 -->
+    <!-- 페이지 하단: 구분선 바로 아래에 저작권 문구, 개인정보처리방침, 이메일을 차례로 붙여서, 그다음 방문자 카운터 -->
     <footer class="site-footer">
+        <div class="footer-main-line" aria-hidden="true"></div>
         <div class="copyright-row">
             <span class="copyright-side-line" aria-hidden="true"></span>
             <p class="copyright">Copyright © 2026 Choi Yunhyok. All rights reserved.</p>
             <span class="copyright-side-line" aria-hidden="true"></span>
         </div>
-        <div class="footer-main-line" aria-hidden="true"></div>
         <p class="footer-privacy"><a href="privacy.html">개인정보처리방침</a></p>
         <p class="footer-mail"><a href="mailto:test@webtestmania.com">test@webtestmania.com</a></p>
         <div class="visitor-counter" aria-label="방문자 통계">

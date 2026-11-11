@@ -61,10 +61,15 @@
 }
 /* 마우스를 대면 같은 크기의 막대가 오른쪽으로 불쑥 (clip-path로 왼쪽부터 펼쳐짐) */
 .info-bar .ib-bar::after {
-    content: "";
+    content: "빈칸";
+    font-weight: 700;
+    letter-spacing: 0.06em;
     position: absolute;
     top: 0;
     left: calc(100% + 3px);
+    box-sizing: border-box;
+    display: grid;
+    place-items: center;
     width: 100%;
     height: 100%;
     border-radius: 5px;
@@ -78,11 +83,11 @@
 .info-bar .ib-bar:focus-visible { outline: 2px solid #8a3a7f; outline-offset: 1px; }
 
 .info-bar .ib-about        { background: linear-gradient(180deg, #9b4a8f, #84387a); color: #fff; }   /* 자주 */
-.info-bar .ib-about::after { background: linear-gradient(90deg, #c98bbf, #e7c3df); }               /* 연한 자주 */
-.info-bar .ib-navy         { background: linear-gradient(180deg, #23345f, #1a2749); }               /* 진청 */
-.info-bar .ib-navy::after  { background: linear-gradient(90deg, #4a6aa8, #8fa9d8); }               /* 푸른 하늘색 */
-.info-bar .ib-ivory        { background: #fffaea; border: 1px solid #e3d6b4; }                     /* 아이보리 */
-.info-bar .ib-ivory::after { background: linear-gradient(90deg, #ecd9a6, #f6ebc9); }               /* 샴페인 골드 */
+.info-bar .ib-about::after { background: linear-gradient(90deg, #c98bbf, #e7c3df); color: #5e2456; }               /* 연한 자주 */
+.info-bar .ib-navy         { background: linear-gradient(180deg, #23345f, #1a2749); color: #e9eefc; }               /* 진청 */
+.info-bar .ib-navy::after  { background: linear-gradient(90deg, #4a6aa8, #8fa9d8); color: #fff; }               /* 푸른 하늘색 */
+.info-bar .ib-ivory        { background: #DAD9FF; border: 1px solid #c3c1f0; color: #36347a; }                     /* 연보라 (2026-11-11 아이보리 → #DAD9FF, 블로그 메뉴 막대와 같은 색) */
+.info-bar .ib-ivory::after { background: linear-gradient(90deg, #b3b1f2, #e6e5ff); color: #36347a; }               /* 라벤더 */
 
 /* ---------------- 1) 홈 왼쪽 칸 ---------------- */
 /* 안내 박스 아래를 꽉 채워요. */

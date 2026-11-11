@@ -924,7 +924,7 @@ button:active {
     text-align: center;
 }
 
-/* 2026-11-11: 저작권 문구를 구분선 바로 위에 붙임(빈 공간 없음) → 선 아래 개인정보처리방침 → 이메일 */
+/* 2026-11-11: 구분선 바로 아래에 저작권 문구 → 개인정보처리방침 → 이메일을 빈 공간 없이 차례로 */
 .footer-main-line {
     width: 100%;
     height: 1px;
@@ -934,9 +934,10 @@ button:active {
 
 .site-footer .copyright {
     margin: 0;
+    padding-top: 3px;
     color: #7187a1;
     font-size: 13px;
-    line-height: 1.3;
+    line-height: 1.5;
 }
 
 .site-footer .footer-privacy,
@@ -946,7 +947,7 @@ button:active {
     font-size: 13px;
     line-height: 1.5;
 }
-.site-footer .footer-privacy { margin-top: 8px; }
+.site-footer .footer-privacy { margin-top: 0; }
 .site-footer .footer-privacy a { color: #5a6f8a; font-weight: 700; text-decoration: none; }
 .site-footer .footer-mail a { color: #7187a1; text-decoration: none; }
 .site-footer .footer-privacy a:hover,
