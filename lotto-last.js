@@ -46,7 +46,7 @@
     panel.appendChild(ballsEl);
     box.appendChild(panel);
 
-    /* 소리 끄기·켜기 유리 버튼: 당첨금 "…만원"의 '원' 글자 바로 위에 떠 있어요.
+    /* 소리 끄기·켜기 유리 버튼: 아래 당첨 결과 창의 맨 오른쪽 위, 창 바로 위에 떠 있어요.
        음소거면 스피커에 빗금이 그어져요. (소리 처리는 script.js의 window.lottoSound) */
     var SPK_ON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
     var SPK_OFF = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" opacity=".45"/><path d="M3.5 20.5L20.5 3.5" fill="none" stroke="#ff4d4d" stroke-width="2.6" stroke-linecap="round"/></svg>';
@@ -69,23 +69,12 @@
         showMute();
     }
 
-    // '원' 글자의 가운데에 맞춰 버튼 위치를 정해요. (글자가 안 보이면 오른쪽 끝)
+    // 버튼은 아래 당첨 결과 창의 맨 오른쪽 위, 창 바로 위에 놓아요. (2026-11-11 SPIN 버튼과 멀리)
     function placeMute() {
         if (!muteBtn) return;
         var pr = panel.getBoundingClientRect();
         if (!pr.width) return;
-        var x = pr.width - 16;
-        var tn = prizeEl.firstChild;
-        if (tn && tn.nodeType === 3 && prizeEl.getClientRects().length) {
-            var i = tn.data.lastIndexOf("원");
-            if (i >= 0 && document.createRange) {
-                var r = document.createRange();
-                r.setStart(tn, i);
-                r.setEnd(tn, i + 1);
-                var b = r.getBoundingClientRect();
-                if (b.width) x = b.left + b.width / 2 - pr.left;
-            }
-        }
+        var x = pr.width - 14;                     // 버튼 가운데 = 창 오른쪽 끝에서 14px 안쪽
         muteBtn.style.left = (x - panel.clientLeft) + "px";
     }
 
