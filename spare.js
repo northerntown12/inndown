@@ -54,18 +54,55 @@
 
     var tablePhone = mk("rect", { x: 76, y: 53.4, width: 8, height: 1.6, "stroke-width": 1.1 }, root);   // 탁자 위 폰
 
+    /* ---------- 머리카락 (2026-11-11) ----------
+       머리 가운데를 (0,0)으로 놓고 그린 뒤, 그릴 때마다 머리 위치·기울기에 맞춰 옮겨요.
+       man  : 꾸불꾸불한 머리카락 5개
+       kid  : 곧은 머리카락 3개
+       woman: 어깨까지 내려오는 긴 머리 + 옆으로 넘긴 앞머리 */
+    function hairPath(type, k) {
+        var r = HR * k, d = "", i, j;
+        function f(v) { return v.toFixed(2); }
+        if (type === "man") {
+            [-62, -31, 0, 31, 62].forEach(function (deg, n) {
+                var a = rad(deg), dx = Math.sin(a), dy = -Math.cos(a), px = -dy, py = dx;
+                var L = 4.4 - Math.abs(deg) / 62 * 0.9, A = 0.85, flip = n % 2 ? -1 : 1;
+                for (j = 0; j <= 10; j++) {
+                    var t = j / 10, w = flip * A * Math.sin(t * Math.PI * 2.5) * (0.4 + 0.6 * t);
+                    var x = dx * (r + L * t) + px * w, y = dy * (r + L * t) + py * w;
+                    d += (j ? "L" : "M") + f(x) + " " + f(y);
+                }
+            });
+        } else if (type === "kid") {
+            [-38, 0, 38].forEach(function (deg) {
+                var a = rad(deg), dx = Math.sin(a), dy = -Math.cos(a);
+                d += "M" + f(dx * r) + " " + f(dy * r) + "L" + f(dx * (r + 2.6)) + " " + f(dy * (r + 2.6));
+            });
+        } else if (type === "woman") {
+            var e = r + 4.4;                               // 머리끝 높이 (어깨 언저리)
+            d += "M" + f(-r - 1.1) + " " + f(e) +
+                 "C" + f(-r - 2.1) + " " + f(r * 0.4) + " " + f(-r - 2.0) + " " + f(-r * 1.05) + " " + f(0) + " " + f(-r - 1.5) +
+                 "C" + f(r + 2.0) + " " + f(-r * 1.05) + " " + f(r + 2.1) + " " + f(r * 0.4) + " " + f(r + 1.1) + " " + f(e);
+            d += "M" + f(-r - 1.1) + " " + f(e) + "q-0.7 0.7 -1.7 0.4";          // 머리끝이 바깥으로 살짝 말림
+            d += "M" + f(r + 1.1) + " " + f(e) + "q0.7 0.7 1.7 0.4";
+            d += "M" + f(-r * 0.9) + " " + f(-r * 0.35) + "Q" + f(-r * 0.15) + " " + f(-r * 0.2) + " " + f(r * 0.45) + " " + f(-r * 0.98);   // 옆으로 넘긴 앞머리
+        }
+        return d;
+    }
+
     /* ---------- 졸라맨 ---------- */
-    function makeFig(k) {
+    function makeFig(k, hairType) {
         var g = mk("g", { "stroke-width": (2.2 * (0.55 + 0.45 * k)).toFixed(2) }, root);
         var body = mk("path", { d: "" }, g);
         var head = mk("circle", { r: HR * k, cx: 0, cy: 0 }, g);
+        var hair = mk("path", { d: hairPath(hairType, k),
+            "stroke-width": hairType === "woman" ? 1.35 : hairType === "kid" ? 1.0 : 1.1 }, g);
         var face = mk("g", { "stroke-width": 1.2 }, g);
         mk("path", { d: "M-3.6 -1 l1.6 -1.7 l1.6 1.7 M2 -1 l1.6 -1.7 l1.6 1.7" }, face);
         mk("path", { d: "M-3.2 1 Q0 7.5 3.2 1 Z", fill: "#fff" }, face);
         face.setAttribute("opacity", 0);      // 얼굴은 주인공이 웃을 때만 보여요
-        return { k: k, g: g, body: body, head: head, face: face };
+        return { k: k, g: g, body: body, head: head, hair: hair, face: face };
     }
-    var wife = makeFig(1), col = makeFig(1), kid = makeFig(0.55), main = makeFig(1);
+    var wife = makeFig(1, "woman"), col = makeFig(1, "man"), kid = makeFig(0.55, "kid"), main = makeFig(1, "man");
 
     var boxEl = mk("rect", { x: 0, y: 0, width: 9, height: 9, "stroke-width": 1.5 }, root);   // 나르는 박스
     var phoneEl = mk("g", { "stroke-width": 1.2 }, root);                                       // 손에 든 폰
@@ -317,6 +354,7 @@
         var hcx = nx + ux * HR * k + p[3], hcy = ny + uy * HR * k + p[4];
         f.head.setAttribute("cx", hcx.toFixed(1));
         f.head.setAttribute("cy", hcy.toFixed(1));
+        f.hair.setAttribute("transform", "translate(" + hcx.toFixed(2) + " " + hcy.toFixed(2) + ") rotate(" + p[2].toFixed(1) + ")");
         f.g.setAttribute("opacity", alpha.toFixed(2));
         if (showFace) {
             f.face.setAttribute("transform", "translate(" + hcx.toFixed(1) + " " + hcy.toFixed(1) + ")");
