@@ -1543,8 +1543,22 @@ button:active {
     font-variant-numeric: tabular-nums;
 }
 
-.ll-more { display: none; }
-@container (min-width: 300px) { .ll-more { display: inline; } }
+.ll-more { display: inline; }   /* 1등 당첨자 수 (2026-11-11 좁은 칸에서도 보이게) */
+
+/* 칸이 좁아서 SPIN 버튼과 겹칠 때 1단계: 머리줄을 한 줄로 줄여요
+   ("지난 당첨 결과" 글자는 빼고 "1249회 1등 20억 2,504만원 · 14명") */
+.lotto-last.ll-tight .ll-title { display: none; }
+.lotto-last.ll-tight .ll-round { margin-left: 0; }
+.lotto-last.ll-tight .ll-head {
+    flex-wrap: nowrap;
+    justify-content: center;
+    column-gap: 5px;
+    margin-bottom: 1px;
+}
+.lotto-last.ll-tight .ll-round,
+.lotto-last.ll-tight .ll-prize { font-size: 0.72rem; }
+.lotto-last.ll-tight { padding: 2px 6px 2px; }
+.lotto-last.ll-tight .ball { width: 20px; height: 20px; }
 
 .ll-balls {
     display: flex;

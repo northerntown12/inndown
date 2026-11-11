@@ -133,10 +133,10 @@
         layout();
     }
 
-    /* 칸이 좁아서 SPIN 버튼과 겹치면 줄여요: 전체 → 공만 → 숨김 */
+    /* 칸이 좁아서 SPIN 버튼과 겹치면 줄여요: 전체 → 한 줄(회차·당첨금·명수) → 공만 → 숨김 */
     function fit() {
         var btn = document.getElementById("lotto-btn");
-        panel.classList.remove("ll-min", "ll-off");
+        panel.classList.remove("ll-tight", "ll-min", "ll-off");
         if (!btn) return;
         // 로그인 화면이 떠 있는 동안처럼 칸이 안 보일 때는 재지 않아요 (재면 0이라 겹친다고 착각해서 숨겨 버려요)
         if (!panel.getClientRects().length || !btn.getClientRects().length) return;
@@ -144,6 +144,10 @@
             return panel.getBoundingClientRect().top < btn.getBoundingClientRect().bottom + 2;
         }
         if (!overlaps()) return;
+        panel.classList.add("ll-tight");
+        var hd = panel.querySelector(".ll-head");
+        if (!overlaps() && hd.scrollWidth <= hd.clientWidth + 1) return;
+        panel.classList.remove("ll-tight");
         panel.classList.add("ll-min");
         if (!overlaps()) return;
         panel.classList.remove("ll-min");
