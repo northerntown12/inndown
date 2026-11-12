@@ -97,6 +97,8 @@
 .info-bar .ib-bar:hover::before,
 .info-bar .ib-bar:focus-visible::before { transition-delay: 0.12s; }   /* 나올 땐 첫째 다음에 */
 .info-bar .ib-bar:focus-visible { outline: 2px solid #8a3a7f; outline-offset: 1px; }
+/* 홈피 소개는 튀어나오는 막대 없음 (2026-11-12) — 다시 쓰려면 이 줄 지우기 */
+.info-bar .ib-about::after, .info-bar .ib-about::before { content: none; }
 
 /* 색: 막대 / 첫째 튀어나옴 / 둘째 튀어나옴 */
 .info-bar .ib-about         { background: linear-gradient(180deg, #9b4a8f, #84387a); color: #fff; }   /* 자주 */
