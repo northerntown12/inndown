@@ -80,6 +80,15 @@
     function sndWin()  { tones([[523, 0, 0.18], [659, 0.13, 0.18], [784, 0.26, 0.18], [1047, 0.39, 0.45]]); }
     function sndLose() { tones([[392, 0, 0.25], [330, 0.2, 0.25], [262, 0.4, 0.5]], "sine", 0.2); }
     function sndBuzz() { tones([[140, 0, 0.16]], "square", 0.06); }
+    /* 버튼 누를 때 "톡" (소리 꺼져 있으면 audio()가 null이라 안 남) */
+    function sndClick() {
+        var a = audio(); if (!a) return;
+        var t = a.currentTime;
+        var o = a.createOscillator(); o.type = "triangle";
+        o.frequency.setValueAtTime(880, t); o.frequency.exponentialRampToValueAtTime(520, t + 0.05);
+        var g = a.createGain(); g.gain.setValueAtTime(0.18, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.07);
+        o.connect(g); g.connect(a.destination); o.start(t); o.stop(t + 0.08);
+    }
     function sndTick(last) { tones([[last ? 1320 : 990, 0, 0.07]], "sine", 0.12); }
 
     /* ======================= 그리기 ======================= */
@@ -421,15 +430,15 @@
     }
     $("omLevel").addEventListener("click", function (ev) {
         var b = ev.target.closest("button"); if (!b) return;
-        settings.level = b.dataset.v; changeSetting();
+        sndClick(); settings.level = b.dataset.v; changeSetting();
     });
     $("omColor").addEventListener("click", function (ev) {
         var b = ev.target.closest("button"); if (!b) return;
-        settings.color = +b.dataset.v; changeSetting();
+        sndClick(); settings.color = +b.dataset.v; changeSetting();
     });
-    btnStart.addEventListener("click", function () { audio(); startGame(); });
-    $("omAgain").addEventListener("click", function () { audio(); newGame(); startGame(); });
-    btnUndo.addEventListener("click", undo);
+    btnStart.addEventListener("click", function () { sndClick(); startGame(); });
+    $("omAgain").addEventListener("click", function () { sndClick(); newGame(); startGame(); });
+    btnUndo.addEventListener("click", function () { sndClick(); undo(); });
     function syncSound() {
         btnSound.classList.toggle("muted", muted);
         btnSound.setAttribute("aria-label", muted ? "소리 켜기" : "소리 끄기");
