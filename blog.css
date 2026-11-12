@@ -59,6 +59,12 @@
     text-decoration: none;
     box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08), inset 0 -2px 0 rgba(0, 0, 0, 0.1);
 }
+/* 글씨 옆 작은 아이콘 (2026-11-12: 홈피 소개=집, 게임=게임 패드, index.html 안 SVG) */
+.info-bar .ib-bar { grid-auto-flow: column; justify-content: center; column-gap: 7px; }
+.info-bar .ib-ic { width: 17px; height: 17px; order: 1; }   /* order 1 = 글씨 오른쪽 (2026-11-12 왼쪽 → 오른쪽) */
+.info-bar .ib-about .ib-ic { color: #ffe3f6; }
+.info-bar .ib-navy  .ib-ic { color: #cfdcff; }
+
 /* 마우스를 대면 같은 크기의 막대 2개가 오른쪽으로 차례로 불쑥 (clip-path로 왼쪽부터 펼쳐짐)
    2026-11-12: 1개 → 2개 (::after 첫째, ::before 둘째는 첫째 바로 아래), 글씨 "빈칸" → "빈란" */
 .info-bar .ib-bar::after,
