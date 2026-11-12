@@ -21,13 +21,18 @@
     /* ---------- 상태 ---------- */
     var board, history, human, ai, level, over, thinking, winCells, forbid, hover, preview, aiTimer;
     var pendingSettings = false;
+    var started = false;                       // 시작 버튼을 눌렀나
+    var TIME_LIMIT = 15;                       // 한 수 제한 시간(초). 넘기면 시간 초과 패배
+    var timerId = 0, turnEnd = 0, lastTick = 0;
 
     /* ---------- 화면 요소 ---------- */
     var $ = function (id) { return document.getElementById(id); };
     var canvas = $("omBoard"), ctx = canvas.getContext("2d"), box = $("omBoardBox");
     var elStatus = $("omStatus"), elHint = $("omHint"), elNote = $("omNote");
     var elResult = $("omResult"), elResultTitle = $("omResultTitle"), elResultSub = $("omResultSub");
-    var btnUndo = $("omUndo"), btnSound = $("omSound"), chkForbid = $("omShowForbid");
+    var btnUndo = $("omUndo"), btnSound = $("omSound"), chkForbid = $("omShowForbid"), btnStart = $("omStart");
+    var elTimer = $("omTimer"), elTimerNum = $("omTimerNum"), elTimerRing = $("omTimerRing");
+    var RING = 2 * Math.PI * 19;
     var coarse = window.matchMedia && window.matchMedia("(pointer: coarse)").matches;
 
     /* ======================= 소리 (Web Audio로 직접 만듦) ======================= */
@@ -75,6 +80,7 @@
     function sndWin()  { tones([[523, 0, 0.18], [659, 0.13, 0.18], [784, 0.26, 0.18], [1047, 0.39, 0.45]]); }
     function sndLose() { tones([[392, 0, 0.25], [330, 0.2, 0.25], [262, 0.4, 0.5]], "sine", 0.2); }
     function sndBuzz() { tones([[140, 0, 0.16]], "square", 0.06); }
+    function sndTick(last) { tones([[last ? 1320 : 990, 0, 0.07]], "sine", 0.12); }
 
     /* ======================= 그리기 ======================= */
     var size = 0, dpr = 1, margin = 0, cell = 0, woodCanvas = null;
@@ -206,7 +212,7 @@
     }
 
     /* ======================= 게임 진행 ======================= */
-    function canPlay() { return !over && !thinking && turn() === human; }
+    function canPlay() { return started && !over && !thinking && turn() === human; }
     function turn() { return history.length % 2 === 0 ? 1 : 2; }
 
     function setStatus(text, cls) {
@@ -226,10 +232,62 @@
         human = settings.color; ai = 3 - human; level = settings.level;
         pendingSettings = false; elNote.hidden = true;
         elResult.hidden = true;
+        started = false;
+        stopTimer(); timerShow("idle");
+        btnStart.textContent = "시작";
         syncButtons();
-        if (ai === 1) { aiMove(); }
-        else { setStatus("내 차례예요 (" + stoneName(human) + ") · " + LEVEL_NAME[level]); draw(); }
+        setStatus("시작 버튼을 누르세요 · " + LEVEL_NAME[level] + " · 내 돌 " + stoneName(human));
         updateUndo();
+        draw();
+    }
+
+    /* 시작 버튼: 처음이면 시작, 두는 중이면 판을 비우고 다시 시작 */
+    function startGame() {
+        if (started) newGame();
+        started = true;
+        btnStart.textContent = "다시 시작";
+        /* 폰에서는 시작 버튼이 판 아래에 있어서, 판이 보이게 위로 올려 줌 */
+        if (window.matchMedia && window.matchMedia("(max-width: 760px)").matches) {
+            var row = document.querySelector(".om-statusrow");
+            if (row && row.getBoundingClientRect().top < 0) row.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+        if (ai === 1) aiMove(); else humanTurn("");
+    }
+
+    function humanTurn(prefix) {
+        refreshForbid();
+        setStatus((prefix || "") + "내 차례예요 (" + stoneName(human) + ") · " + TIME_LIMIT + "초 안에 두세요");
+        startTimer();
+        updateUndo();
+        draw();
+    }
+
+    /* ---------- 제한 시간 ---------- */
+    function startTimer() {
+        stopTimer();
+        turnEnd = Date.now() + TIME_LIMIT * 1000;
+        lastTick = TIME_LIMIT + 1;
+        timerShow("run");
+        timerId = setInterval(timerStep, 100);
+        timerStep();
+    }
+    function stopTimer() { if (timerId) { clearInterval(timerId); timerId = 0; } }
+    function timerStep() {
+        var rem = Math.max(0, (turnEnd - Date.now()) / 1000);
+        var sec = Math.ceil(rem);
+        elTimerNum.textContent = sec;
+        elTimerRing.style.strokeDashoffset = (RING * (1 - rem / TIME_LIMIT)).toFixed(2);
+        elTimer.classList.toggle("warn", sec <= 5);
+        if (sec <= 5 && sec >= 1 && sec < lastTick) sndTick(sec === 1);
+        lastTick = sec;
+        if (rem <= 0) { stopTimer(); finish("timeout", null); }
+    }
+    /* idle: 시작 전 / run: 내 차례 / ai: 컴퓨터 차례 / end: 끝 */
+    function timerShow(mode) {
+        elTimer.className = "om-timer " + mode;
+        elTimerRing.style.strokeDashoffset = mode === "run" ? "0" : (mode === "end" ? elTimerRing.style.strokeDashoffset : "0");
+        if (mode === "idle") elTimerNum.textContent = TIME_LIMIT;
+        if (mode === "ai") elTimerNum.textContent = "…";
     }
 
     function place(x, y, c) {
@@ -251,13 +309,15 @@
             return;
         }
         preview = null; hover = null; forbid = [];
+        stopTimer();
         if (place(x, y, human)) return;
         aiMove();
     }
 
     function aiMove() {
         thinking = true;
-        setStatus("컴퓨터가 생각 중", "thinking");
+        stopTimer(); timerShow("ai");
+        setStatus("컴퓨터 차례예요 (" + stoneName(ai) + ") · 생각 중", "thinking");
         updateUndo();
         draw();
         var start = Date.now();
@@ -268,19 +328,20 @@
                 thinking = false;
                 if (!m) { finish("draw", null); return; }
                 if (place(m[0], m[1], ai)) { updateUndo(); return; }
-                refreshForbid();
-                setStatus("내 차례예요 (" + stoneName(human) + ") · " + LEVEL_NAME[level]);
-                updateUndo();
-                draw();
+                humanTurn("");
             }, wait);
         }, 30);
     }
 
     function finish(kind, line) {
         over = true; thinking = false; winCells = line; forbid = []; preview = null; hover = null;
+        stopTimer(); timerShow("end");
+        if (kind === "timeout") elTimerNum.textContent = "0";
+        btnStart.textContent = "시작";
         var r = record[level] || (record[level] = { w: 0, l: 0, d: 0 });
         if (kind === "win") { r.w++; setStatus("이겼어요! 🎉", "win"); sndWin(); }
         else if (kind === "lose") { r.l++; setStatus("컴퓨터가 이겼어요", "lose"); sndLose(); }
+        else if (kind === "timeout") { r.l++; setStatus("시간 초과! " + TIME_LIMIT + "초가 지나 졌어요", "lose"); sndLose(); }
         else { r.d++; setStatus("무승부예요"); }
         save("omokRecord.v1", record);
         showRecord();
@@ -288,7 +349,7 @@
         draw();
         setTimeout(function () {
             if (!over) return;
-            elResultTitle.textContent = kind === "win" ? "승리! 🎉" : kind === "lose" ? "패배" : "무승부";
+            elResultTitle.textContent = kind === "win" ? "승리! 🎉" : kind === "lose" ? "패배" : kind === "timeout" ? "시간 초과 ⏰" : "무승부";
             elResultSub.textContent = LEVEL_NAME[level] + " · " + stoneName(human) + " · " + history.length + "수";
             elResult.hidden = false;
         }, 900);
@@ -305,9 +366,7 @@
         if (!removed) return;
         preview = null; hover = null;
         refreshForbid();
-        setStatus("한 수 물렀어요 · 내 차례 (" + stoneName(human) + ")");
-        updateUndo();
-        draw();
+        humanTurn("한 수 물렀어요 · ");
     }
     function updateUndo() {
         var mine = history.some(function (h) { return h[2] === human; });
@@ -317,7 +376,7 @@
     function showRecord() {
         var rows = ["easy", "normal", "hard"].map(function (k) {
             var r = record[k] || { w: 0, l: 0, d: 0 };
-            return "<b>" + LEVEL_NAME[k] + "</b> " + r.w + "승 " + r.l + "패" + (r.d ? " " + r.d + "무" : "");
+            return "<span class=\"om-rec\"><b>" + LEVEL_NAME[k] + "</b> " + r.w + "승 " + r.l + "패" + (r.d ? " " + r.d + "무" : "") + "</span>";
         });
         $("omRecord").innerHTML = "내 전적 (이 기기)<br>" + rows.join(" · ");
     }
@@ -357,7 +416,6 @@
         save("omokSettings.v1", settings);
         syncButtons();
         /* 아직 안 뒀거나 끝난 판이면 바로 새 게임, 두는 중이면 다음 판부터 */
-        var started = history.length > (ai === 1 ? 1 : 0);
         if (!started || over) newGame();
         else { pendingSettings = true; elNote.hidden = false; }
     }
@@ -369,8 +427,8 @@
         var b = ev.target.closest("button"); if (!b) return;
         settings.color = +b.dataset.v; changeSetting();
     });
-    $("omNew").addEventListener("click", function () { audio(); newGame(); });
-    $("omAgain").addEventListener("click", function () { audio(); newGame(); });
+    btnStart.addEventListener("click", function () { audio(); startGame(); });
+    $("omAgain").addEventListener("click", function () { audio(); newGame(); startGame(); });
     btnUndo.addEventListener("click", undo);
     function syncSound() {
         btnSound.classList.toggle("muted", muted);

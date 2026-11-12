@@ -8,7 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="omok.css?v=2">
+    <link rel="stylesheet" href="omok.css?v=3">
 </head>
 <body>
     <header class="om-top">
@@ -23,6 +23,11 @@
         <section class="om-board-wrap">
             <div class="om-statusrow">
                 <div class="om-status" id="omStatus" role="status" aria-live="polite">새 게임을 시작해요</div>
+                <!-- 남은 시간 (한 수 15초) -->
+                <div class="om-timer idle" id="omTimer" role="timer" aria-label="남은 시간(초)">
+                    <svg viewBox="0 0 44 44" aria-hidden="true"><circle class="om-tr-bg" cx="22" cy="22" r="19"/><circle class="om-tr" id="omTimerRing" cx="22" cy="22" r="19"/></svg>
+                    <span id="omTimerNum">15</span>
+                </div>
                 <!-- 소리 끄기·켜기 (끄면 스피커에 빨간 빗금) -->
                 <button type="button" class="om-mute" id="omSound" aria-label="소리 끄기" title="소리 끄기">
                     <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -62,10 +67,10 @@
                     <button type="button" data-v="2"><i class="om-dot om-white"></i>백 (나중)</button>
                 </div>
             </div>
-            <p class="om-note" id="omNote" hidden>바꾼 설정은 <b>새 게임</b>부터 적용돼요.</p>
+            <p class="om-note" id="omNote" hidden>바꾼 설정은 <b>다시 시작</b>하면 적용돼요.</p>
 
             <div class="om-actions">
-                <button type="button" class="om-btn om-primary" id="omNew">새 게임</button>
+                <button type="button" class="om-btn om-primary" id="omStart">시작</button>
                 <button type="button" class="om-btn" id="omUndo">무르기</button>
             </div>
 
@@ -91,6 +96,7 @@
                     </li>
                     <li>흑은 <b>정확히 5개</b>여야 이기고, 백은 5개 이상이면 이겨요.</li>
                     <li>흑이 5를 만드는 수는 금수와 겹쳐도 이겨요. 4-3은 금수가 아니에요.</li>
+                    <li>한 수에 <b>15초</b>예요. 시간 안에 못 두면 져요.</li>
                 </ul>
             </details>
         </aside>
@@ -99,6 +105,6 @@
     <footer class="om-foot">Copyright © 2026 Choi Yunhyok. All rights reserved.</footer>
 
     <script src="omok-engine.js?v=1"></script>
-    <script src="omok.js?v=2"></script>
+    <script src="omok.js?v=3"></script>
 </body>
 </html>

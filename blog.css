@@ -132,7 +132,7 @@
     left: -4px; top: 0;
     width: 4px; height: 100%;
 }
-.info-bar .ib-pop-ic { width: 18px; height: 18px; flex: none; }
+.info-bar .ib-pop-ic { width: 18px; height: 18px; flex: none; order: 1; }   /* 아이콘은 "오목" 글씨 오른쪽 */
 .info-bar .ib-game:hover .ib-pop,
 .info-bar .ib-game:focus-within .ib-pop { clip-path: inset(0 0 0 0 round 5px); pointer-events: auto; }
 .info-bar .ib-game:focus-within::before { clip-path: inset(0 0 0 0 round 5px); transition-delay: 0.12s; }

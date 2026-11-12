@@ -223,7 +223,7 @@
         gap: 14px;
     }
     /* 환율·우편번호·졸라맨·주식은 모바일에서 그대로 숨김 */
-    .ad-sidebar .ad-grid > :not(.unit-widget):not(.quick-links):not(.game-widget) { display: none; }
+    .ad-sidebar .ad-grid > :not(.unit-widget):not(.quick-links):not(.game-widget):not(.stock-widget) { display: none; }
 
     .ad-grid .unit-widget,
     .ad-grid .quick-links {
@@ -252,9 +252,26 @@
     .ql-google span { font-size: 2rem; }
     .ql-naver span  { font-size: 1.8rem; }
 
-    /* 게임 입구: 단위 환산 아래, 위 칸들과 같은 간격(14px) */
-    .ad-grid .game-widget {
+    /* 오늘의 주식시장: 단위 환산 아래 (2026-11-12 폰에서 다시 보이게) */
+    .ad-grid .stock-widget {
         order: 3;
+        grid-column: 1;
+        grid-row: auto;
+        height: auto;
+        border-radius: 8px;
+        padding: 12px 14px 10px;
+    }
+    .stk-title { font-size: 1.05rem; margin-bottom: 4px; }
+    .stk-group { font-size: 0.78rem; margin-top: 8px; }
+    .stk-list li { padding: 6px 0; gap: 8px; }
+    .stk-name  { font-size: 0.9rem; }
+    .stk-price { font-size: 0.92rem; }
+    .stk-chg   { font-size: 0.82rem; min-width: 68px; }
+    .stk-foot  { font-size: 0.7rem; margin-top: 8px; }
+
+    /* 게임 입구: 주식시장 아래, 위 칸들과 같은 간격(14px) */
+    .ad-grid .game-widget {
+        order: 4;
         grid-column: 1;
         grid-row: auto;
         height: auto;
