@@ -439,6 +439,15 @@
     btnStart.addEventListener("click", function () { sndClick(); startGame(); });
     $("omAgain").addEventListener("click", function () { sndClick(); newGame(); startGame(); });
     btnUndo.addEventListener("click", function () { sndClick(); undo(); });
+    /* 종료: 오목 창 닫기. 홈에서 새 창으로 연 경우만 닫힘 → 안 닫히면(주소로 직접 연 경우 등) 홈으로 */
+    $("omExit").addEventListener("click", function () {
+        sndClick();
+        stopTimer(); clearTimeout(aiTimer);
+        setTimeout(function () {
+            window.close();
+            setTimeout(function () { if (!window.closed) location.href = "index.html"; }, 250);
+        }, 120);
+    });
     function syncSound() {
         btnSound.classList.toggle("muted", muted);
         btnSound.setAttribute("aria-label", muted ? "소리 켜기" : "소리 끄기");

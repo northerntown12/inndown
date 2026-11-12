@@ -154,6 +154,8 @@ body {
 .om-btn:active:not(:disabled) { transform: translateY(1px); }
 .om-btn:disabled { cursor: not-allowed; opacity: 0.55; }
 .om-actions .om-btn { flex: 1; }
+.om-exit { background: #eef0f7; border-color: #c4cbe0; color: var(--om-navy2); }
+.om-exit:hover { background: #e2e6f2; }
 .om-primary { background: linear-gradient(180deg, #b77f42, #9a6430); border-color: #8a5a2b; color: #fff; }
 .om-primary:hover:not(:disabled) { background: linear-gradient(180deg, #c48a4b, #a66c35); }
 
