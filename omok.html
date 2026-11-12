@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>오목 · Records after work</title>
+    <meta name="description" content="컴퓨터와 두는 렌주룰 오목. 쉬움·보통·어려움 난이도.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="omok.css?v=1">
+</head>
+<body>
+    <header class="om-top">
+        <div class="om-top-in">
+            <h1 class="om-title">오목 <small>렌주룰 · 컴퓨터와 두기</small></h1>
+            <span class="om-brand">Records after work</span>
+        </div>
+    </header>
+
+    <main class="om-main">
+        <!-- 판 -->
+        <section class="om-board-wrap">
+            <div class="om-status" id="omStatus" role="status" aria-live="polite">새 게임을 시작해요</div>
+            <div class="om-board" id="omBoardBox">
+                <canvas id="omBoard" aria-label="오목판"></canvas>
+                <div class="om-result" id="omResult" hidden>
+                    <div class="om-result-card">
+                        <p class="om-result-title" id="omResultTitle"></p>
+                        <p class="om-result-sub" id="omResultSub"></p>
+                        <button type="button" class="om-btn om-primary" id="omAgain">한 판 더</button>
+                    </div>
+                </div>
+            </div>
+            <p class="om-hint" id="omHint">놓고 싶은 자리를 누르세요.</p>
+        </section>
+
+        <!-- 설정·버튼 -->
+        <aside class="om-panel">
+            <div class="om-group">
+                <span class="om-label">난이도</span>
+                <div class="om-seg" id="omLevel">
+                    <button type="button" data-v="easy">쉬움</button>
+                    <button type="button" data-v="normal">보통</button>
+                    <button type="button" data-v="hard">어려움</button>
+                </div>
+            </div>
+            <div class="om-group">
+                <span class="om-label">내 돌</span>
+                <div class="om-seg" id="omColor">
+                    <button type="button" data-v="1"><i class="om-dot om-black"></i>흑 (먼저)</button>
+                    <button type="button" data-v="2"><i class="om-dot om-white"></i>백 (나중)</button>
+                </div>
+            </div>
+            <p class="om-note" id="omNote" hidden>바꾼 설정은 <b>새 게임</b>부터 적용돼요.</p>
+
+            <div class="om-actions">
+                <button type="button" class="om-btn om-primary" id="omNew">새 게임</button>
+                <button type="button" class="om-btn" id="omUndo">무르기</button>
+                <button type="button" class="om-btn om-icon" id="omSound" aria-label="소리 끄기" title="소리 끄기·켜기">🔊</button>
+            </div>
+
+            <!-- 온라인 대결: 추후 반영 (지금은 누를 수 없음) -->
+            <button type="button" class="om-btn om-online" disabled aria-disabled="true">
+                🌐 온라인 대결 <span class="om-soon">추후 반영</span>
+            </button>
+
+            <label class="om-check"><input type="checkbox" id="omShowForbid" checked> 흑 금수 자리 표시 (×)</label>
+
+            <div class="om-record" id="omRecord"></div>
+
+            <details class="om-rules">
+                <summary>렌주룰이 뭐예요?</summary>
+                <ul>
+                    <li>흑과 백이 번갈아 두고, 가로·세로·대각선으로 <b>5개를 먼저 잇는 쪽</b>이 이겨요. 흑이 먼저 둬요.</li>
+                    <li>먼저 두는 흑이 유리해서, <b>흑에게만</b> 다음 자리를 금지해요 (금수).
+                        <ul>
+                            <li><b>3-3</b>: 한 수로 열린 3이 두 개 생기는 자리</li>
+                            <li><b>4-4</b>: 한 수로 4가 두 개 생기는 자리</li>
+                            <li><b>장목</b>: 6개 이상 이어지는 자리</li>
+                        </ul>
+                    </li>
+                    <li>흑은 <b>정확히 5개</b>여야 이기고, 백은 5개 이상이면 이겨요.</li>
+                    <li>흑이 5를 만드는 수는 금수와 겹쳐도 이겨요. 4-3은 금수가 아니에요.</li>
+                </ul>
+            </details>
+        </aside>
+    </main>
+
+    <footer class="om-foot">Copyright © 2026 Choi Yunhyok. All rights reserved.</footer>
+
+    <script src="omok-engine.js?v=1"></script>
+    <script src="omok.js?v=1"></script>
+</body>
+</html>

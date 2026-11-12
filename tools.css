@@ -117,6 +117,9 @@
     text-overflow: ellipsis;
 }
 
+/* ---------- 게임 입구 (2026-11-12, 폰에서만 보임 — 아래 폰 부분) ---------- */
+.ad-grid .game-widget { display: none; }
+
 /* ---------- 바로가기 (구글 · 네이버 · 유튜브 · 빙) ---------- */
 .ad-grid .quick-links {
     grid-column: 2;
@@ -220,7 +223,7 @@
         gap: 14px;
     }
     /* 환율·우편번호·졸라맨·주식은 모바일에서 그대로 숨김 */
-    .ad-sidebar .ad-grid > :not(.unit-widget):not(.quick-links) { display: none; }
+    .ad-sidebar .ad-grid > :not(.unit-widget):not(.quick-links):not(.game-widget) { display: none; }
 
     .ad-grid .unit-widget,
     .ad-grid .quick-links {
@@ -248,4 +251,38 @@
     .ql-item   { border-radius: 12px; }
     .ql-google span { font-size: 2rem; }
     .ql-naver span  { font-size: 1.8rem; }
+
+    /* 게임 입구: 단위 환산 아래, 위 칸들과 같은 간격(14px) */
+    .ad-grid .game-widget {
+        order: 3;
+        grid-column: 1;
+        grid-row: auto;
+        height: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 9px;
+        padding: 10px 14px 14px;
+        border-radius: 8px;
+        background: linear-gradient(180deg, #fbf8f1 0%, #f1e9d9 100%);
+        border: 1px solid #d9c9a8;
+        color: #5b4636;
+    }
+    .gw-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 14px 10px 10px;
+        border-radius: 12px;
+        background: #DAD9FF;
+        border: 1px solid #c3c1f0;
+        color: #36347a;
+        text-decoration: none;
+        box-shadow: 0 1px 2px rgba(60, 40, 20, 0.18), 0 2px 6px rgba(60, 40, 20, 0.10);
+    }
+    .gw-item:active { transform: translateY(1px); }
+    .gw-board { width: 46px; height: 46px; flex: none; border-radius: 8px; box-shadow: 0 1px 3px rgba(70, 40, 10, 0.3); }
+    .gw-text { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+    .gw-text b { font-size: 1.05rem; }
+    .gw-text small { font-size: 0.8rem; color: #5a57b5; }
+    .gw-go { font-size: 1.6rem; line-height: 1; color: #5a57b5; }
 }
