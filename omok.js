@@ -225,10 +225,12 @@
     function turn() { return history.length % 2 === 0 ? 1 : 2; }
 
     function setStatus(text, cls) {
-        elStatus.textContent = text;
+        elStatus.innerHTML = text;          // 돌 그림(<i>)이 들어가서 HTML로 넣음 (글은 모두 이 파일 안 문구)
         elStatus.className = "om-status" + (cls ? " " + cls : "");
     }
     function stoneName(c) { return c === 1 ? "흑" : "백"; }
+    /* "흑"·"백" 글자 바로 뒤에 작은 검은 돌·흰 돌 그림 */
+    function stoneTag(c) { return stoneName(c) + '<i class="om-dot om-inline ' + (c === 1 ? "om-black" : "om-white") + '"></i>'; }
 
     function refreshForbid() {
         forbid = (human === 1 && !over && turn() === 1) ? E.forbiddenPoints(board) : [];
@@ -245,7 +247,7 @@
         stopTimer(); timerShow("idle");
         btnStart.textContent = "시작";
         syncButtons();
-        setStatus("시작 버튼을 누르세요 · " + LEVEL_NAME[level] + " · 내 돌 " + stoneName(human));
+        setStatus("시작 버튼을 누르세요 · " + LEVEL_NAME[level] + " · 내 돌 " + stoneTag(human));
         updateUndo();
         draw();
     }
@@ -265,7 +267,7 @@
 
     function humanTurn(prefix) {
         refreshForbid();
-        setStatus((prefix || "") + "내 차례예요 (" + stoneName(human) + ") · " + TIME_LIMIT + "초 안에 두세요");
+        setStatus((prefix || "") + "내 차례예요 (" + stoneTag(human) + ") · " + TIME_LIMIT + "초 안에 두세요");
         startTimer();
         updateUndo();
         draw();
@@ -326,7 +328,7 @@
     function aiMove() {
         thinking = true;
         stopTimer(); timerShow("ai");
-        setStatus("컴퓨터 차례예요 (" + stoneName(ai) + ") · 생각 중", "thinking");
+        setStatus("컴퓨터 차례예요 (" + stoneTag(ai) + ") · 생각 중", "thinking");
         updateUndo();
         draw();
         var start = Date.now();
@@ -359,7 +361,7 @@
         setTimeout(function () {
             if (!over) return;
             elResultTitle.textContent = kind === "win" ? "승리! 🎉" : kind === "lose" ? "패배" : kind === "timeout" ? "시간 초과 ⏰" : "무승부";
-            elResultSub.textContent = LEVEL_NAME[level] + " · " + stoneName(human) + " · " + history.length + "수";
+            elResultSub.innerHTML = LEVEL_NAME[level] + " · " + stoneTag(human) + " · " + history.length + "수";
             elResult.hidden = false;
         }, 900);
     }

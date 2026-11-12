@@ -142,6 +142,7 @@ body {
 .om-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; flex: none; }
 .om-black { background: radial-gradient(circle at 35% 30%, #666, #000 70%); }
 .om-white { background: radial-gradient(circle at 35% 30%, #fff, #cfc9bd 80%); border: 1px solid #b8b0a0; }
+.om-inline { width: 0.85em; height: 0.85em; margin: 0 0 0 3px; vertical-align: -0.08em; box-shadow: 0 1px 1px rgba(0, 0, 0, 0.25); }
 .om-note { margin: -6px 0 0; font-size: 0.8rem; color: #a3321f; }
 
 .om-actions { display: flex; gap: 8px; }
