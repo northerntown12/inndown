@@ -60,7 +60,7 @@
     box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08), inset 0 -2px 0 rgba(0, 0, 0, 0.1);
 }
 /* 마우스를 대면 같은 크기의 막대 2개가 오른쪽으로 차례로 불쑥 (clip-path로 왼쪽부터 펼쳐짐)
-   2026-11-12: 1개 → 2개 (::after 첫째, ::before 둘째), 글씨 "빈칸" → "빈란" */
+   2026-11-12: 1개 → 2개 (::after 첫째, ::before 둘째는 첫째 바로 아래), 글씨 "빈칸" → "빈란" */
 .info-bar .ib-bar::after,
 .info-bar .ib-bar::before {
     content: "빈란";
@@ -81,7 +81,7 @@
     pointer-events: none;
 }
 .info-bar .ib-bar::before {
-    left: calc(200% + 6px);             /* 첫째 막대 바로 옆 */
+    top: calc(100% + 3px);              /* 첫째 막대 바로 아래 (2026-11-12 옆 → 아래) */
     transition-delay: 0s;               /* 들어갈 땐 같이 */
 }
 .info-bar .ib-bar:hover::after,
