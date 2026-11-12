@@ -59,9 +59,11 @@
     text-decoration: none;
     box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08), inset 0 -2px 0 rgba(0, 0, 0, 0.1);
 }
-/* 마우스를 대면 같은 크기의 막대가 오른쪽으로 불쑥 (clip-path로 왼쪽부터 펼쳐짐) */
-.info-bar .ib-bar::after {
-    content: "빈칸";
+/* 마우스를 대면 같은 크기의 막대 2개가 오른쪽으로 차례로 불쑥 (clip-path로 왼쪽부터 펼쳐짐)
+   2026-11-12: 1개 → 2개 (::after 첫째, ::before 둘째), 글씨 "빈칸" → "빈란" */
+.info-bar .ib-bar::after,
+.info-bar .ib-bar::before {
+    content: "빈란";
     font-weight: 700;
     letter-spacing: 0.06em;
     position: absolute;
@@ -78,16 +80,28 @@
     transition: clip-path 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
     pointer-events: none;
 }
+.info-bar .ib-bar::before {
+    left: calc(200% + 6px);             /* 첫째 막대 바로 옆 */
+    transition-delay: 0s;               /* 들어갈 땐 같이 */
+}
 .info-bar .ib-bar:hover::after,
-.info-bar .ib-bar:focus-visible::after { clip-path: inset(0 0 0 0 round 5px); }
+.info-bar .ib-bar:focus-visible::after,
+.info-bar .ib-bar:hover::before,
+.info-bar .ib-bar:focus-visible::before { clip-path: inset(0 0 0 0 round 5px); }
+.info-bar .ib-bar:hover::before,
+.info-bar .ib-bar:focus-visible::before { transition-delay: 0.12s; }   /* 나올 땐 첫째 다음에 */
 .info-bar .ib-bar:focus-visible { outline: 2px solid #8a3a7f; outline-offset: 1px; }
 
-.info-bar .ib-about        { background: linear-gradient(180deg, #9b4a8f, #84387a); color: #fff; }   /* 자주 */
-.info-bar .ib-about::after { background: linear-gradient(90deg, #c98bbf, #e7c3df); color: #5e2456; }               /* 연한 자주 */
-.info-bar .ib-navy         { background: linear-gradient(180deg, #23345f, #1a2749); color: #e9eefc; }               /* 진청 */
-.info-bar .ib-navy::after  { background: linear-gradient(90deg, #4a6aa8, #8fa9d8); color: #fff; }               /* 푸른 하늘색 */
-.info-bar .ib-ivory        { background: #DAD9FF; border: 1px solid #c3c1f0; color: #36347a; }                     /* 연보라 (2026-11-11 아이보리 → #DAD9FF, 블로그 메뉴 막대와 같은 색) */
-.info-bar .ib-ivory::after { background: linear-gradient(90deg, #b3b1f2, #e6e5ff); color: #36347a; }               /* 라벤더 */
+/* 색: 막대 / 첫째 튀어나옴 / 둘째 튀어나옴 */
+.info-bar .ib-about         { background: linear-gradient(180deg, #9b4a8f, #84387a); color: #fff; }   /* 자주 */
+.info-bar .ib-about::after  { background: linear-gradient(90deg, #c98bbf, #e7c3df); color: #5e2456; }  /* 연한 자주 */
+.info-bar .ib-about::before { background: linear-gradient(90deg, #f0a9bd, #fbdde6); color: #7a2944; }  /* 장밋빛 분홍 */
+.info-bar .ib-navy          { background: linear-gradient(180deg, #23345f, #1a2749); color: #e9eefc; } /* 진청 */
+.info-bar .ib-navy::after   { background: linear-gradient(90deg, #4a6aa8, #8fa9d8); color: #fff; }     /* 푸른 하늘색 */
+.info-bar .ib-navy::before  { background: linear-gradient(90deg, #3f9c9c, #9fd8d0); color: #fff; }     /* 청록 */
+.info-bar .ib-ivory         { background: #DAD9FF; border: 1px solid #c3c1f0; color: #36347a; }       /* 연보라 (블로그 메뉴 막대와 같은 색) */
+.info-bar .ib-ivory::after  { background: linear-gradient(90deg, #b3b1f2, #e6e5ff); color: #36347a; } /* 라벤더 */
+.info-bar .ib-ivory::before { background: linear-gradient(90deg, #f5bf9f, #fde3d2); color: #7a3d1d; } /* 살구 */
 
 /* ---------------- 1) 홈 왼쪽 칸 ---------------- */
 /* 안내 박스 아래를 꽉 채워요. */
