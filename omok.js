@@ -373,8 +373,9 @@
     $("omAgain").addEventListener("click", function () { audio(); newGame(); });
     btnUndo.addEventListener("click", undo);
     function syncSound() {
-        btnSound.textContent = muted ? "🔇" : "🔊";
+        btnSound.classList.toggle("muted", muted);
         btnSound.setAttribute("aria-label", muted ? "소리 켜기" : "소리 끄기");
+        btnSound.title = muted ? "소리 켜기" : "소리 끄기";
     }
     btnSound.addEventListener("click", function () {
         muted = !muted; save("omokMuted.v1", muted); syncSound();

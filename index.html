@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="stock.css?v=3">
     <link rel="stylesheet" href="news.css?v=3">
     <link rel="stylesheet" href="tools.css?v=7">
-    <link rel="stylesheet" href="blog.css?v=16">
+    <link rel="stylesheet" href="blog.css?v=17">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
    <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Gaegu:wght@400;700&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
@@ -32,11 +32,11 @@
     <div class="page-layout">
         <aside class="tree-panel" aria-label="시계와 블로그">
             <!-- 시계 아래 박스: 막대 3개 (blog.css). 마우스를 대면 같은 크기 막대가 옆으로 불쑥 나와요.
-                 1 홈피 소개(자주) / 2 "빈란"(진청) / 3 "게임"(연보라 #DAD9FF, 누르면 오목 omok.html 새 탭), 마우스를 대면 "빈란" 막대 2개가 옆으로 나옴(둘째는 첫째 아래). 개인정보처리방침·이메일은 맨 아래로 옮김 -->
+                 1 홈피 소개(자주) / 2 "빈란"(진청) / 3 "게임"(연보라 #DAD9FF, 마우스를 대면 첫째 튀어나온 막대가 "오목" 링크, 막대나 오목을 누르면 omok.html 새 창), 마우스를 대면 "빈란" 막대 2개가 옆으로 나옴(둘째는 첫째 아래). 개인정보처리방침·이메일은 맨 아래로 옮김 -->
             <nav class="info-bar" aria-label="사이트 안내">
                 <a class="ib-bar ib-about" href="about.html"><svg class="ib-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.2 12 4l9 7.2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.5 10v9.5h4.8v-5.6h3.4v5.6h4.8V10" fill="currentColor" opacity=".9"/></svg>홈피 소개</a>
                 <span class="ib-bar ib-navy" aria-hidden="true">빈란</span>
-                <a class="ib-bar ib-ivory" href="omok.html" target="_blank" rel="noopener" title="오목 (새 탭)"><svg class="ib-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M7.2 7h9.6a4.6 4.6 0 0 1 4.5 3.7l1 5.2a2.6 2.6 0 0 1-4.5 2.2L15.6 16H8.4l-2.2 2.1a2.6 2.6 0 0 1-4.5-2.2l1-5.2A4.6 4.6 0 0 1 7.2 7z" fill="currentColor"/><path d="M7.6 9.8v3.6M5.8 11.6h3.6" stroke="#DAD9FF" stroke-width="1.6" stroke-linecap="round"/><circle cx="15.6" cy="10.6" r="1.1" fill="#ffd166"/><circle cx="17.8" cy="12.7" r="1.1" fill="#ff7a8a"/></svg>게임</a>
+                <div class="ib-bar ib-ivory ib-game" data-omok title="오목 (새 창)"><svg class="ib-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M7.2 7h9.6a4.6 4.6 0 0 1 4.5 3.7l1 5.2a2.6 2.6 0 0 1-4.5 2.2L15.6 16H8.4l-2.2 2.1a2.6 2.6 0 0 1-4.5-2.2l1-5.2A4.6 4.6 0 0 1 7.2 7z" fill="currentColor"/><path d="M7.6 9.8v3.6M5.8 11.6h3.6" stroke="#DAD9FF" stroke-width="1.6" stroke-linecap="round"/><circle cx="15.6" cy="10.6" r="1.1" fill="#ffd166"/><circle cx="17.8" cy="12.7" r="1.1" fill="#ff7a8a"/></svg>게임<a class="ib-pop" href="omok.html" target="_blank" rel="noopener" data-omok><svg class="ib-pop-ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="1.5" y="1.5" width="21" height="21" rx="4" fill="#dcaa5e" stroke="#9a6a2c" stroke-width="1"/><path d="M6 6h12M6 10h12M6 14h12M6 18h12M6 6v12M10 6v12M14 6v12M18 6v12" stroke="#6b4316" stroke-width=".9"/><circle cx="10" cy="10" r="2.6" fill="#1b1b1b"/><circle cx="14" cy="14" r="2.6" fill="#1b1b1b"/><circle cx="14" cy="10" r="2.6" fill="#fbf8f2" stroke="#9c9486" stroke-width=".6"/><circle cx="10" cy="14" r="2.6" fill="#fbf8f2" stroke="#9c9486" stroke-width=".6"/></svg>오목</a></div>
             </nav>
             <!-- 그 아래 박스: 블로그 "Records after work" 슬라이드 메뉴 (blog.js, blog.css, 글 목록은 posts.js) -->
             <div class="blog-box">
@@ -285,6 +285,18 @@
     <script src="clock.js?v=13"></script>
     <script src="posts.js?v=2"></script>
     <script src="blog.js?v=2"></script>
+    <!-- 오목 열기: "게임" 막대·"오목" 막대를 누르면 오목을 따로 새 창으로 (창이 막히면 새 탭) -->
+    <script>
+    document.addEventListener("click", function (e) {
+        var t = e.target.closest && e.target.closest("[data-omok]");
+        if (!t) return;
+        e.preventDefault();
+        var w = Math.min(1040, screen.availWidth - 40), h = Math.min(900, screen.availHeight - 60);
+        var x = Math.max(0, (screen.availWidth - w) / 2), y = Math.max(0, (screen.availHeight - h) / 2);
+        var win = window.open("omok.html", "omokGame", "width=" + w + ",height=" + h + ",left=" + x + ",top=" + y + ",resizable=yes,scrollbars=yes");
+        if (win) win.focus(); else window.open("omok.html", "_blank");
+    });
+    </script>
     <script src="login.js?v=5"></script>    
 </body>
 </html>
