@@ -139,6 +139,29 @@
 .info-bar .ib-pop:hover { filter: brightness(1.06) saturate(1.1); }
 .info-bar .ib-pop:focus-visible { outline: 2px solid #36347a; outline-offset: 1px; }
 
+/* 2026-11-13: 게임 막대의 둘째 튀어나오는 막대(오목 바로 아래)도 진짜 링크 "2048" (예전 "빈란" ::before 대신).
+   색은 예전 둘째 막대와 같은 살구, 아이콘은 글씨 오른쪽 (.ib-pop-ic의 order: 1) */
+.info-bar .ib-game::before { content: none; }
+.info-bar .ib-pop2 {
+    top: calc(100% + 3px);
+    background: linear-gradient(90deg, #f5bf9f, #fde3d2);
+    color: #7a3e1c;
+}
+.info-bar .ib-pop2::after {             /* 오목 → 2048 사이 3px 틈에서도 마우스가 끊기지 않게 */
+    content: "";
+    position: absolute;
+    left: 0; top: -4px;
+    width: 100%; height: 4px;
+}
+.info-bar .ib-game:hover .ib-pop2,
+.info-bar .ib-game:focus-within .ib-pop2 { transition-delay: 0.12s; }   /* 나올 땐 오목 다음에 */
+/* 틈 메우는 투명 칸(::before 왼쪽, ::after 위쪽)이 clip-path에 잘리지 않게, 펼쳐졌을 때 잘라내는 범위를 4px 넓힘 */
+.info-bar .ib-game:hover .ib-pop,
+.info-bar .ib-game:focus-within .ib-pop { clip-path: inset(0 0 0 -4px round 5px); }
+.info-bar .ib-game:hover .ib-pop2,
+.info-bar .ib-game:focus-within .ib-pop2 { clip-path: inset(-4px 0 0 -4px round 5px); }
+.info-bar .ib-pop2:focus-visible { outline-color: #7a3e1c; }
+
 /* 색: 막대 / 첫째 튀어나옴 / 둘째 튀어나옴 */
 .info-bar .ib-about         { background: linear-gradient(180deg, #9b4a8f, #84387a); color: #fff; }   /* 자주 */
 .info-bar .ib-about::after  { background: linear-gradient(90deg, #c98bbf, #e7c3df); color: #5e2456; }  /* 연한 자주 */

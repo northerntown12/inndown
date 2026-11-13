@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="stock.css?v=4">
     <link rel="stylesheet" href="news.css?v=3">
     <link rel="stylesheet" href="tools.css?v=8">
-    <link rel="stylesheet" href="blog.css?v=18">
+    <link rel="stylesheet" href="blog.css?v=19">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
    <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Gaegu:wght@400;700&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
@@ -32,11 +32,11 @@
     <div class="page-layout">
         <aside class="tree-panel" aria-label="시계와 블로그">
             <!-- 시계 아래 박스: 막대 3개 (blog.css). 마우스를 대면 같은 크기 막대가 옆으로 불쑥 나와요.
-                 1 홈피 소개(자주) / 2 "빈란"(진청) / 3 "게임"(연보라 #DAD9FF, 마우스를 대면 첫째 튀어나온 막대가 "오목" 링크, 막대나 오목을 누르면 omok.html 새 창), 마우스를 대면 "빈란" 막대 2개가 옆으로 나옴(둘째는 첫째 아래). 개인정보처리방침·이메일은 맨 아래로 옮김 -->
+                 1 홈피 소개(자주) / 2 "빈란"(진청) / 3 "게임"(연보라 #DAD9FF, 마우스를 대면 첫째 튀어나온 막대가 "오목" 링크, 둘째(바로 아래)가 "2048" 링크(2026-11-13), 막대나 오목을 누르면 omok.html·2048을 누르면 game2048.html 새 창), 마우스를 대면 "빈란" 막대 2개가 옆으로 나옴(둘째는 첫째 아래). 개인정보처리방침·이메일은 맨 아래로 옮김 -->
             <nav class="info-bar" aria-label="사이트 안내">
                 <a class="ib-bar ib-about" href="about.html"><svg class="ib-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.2 12 4l9 7.2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.5 10v9.5h4.8v-5.6h3.4v5.6h4.8V10" fill="currentColor" opacity=".9"/></svg>홈피 소개</a>
                 <span class="ib-bar ib-navy" aria-hidden="true">빈란</span>
-                <div class="ib-bar ib-ivory ib-game" data-omok title="오목 (새 창)"><svg class="ib-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M7.2 7h9.6a4.6 4.6 0 0 1 4.5 3.7l1 5.2a2.6 2.6 0 0 1-4.5 2.2L15.6 16H8.4l-2.2 2.1a2.6 2.6 0 0 1-4.5-2.2l1-5.2A4.6 4.6 0 0 1 7.2 7z" fill="currentColor"/><path d="M7.6 9.8v3.6M5.8 11.6h3.6" stroke="#DAD9FF" stroke-width="1.6" stroke-linecap="round"/><circle cx="15.6" cy="10.6" r="1.1" fill="#ffd166"/><circle cx="17.8" cy="12.7" r="1.1" fill="#ff7a8a"/></svg>게임<a class="ib-pop" href="omok.html" target="_blank" rel="noopener" data-omok><svg class="ib-pop-ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="1.5" y="1.5" width="21" height="21" rx="4" fill="#dcaa5e" stroke="#9a6a2c" stroke-width="1"/><path d="M6 6h12M6 10h12M6 14h12M6 18h12M6 6v12M10 6v12M14 6v12M18 6v12" stroke="#6b4316" stroke-width=".9"/><circle cx="10" cy="10" r="2.6" fill="#1b1b1b"/><circle cx="14" cy="14" r="2.6" fill="#1b1b1b"/><circle cx="14" cy="10" r="2.6" fill="#fbf8f2" stroke="#9c9486" stroke-width=".6"/><circle cx="10" cy="14" r="2.6" fill="#fbf8f2" stroke="#9c9486" stroke-width=".6"/></svg>오목</a></div>
+                <div class="ib-bar ib-ivory ib-game" data-omok title="오목 (새 창)"><svg class="ib-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M7.2 7h9.6a4.6 4.6 0 0 1 4.5 3.7l1 5.2a2.6 2.6 0 0 1-4.5 2.2L15.6 16H8.4l-2.2 2.1a2.6 2.6 0 0 1-4.5-2.2l1-5.2A4.6 4.6 0 0 1 7.2 7z" fill="currentColor"/><path d="M7.6 9.8v3.6M5.8 11.6h3.6" stroke="#DAD9FF" stroke-width="1.6" stroke-linecap="round"/><circle cx="15.6" cy="10.6" r="1.1" fill="#ffd166"/><circle cx="17.8" cy="12.7" r="1.1" fill="#ff7a8a"/></svg>게임<a class="ib-pop" href="omok.html" target="_blank" rel="noopener" data-omok><svg class="ib-pop-ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="1.5" y="1.5" width="21" height="21" rx="4" fill="#dcaa5e" stroke="#9a6a2c" stroke-width="1"/><path d="M6 6h12M6 10h12M6 14h12M6 18h12M6 6v12M10 6v12M14 6v12M18 6v12" stroke="#6b4316" stroke-width=".9"/><circle cx="10" cy="10" r="2.6" fill="#1b1b1b"/><circle cx="14" cy="14" r="2.6" fill="#1b1b1b"/><circle cx="14" cy="10" r="2.6" fill="#fbf8f2" stroke="#9c9486" stroke-width=".6"/><circle cx="10" cy="14" r="2.6" fill="#fbf8f2" stroke="#9c9486" stroke-width=".6"/></svg>오목</a><a class="ib-pop ib-pop2" href="game2048.html" target="_blank" rel="noopener" data-game="game2048.html">2048<svg class="ib-pop-ic" viewBox="0 0 24 24" aria-hidden="true"><rect x="1.5" y="1.5" width="21" height="21" rx="4" fill="#36347a"/><rect x="4" y="4" width="7.2" height="7.2" rx="1.6" fill="#dad9ff"/><rect x="12.8" y="4" width="7.2" height="7.2" rx="1.6" fill="#f5bf9f"/><rect x="4" y="12.8" width="7.2" height="7.2" rx="1.6" fill="#f0a9bd"/><rect x="12.8" y="12.8" width="7.2" height="7.2" rx="1.6" fill="#f2c94c"/></svg></a></div>
             </nav>
             <!-- 그 아래 박스: 블로그 "Records after work" 슬라이드 메뉴 (blog.js, blog.css, 글 목록은 posts.js) -->
             <div class="blog-box">
@@ -235,12 +235,17 @@
                 <a class="ql-item ql-bing" href="https://www.bing.com/" target="_blank" rel="noopener noreferrer" title="빙 (Bing)" aria-label="빙"><svg viewBox="0 0 40 40" aria-hidden="true"><defs><linearGradient id="ql-bing-bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffb347"/><stop offset="1" stop-color="#f2545b"/></linearGradient></defs><rect width="40" height="40" rx="9" fill="url(#ql-bing-bg)"/><circle cx="17.5" cy="17.5" r="7.5" fill="none" stroke="#fff" stroke-width="3.2"/><path d="M23 23l7 7" stroke="#fff" stroke-width="3.6" stroke-linecap="round"/><path d="M30 6.5l1.1 2.9 2.9 1.1-2.9 1.1-1.1 2.9-1.1-2.9-2.9-1.1 2.9-1.1z" fill="#fff" opacity="0.9"/></svg></a>
             </div>
         </nav>
-        <!-- 폰에서만 보이는 게임 입구 (단위 환산·주식시장 아래, tools.css 맨 끝). PC는 왼쪽 안내 박스의 "게임" 막대 -->
+        <!-- 폰에서만 보이는 게임 입구 (단위 환산·주식시장 아래, tools.css 맨 끝): 오목, 2048(2026-11-13). PC는 왼쪽 안내 박스의 "게임" 막대 -->
         <nav class="ad-banner game-widget" aria-label="게임">
             <h3 class="ql-title">게임</h3>
             <a class="gw-item" href="omok.html" target="_blank" rel="noopener">
                 <svg class="gw-board" viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="7" fill="#dcaa5e"/><path d="M8 8h24M8 14h24M8 20h24M8 26h24M8 32h24M8 8v24M14 8v24M20 8v24M26 8v24M32 8v24" stroke="#6b4316" stroke-width="1.1"/><circle cx="14" cy="14" r="4.2" fill="#1b1b1b"/><circle cx="20" cy="20" r="4.2" fill="#1b1b1b"/><circle cx="26" cy="20" r="4.2" fill="#f7f4ee" stroke="#b9b1a2" stroke-width=".8"/><circle cx="20" cy="26" r="4.2" fill="#f7f4ee" stroke="#b9b1a2" stroke-width=".8"/><circle cx="26" cy="26" r="4.2" fill="#1b1b1b"/></svg>
                 <span class="gw-text"><b>오목</b><small>렌주룰 · 컴퓨터와 두기</small></span>
+                <span class="gw-go" aria-hidden="true">›</span>
+            </a>
+            <a class="gw-item" href="game2048.html" target="_blank" rel="noopener">
+                <svg class="gw-board" viewBox="0 0 40 40" aria-hidden="true"><rect width="40" height="40" rx="7" fill="#36347a"/><rect x="4.5" y="4.5" width="14" height="14" rx="3" fill="#dad9ff"/><rect x="21.5" y="4.5" width="14" height="14" rx="3" fill="#f5bf9f"/><rect x="4.5" y="21.5" width="14" height="14" rx="3" fill="#f0a9bd"/><rect x="21.5" y="21.5" width="14" height="14" rx="3" fill="#f2c94c"/><text x="11.5" y="15.2" font-size="9" font-weight="700" text-anchor="middle" fill="#36347a" font-family="Arial, sans-serif">2</text><text x="28.5" y="32.2" font-size="7" font-weight="700" text-anchor="middle" fill="#fff" font-family="Arial, sans-serif">2048</text></svg>
+                <span class="gw-text"><b>2048</b><small>같은 숫자 합치기 퍼즐</small></span>
                 <span class="gw-go" aria-hidden="true">›</span>
             </a>
         </nav>
@@ -273,7 +278,7 @@
 
     <script src="script.js?v=4"></script>
     <script src="lotto-last.js?v=11"></script>
-    <script src="weather.js?v=5"></script>
+    <script src="weather.js?v=6"></script>
     <script src="fx.js"></script>
     <script src="units.js?v=2"></script>
         
@@ -285,16 +290,18 @@
     <script src="clock.js?v=13"></script>
     <script src="posts.js?v=2"></script>
     <script src="blog.js?v=2"></script>
-    <!-- 오목 열기: "게임" 막대·"오목" 막대를 누르면 오목을 따로 새 창으로 (창이 막히면 새 탭) -->
+    <!-- 게임 열기: "게임" 막대·"오목" 막대를 누르면 오목, "2048" 막대를 누르면 2048을 따로 새 창으로 (창이 막히면 새 탭) -->
     <script>
     document.addEventListener("click", function (e) {
-        var t = e.target.closest && e.target.closest("[data-omok]");
+        var t = e.target.closest && e.target.closest("[data-game], [data-omok]");
         if (!t) return;
         e.preventDefault();
-        var w = Math.min(1040, screen.availWidth - 40), h = Math.min(900, screen.availHeight - 60);
+        var page = t.getAttribute("data-game") || "omok.html";
+        var big = page === "omok.html";
+        var w = Math.min(big ? 1040 : 900, screen.availWidth - 40), h = Math.min(big ? 900 : 860, screen.availHeight - 60);
         var x = Math.max(0, (screen.availWidth - w) / 2), y = Math.max(0, (screen.availHeight - h) / 2);
-        var win = window.open("omok.html", "omokGame", "width=" + w + ",height=" + h + ",left=" + x + ",top=" + y + ",resizable=yes,scrollbars=yes");
-        if (win) win.focus(); else window.open("omok.html", "_blank");
+        var win = window.open(page, big ? "omokGame" : "g2048Game", "width=" + w + ",height=" + h + ",left=" + x + ",top=" + y + ",resizable=yes,scrollbars=yes");
+        if (win) win.focus(); else window.open(page, "_blank");
     });
     </script>
     <script src="login.js?v=5"></script>    
