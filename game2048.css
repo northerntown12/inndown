@@ -26,14 +26,14 @@ body {
 }
 
 /* 위 막대 */
-.g-top { background: linear-gradient(180deg, #4a8a4e, #2e5e34); border-bottom: 3px solid #e8c45a; }   /* 2026-11-13 진청 → 녹색 */
+.g-top { background: linear-gradient(180deg, #e6e5ff, #DAD9FF); border-bottom: 3px solid #b3b1f2; }   /* 2026-11-13 진청 → 녹색 → 홈 "게임" 막대 연보라 */
 .g-top-in {
     max-width: 860px; margin: 0 auto; padding: 14px 16px;
     display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
 }
-.g-title { margin: 0; color: #fff3c4; font-size: 1.5rem; letter-spacing: 0.04em; }
-.g-title small { margin-left: 8px; font-size: 0.82rem; font-weight: 600; color: #e9d9c4; letter-spacing: 0; }
-.g-brand { font-family: "Chewy", cursive; color: var(--g-gold); font-size: 1.05rem; white-space: nowrap; }
+.g-title { margin: 0; color: #36347a; font-size: 1.5rem; letter-spacing: 0.04em; }
+.g-title small { margin-left: 8px; font-size: 0.82rem; font-weight: 600; color: #5a57b5; letter-spacing: 0; }
+.g-brand { font-family: "Chewy", cursive; color: #5a57b5; font-size: 1.05rem; white-space: nowrap; }
 
 /* 본문: PC는 판(왼쪽) + 버튼(오른쪽), 폰은 위아래 */
 .g-main {
@@ -51,17 +51,17 @@ body {
     flex: 1; min-width: 0;
     display: flex; flex-direction: column; align-items: center;
     padding: 6px 10px 7px; border-radius: 10px;
-    background: #3f7a45; color: #fff;
-    box-shadow: 0 2px 6px rgba(40, 80, 40, 0.25);
+    background: #DAD9FF; color: #36347a; border: 1px solid #c3c1f0;
+    box-shadow: 0 2px 6px rgba(54, 52, 122, 0.18);
 }
-.g-score span { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; color: #d8efc0; }
+.g-score span { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; color: #5a57b5; }
 .g-score b { font-size: 1.35rem; line-height: 1.2; font-variant-numeric: tabular-nums; }
-.g-best { background: #fff3c4; color: #2e5e34; box-shadow: 0 2px 6px rgba(120, 100, 20, 0.15); border: 1px solid #e8d48a; }
+.g-best { background: #fff3c4; color: #36347a; box-shadow: 0 2px 6px rgba(120, 100, 20, 0.15); border: 1px solid #e8d48a; }
 .g-best span { color: #7a6a20; }
 /* 점수 오를 때 "+8" 떠오름 */
 .g-plus {
     position: absolute; right: 10px; top: 4px;
-    font-style: normal; font-weight: 700; font-size: 0.95rem; color: #ffd166;
+    font-style: normal; font-weight: 700; font-size: 0.95rem; color: #e0a800;
     opacity: 0; pointer-events: none;
 }
 .g-plus.go { animation: gPlus 0.7s ease-out; }
@@ -93,8 +93,9 @@ body {
     aspect-ratio: 1 / 1;
     border-radius: 14px;
     /* 2026-11-13: 판 바탕을 녹색으로 (예전 남보라 #4a4796 → #36347a) */
-    background: linear-gradient(160deg, #4f8a4b, #3a6e3d);
-    box-shadow: 0 10px 26px rgba(40, 80, 40, 0.3), 0 2px 0 rgba(0, 0, 0, 0.08);
+    background: #DAD9FF;      /* 2026-11-13 녹색 → 홈 "게임" 막대 색 */
+    border: 1px solid #c3c1f0;
+    box-shadow: 0 10px 26px rgba(54, 52, 122, 0.22), 0 2px 0 rgba(0, 0, 0, 0.06);
     touch-action: none;           /* 손가락으로 밀 때 화면이 같이 움직이지 않게 */
     user-select: none; -webkit-user-select: none;
     cursor: grab;
@@ -105,7 +106,7 @@ body {
     position: absolute; inset: 0; padding: var(--gap);
     display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(4, 1fr); gap: var(--gap);
 }
-.g-cells i { border-radius: 8px; background: rgba(255, 255, 255, 0.16); box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.15); }
+.g-cells i { border-radius: 8px; background: rgba(54, 52, 122, 0.10); box-shadow: inset 0 1px 2px rgba(54, 52, 122, 0.15); }
 .g-tiles { position: absolute; inset: 0; }
 
 /* 타일: --r, --c (0~3)로 자리 */
@@ -154,7 +155,7 @@ body {
 /* 결과 창 (판 위) */
 .g-result {
     position: absolute; inset: 0; display: grid; place-items: center; z-index: 5;
-    background: rgba(30, 60, 30, 0.38); border-radius: 14px;
+    background: rgba(54, 52, 122, 0.30); border-radius: 14px;
     animation: gFade 0.35s ease;
 }
 .g-result[hidden] { display: none; }
@@ -185,16 +186,16 @@ body {
 .g-btn:active:not(:disabled) { transform: translateY(1px); }
 .g-btn:disabled { cursor: not-allowed; opacity: 0.55; }
 .g-actions .g-btn { flex: 1; padding-left: 6px; padding-right: 6px; }
-.g-exit { background: #eef5e4; border-color: #c6dcae; color: #2e5e34; }
-.g-exit:hover { background: #e2eed4; }
-.g-primary { background: linear-gradient(180deg, #5a9a5c, #3f7a45); border-color: #2e5e34; color: #fff; }
-.g-primary:hover:not(:disabled) { background: linear-gradient(180deg, #66a868, #468a4c); }
+.g-exit { background: #f1f1ff; border-color: #c3c1f0; color: #36347a; }
+.g-exit:hover { background: #e6e5ff; }
+.g-primary { background: linear-gradient(180deg, #e6e5ff, #DAD9FF); border-color: #b3b1f2; color: #36347a; }
+.g-primary:hover:not(:disabled) { background: linear-gradient(180deg, #efeeff, #cfcdfb); }
 
 .g-record { font-size: 0.82rem; color: #5a4c38; background: var(--g-paper); border-radius: 10px; padding: 10px 12px; line-height: 1.7; }
 .g-record b { color: var(--g-ink); }
 
 .g-rules { font-size: 0.85rem; color: #4a3d2c; }
-.g-rules summary { cursor: pointer; font-weight: 700; color: #2e5e34; }
+.g-rules summary { cursor: pointer; font-weight: 700; color: #36347a; }
 .g-rules ul { padding-left: 1.2em; margin: 8px 0 0; line-height: 1.7; }
 
 .g-foot { text-align: center; font-size: 0.78rem; color: var(--g-mute); padding: 18px 16px 26px; }
