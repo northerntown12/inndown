@@ -64,6 +64,27 @@
 .info-bar .ib-ic { width: 17px; height: 17px; order: 1; }   /* order 1 = 글씨 오른쪽 (2026-11-12 왼쪽 → 오른쪽) */
 .info-bar .ib-about .ib-ic { color: #ffe3f6; }
 .info-bar .ib-ivory .ib-ic { color: #36347a; }   /* 게임 아이콘 (연보라 막대 위라 진한 남보라) */
+/* 2026-11-13: 게임 막대 아이콘 오른쪽에 발랄한 "FREE!" (게임 · 아이콘 · FREE! 순서, 막대 안 가운데 정렬) */
+.info-bar .ib-free {
+    order: 2;                           /* 아이콘(order 1) 다음 */
+    display: inline-block;
+    font-family: "Chewy", "Comic Sans MS", cursive;
+    font-weight: 400;
+    font-size: 0.86rem;
+    letter-spacing: 0.04em;
+    line-height: 1;
+    color: #ff5e8a;
+    text-shadow: 1px 1px 0 #fff, -1px 1px 0 #fff, 0 2px 0 rgba(255, 179, 71, 0.9);
+    transform: rotate(-7deg);
+    animation: ibFreeWiggle 2.6s ease-in-out infinite;
+}
+@keyframes ibFreeWiggle {
+    0%, 70%, 100% { transform: rotate(-7deg) scale(1); }
+    78% { transform: rotate(4deg) scale(1.12); }
+    86% { transform: rotate(-10deg) scale(1.05); }
+    93% { transform: rotate(-5deg) scale(1); }
+}
+@media (prefers-reduced-motion: reduce) { .info-bar .ib-free { animation: none; } }
 
 /* 마우스를 대면 같은 크기의 막대 2개가 오른쪽으로 차례로 불쑥 (clip-path로 왼쪽부터 펼쳐짐)
    2026-11-12: 1개 → 2개 (::after 첫째, ::before 둘째는 첫째 바로 아래), 글씨 "빈칸" → "빈란" */
