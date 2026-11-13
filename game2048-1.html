@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>2048 · Records after work</title>
+    <meta name="description" content="같은 숫자 타일을 밀어서 합쳐 2048을 만드는 퍼즐 게임.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="game2048.css?v=2">
+</head>
+<body>
+    <header class="g-top">
+        <div class="g-top-in">
+            <h1 class="g-title">2048 <small>숫자 합치기 퍼즐</small></h1>
+            <span class="g-brand">Records after work</span>
+        </div>
+    </header>
+
+    <main class="g-main">
+        <!-- 판 -->
+        <section class="g-board-wrap">
+            <div class="g-statusrow">
+                <div class="g-score"><span>점수</span><b id="gScore">0</b><i class="g-plus" id="gPlus"></i></div>
+                <div class="g-score g-best"><span>최고 점수</span><b id="gBest">0</b></div>
+                <!-- 소리 끄기·켜기 (끄면 스피커에 오른쪽 위→왼쪽 아래 빨간 빗금) -->
+                <button type="button" class="g-mute" id="gSound" aria-label="소리 끄기" title="소리 끄기">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path class="g-spk" d="M4 9.2h3.6L12.4 5v14l-4.8-4.2H4z"/>
+                        <path class="g-wave" d="M15.3 9.2a4 4 0 0 1 0 5.6M17.8 6.8a7.4 7.4 0 0 1 0 10.4"/>
+                        <path class="g-slash" d="M20.5 3.5 4 20"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="g-board" id="gBoard" aria-label="2048 판" role="application">
+                <div class="g-cells" aria-hidden="true">
+                    <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                    <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                </div>
+                <div class="g-tiles" id="gTiles"></div>
+                <div class="g-result" id="gResult" hidden>
+                    <div class="g-result-card">
+                        <p class="g-result-title" id="gResultTitle"></p>
+                        <p class="g-result-sub" id="gResultSub"></p>
+                        <div class="g-result-btns">
+                            <button type="button" class="g-btn" id="gKeep">계속하기</button>
+                            <button type="button" class="g-btn g-primary" id="gAgain">새 게임</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p class="g-hint" id="gHint">방향키(← ↑ → ↓)로 밀어서 같은 숫자를 합치세요.</p>
+        </section>
+
+        <!-- 버튼·기록 -->
+        <aside class="g-panel">
+            <div class="g-actions">
+                <button type="button" class="g-btn g-primary" id="gNew">새 게임</button>
+                <button type="button" class="g-btn" id="gUndo">되돌리기</button>
+                <button type="button" class="g-btn g-exit" id="gExit" title="2048 창 닫기">종료</button>
+            </div>
+
+            <div class="g-record" id="gRecord"></div>
+
+            <details class="g-rules">
+                <summary>어떻게 해요?</summary>
+                <ul>
+                    <li>방향키나 손가락으로 판을 밀면 모든 타일이 그쪽으로 끝까지 움직여요.</li>
+                    <li>같은 숫자 두 개가 부딪히면 <b>하나로 합쳐져요</b> (2+2=4, 4+4=8 …). 합쳐진 숫자만큼 점수가 올라요.</li>
+                    <li>한 번 밀 때마다 빈칸에 새 타일(2, 가끔 4)이 하나 생겨요.</li>
+                    <li><b>2048</b>을 만들면 성공! 계속해서 더 큰 숫자에 도전할 수도 있어요.</li>
+                    <li>빈칸이 없고 더 합칠 것도 없으면 끝나요. <b>되돌리기</b>는 바로 전 한 번만 돼요.</li>
+                    <li>하던 게임은 이 기기에 저장돼서, 창을 닫았다 열어도 이어서 할 수 있어요.</li>
+                </ul>
+            </details>
+        </aside>
+    </main>
+
+    <footer class="g-foot">Copyright © 2026 Choi Yunhyok. All rights reserved.</footer>
+
+    <script src="game2048.js?v=1"></script>
+</body>
+</html>

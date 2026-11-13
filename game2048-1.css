@@ -1,0 +1,225 @@
+/* =========================================================
+   2048 페이지 (game2048.html) — 오목 페이지와 같은 크림 종이 + 남색 위 막대
+   타일 색은 홈 블로그 메뉴의 연보라(#DAD9FF) → 남보라 → 살구·분홍 → 금색
+   ========================================================= */
+:root {
+    --g-navy: #1e2942;
+    --g-navy2: #2b3a5c;
+    --g-gold: #c9a27e;
+    --g-cream: #fbf7ef;
+    --g-paper: #f4ecdd;
+    --g-ink: #2c2418;
+    --g-mute: #8a7d68;
+    --g-lav: #dad9ff;
+    --g-plum: #36347a;
+    --gap: 12px;            /* 칸 사이 간격 (폰은 아래에서 8px) */
+    --speed: 110ms;         /* 타일이 미끄러지는 시간 (game2048.js의 SLIDE_MS와 같게) */
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body {
+    /* 2026-11-13: 바탕을 따뜻한 노랑으로 (예전 크림 #fbf7ef) */
+    background: linear-gradient(180deg, #fff3c4 0%, #fde9a6 100%) fixed;
+    color: var(--g-ink);
+    font-family: "Noto Sans KR", system-ui, sans-serif;
+    -webkit-tap-highlight-color: transparent;
+}
+
+/* 위 막대 */
+.g-top { background: linear-gradient(180deg, var(--g-navy2), var(--g-navy)); border-bottom: 3px solid var(--g-gold); }
+.g-top-in {
+    max-width: 860px; margin: 0 auto; padding: 14px 16px;
+    display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
+}
+.g-title { margin: 0; color: #fff3c4; font-size: 1.5rem; letter-spacing: 0.04em; }
+.g-title small { margin-left: 8px; font-size: 0.82rem; font-weight: 600; color: #e9d9c4; letter-spacing: 0; }
+.g-brand { font-family: "Chewy", cursive; color: var(--g-gold); font-size: 1.05rem; white-space: nowrap; }
+
+/* 본문: PC는 판(왼쪽) + 버튼(오른쪽), 폰은 위아래 */
+.g-main {
+    max-width: 860px; margin: 0 auto; padding: 20px 16px 10px;
+    display: grid; grid-template-columns: minmax(0, 1fr) 260px; gap: 22px; align-items: start;
+}
+
+/* 점수 줄 + 오른쪽 끝 소리 버튼 */
+.g-statusrow {
+    display: flex; align-items: center; gap: 10px;
+    max-width: 480px; margin: 0 auto 12px;
+}
+.g-score {
+    position: relative;
+    flex: 1; min-width: 0;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 6px 10px 7px; border-radius: 10px;
+    background: var(--g-plum); color: #fff;
+    box-shadow: 0 2px 6px rgba(54, 52, 122, 0.25);
+}
+.g-score span { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; color: #cfcdfb; }
+.g-score b { font-size: 1.35rem; line-height: 1.2; font-variant-numeric: tabular-nums; }
+.g-best { background: var(--g-lav); color: var(--g-plum); box-shadow: 0 2px 6px rgba(54, 52, 122, 0.15); border: 1px solid #c3c1f0; }
+.g-best span { color: #5a57b5; }
+/* 점수 오를 때 "+8" 떠오름 */
+.g-plus {
+    position: absolute; right: 10px; top: 4px;
+    font-style: normal; font-weight: 700; font-size: 0.95rem; color: #ffd166;
+    opacity: 0; pointer-events: none;
+}
+.g-plus.go { animation: gPlus 0.7s ease-out; }
+@keyframes gPlus { 0% { opacity: 1; transform: translateY(6px); } 100% { opacity: 0; transform: translateY(-18px); } }
+
+.g-mute {
+    flex: none; width: 42px; height: 42px; padding: 0;
+    display: grid; place-items: center;
+    border-radius: 50%; cursor: pointer;
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    background: linear-gradient(160deg, rgba(120, 170, 235, 0.55), rgba(40, 80, 150, 0.75));
+    box-shadow: 0 4px 12px rgba(30, 50, 100, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+    transition: transform 0.12s, filter 0.15s;
+}
+.g-mute:hover { filter: brightness(1.08); }
+.g-mute:active { transform: scale(0.94); }
+.g-mute svg { width: 24px; height: 24px; overflow: visible; }
+.g-mute .g-spk { fill: #fff; }
+.g-mute .g-wave { fill: none; stroke: #fff; stroke-width: 1.9; stroke-linecap: round; }
+.g-mute .g-slash { fill: none; stroke: #e5402b; stroke-width: 2.6; stroke-linecap: round; opacity: 0; filter: drop-shadow(0 0 1px #fff); }
+.g-mute.muted .g-wave { opacity: 0.35; }
+.g-mute.muted .g-slash { opacity: 1; }
+
+/* 판 */
+.g-board {
+    position: relative;
+    width: 100%; max-width: 480px; margin: 0 auto;
+    aspect-ratio: 1 / 1;
+    border-radius: 14px;
+    /* 2026-11-13: 판 바탕을 녹색으로 (예전 남보라 #4a4796 → #36347a) */
+    background: linear-gradient(160deg, #5f9a5a, #3f7a45);
+    box-shadow: 0 10px 26px rgba(40, 80, 40, 0.3), 0 2px 0 rgba(0, 0, 0, 0.08);
+    touch-action: none;           /* 손가락으로 밀 때 화면이 같이 움직이지 않게 */
+    user-select: none; -webkit-user-select: none;
+    cursor: grab;
+}
+.g-board:active { cursor: grabbing; }
+.g-board:focus-visible { outline: 3px solid var(--g-gold); outline-offset: 3px; }
+.g-cells {
+    position: absolute; inset: 0; padding: var(--gap);
+    display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(4, 1fr); gap: var(--gap);
+}
+.g-cells i { border-radius: 8px; background: rgba(255, 255, 255, 0.16); box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.15); }
+.g-tiles { position: absolute; inset: 0; }
+
+/* 타일: --r, --c (0~3)로 자리 */
+.g-tile {
+    --cell: calc((100% - 5 * var(--gap)) / 4);
+    position: absolute;
+    width: var(--cell); height: var(--cell);
+    left: calc(var(--gap) + var(--c) * (var(--cell) + var(--gap)));
+    top:  calc(var(--gap) + var(--r) * (var(--cell) + var(--gap)));
+    transition: left var(--speed) ease-in-out, top var(--speed) ease-in-out;
+    z-index: 2;
+}
+.g-tile.dying { z-index: 1; }
+.g-tile b {
+    position: absolute; inset: 0;
+    display: grid; place-items: center;
+    border-radius: 8px;
+    font-weight: 700; font-variant-numeric: tabular-nums;
+    font-size: clamp(1.3rem, 8.5vw, 2.6rem);
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.12), 0 3px 8px rgba(20, 16, 60, 0.18);
+}
+.g-tile.d3 b { font-size: clamp(1.15rem, 7vw, 2.15rem); }
+.g-tile.d4 b { font-size: clamp(0.95rem, 5.6vw, 1.75rem); }
+.g-tile.d5 b { font-size: clamp(0.8rem, 4.6vw, 1.4rem); }
+.g-tile.new b { animation: gAppear 0.18s ease-out backwards; }
+.g-tile.pop b { animation: gPop 0.2s ease-out; }
+@keyframes gAppear { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes gPop { 0% { transform: scale(1); } 45% { transform: scale(1.16); } 100% { transform: scale(1); } }
+
+/* 타일 색 */
+.v2    b { background: #f6f2ea; color: #5b4a36; }
+.v4    b { background: #ece7f8; color: #4a3f6b; }
+.v8    b { background: #dad9ff; color: #36347a; }
+.v16   b { background: #b3b1f2; color: #2a2860; }
+.v32   b { background: #8f8ce0; color: #fff; }
+.v64   b { background: #6c68c9; color: #fff; }
+.v128  b { background: #f5bf9f; color: #6a3418; box-shadow: 0 0 10px 2px rgba(245, 191, 159, 0.55), 0 2px 0 rgba(0, 0, 0, 0.12); }
+.v256  b { background: #f0a9bd; color: #6a1f3a; box-shadow: 0 0 12px 3px rgba(240, 169, 189, 0.55), 0 2px 0 rgba(0, 0, 0, 0.12); }
+.v512  b { background: #e7849c; color: #fff; box-shadow: 0 0 14px 3px rgba(231, 132, 156, 0.55), 0 2px 0 rgba(0, 0, 0, 0.12); }
+.v1024 b { background: linear-gradient(160deg, #dcb892, #c9a27e); color: #fff; box-shadow: 0 0 16px 4px rgba(201, 162, 126, 0.6), 0 2px 0 rgba(0, 0, 0, 0.12); }
+.v2048 b { background: linear-gradient(160deg, #f7d66b, #d9a521); color: #fff; text-shadow: 0 1px 2px rgba(120, 80, 0, 0.5); box-shadow: 0 0 20px 6px rgba(242, 201, 76, 0.7), 0 2px 0 rgba(0, 0, 0, 0.12); }
+.vbig  b { background: linear-gradient(160deg, #2b3a5c, #1e2942); color: #fff3c4; box-shadow: 0 0 18px 4px rgba(255, 243, 196, 0.45), 0 2px 0 rgba(0, 0, 0, 0.2); }
+
+.g-hint { margin: 10px auto 0; max-width: 480px; text-align: center; font-size: 0.85rem; color: var(--g-mute); }
+
+/* 결과 창 (판 위) */
+.g-result {
+    position: absolute; inset: 0; display: grid; place-items: center; z-index: 5;
+    background: rgba(30, 60, 30, 0.38); border-radius: 14px;
+    animation: gFade 0.35s ease;
+}
+.g-result[hidden] { display: none; }
+@keyframes gFade { from { opacity: 0; } to { opacity: 1; } }
+.g-result-card {
+    background: var(--g-cream); border: 2px solid var(--g-gold); border-radius: 14px;
+    padding: 18px 24px; text-align: center; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    animation: gCard 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    max-width: 86%;
+}
+@keyframes gCard { from { transform: scale(0.8); } to { transform: scale(1); } }
+.g-result-title { margin: 0; font-size: 1.5rem; font-weight: 700; }
+.g-result-sub { margin: 4px 0 14px; color: var(--g-mute); font-size: 0.9rem; }
+.g-result-btns { display: flex; gap: 8px; justify-content: center; }
+
+/* 오른쪽 칸 */
+.g-panel {
+    background: #fff; border: 1px solid #e3d8c4; border-radius: 12px;
+    padding: 16px; display: flex; flex-direction: column; gap: 14px;
+}
+.g-actions { display: flex; gap: 8px; }
+.g-btn {
+    font: inherit; font-size: 0.92rem; font-weight: 700;
+    padding: 10px 14px; border-radius: 10px; cursor: pointer;
+    border: 1px solid #d8ccb4; background: var(--g-paper); color: var(--g-ink);
+    transition: transform 0.1s, background 0.15s;
+}
+.g-btn:active:not(:disabled) { transform: translateY(1px); }
+.g-btn:disabled { cursor: not-allowed; opacity: 0.55; }
+.g-actions .g-btn { flex: 1; padding-left: 6px; padding-right: 6px; }
+.g-exit { background: #eef0f7; border-color: #c4cbe0; color: var(--g-navy2); }
+.g-exit:hover { background: #e2e6f2; }
+.g-primary { background: linear-gradient(180deg, #5d59b8, var(--g-plum)); border-color: #2c2a66; color: #fff; }
+.g-primary:hover:not(:disabled) { background: linear-gradient(180deg, #6965c6, #3e3c88); }
+
+.g-record { font-size: 0.82rem; color: #5a4c38; background: var(--g-paper); border-radius: 10px; padding: 10px 12px; line-height: 1.7; }
+.g-record b { color: var(--g-ink); }
+
+.g-rules { font-size: 0.85rem; color: #4a3d2c; }
+.g-rules summary { cursor: pointer; font-weight: 700; color: var(--g-navy2); }
+.g-rules ul { padding-left: 1.2em; margin: 8px 0 0; line-height: 1.7; }
+
+.g-foot { text-align: center; font-size: 0.78rem; color: var(--g-mute); padding: 18px 16px 26px; }
+
+/* ---------- 폰 ---------- */
+@media (max-width: 760px) {
+    :root { --gap: 8px; }
+    .g-top-in { padding: 11px 16px; }
+    .g-title { font-size: 1.25rem; }
+    .g-title small { display: block; margin: 2px 0 0; }
+    .g-brand { font-size: 0.92rem; }
+    .g-main { grid-template-columns: 1fr; gap: 14px; padding: 12px 10px 6px; }
+    .g-board, .g-result { border-radius: 10px; }
+    .g-cells i, .g-tile b { border-radius: 6px; }
+    .g-panel { padding: 14px; }
+    .g-btn { padding: 12px 14px; }
+}
+/* PC에서는 판 크기가 최대 480px라 글씨 크기를 고정 */
+@media (min-width: 761px) {
+    .g-tile b { font-size: 2.6rem; }
+    .g-tile.d3 b { font-size: 2.15rem; }
+    .g-tile.d4 b { font-size: 1.75rem; }
+    .g-tile.d5 b { font-size: 1.4rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+    :root { --speed: 0ms; }
+    .g-tile.new b, .g-tile.pop b { animation: none; }
+}
