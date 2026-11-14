@@ -86,8 +86,7 @@
         '.lang-switch a:hover{background:#efeeff}' +
         '.lang-switch a.on{background:#DAD9FF;color:#24225e;pointer-events:none}' +
         '.lang-flag{width:20px;height:13.3px;border-radius:2px;display:block;flex:none}' +
-        '.lang-flags{display:inline-flex;gap:0}' +
-        '.lang-flags .lang-flag:first-child{border-radius:2px 0 0 2px}.lang-flags .lang-flag:last-child{border-radius:0 2px 2px 0}' +
+        '.lang-flags{display:inline-flex;gap:3px}' +
         /* 홈: 배너 바로 위, 배너 오른쪽 끝에 맞춰서 (PC·폰 같은 모양) */
         '.main-banner .lang-switch.ls-banner{position:absolute;right:0;bottom:calc(100% + 5px)}' +
         /* 홈: 배너 위 오른쪽 끝 (배너 위 여백 안) */
