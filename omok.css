@@ -238,3 +238,22 @@ body {
 .om-stop:hover:not(:disabled) { background: #ffe9e3; }
 .om-stop.om-stop-hot { border-color: #e08a76; box-shadow: 0 0 0 2px rgba(224, 138, 118, 0.25); }
 .om-result-card .om-stop { margin-left: 6px; }
+
+/* 온라인 대결 버튼의 NEW — 홈 게임 막대 FREE!와 같은 모양으로 통통 흔들림 (2026-11-15, PC·폰) */
+.om-online .om-soon {
+    display: inline-block;
+    padding: 0; border-radius: 0; background: none;
+    font-family: "Chewy", "Comic Sans MS", cursive;
+    font-weight: 400; font-size: 1rem; letter-spacing: 0.04em; line-height: 1;
+    color: #ff5e8a;
+    text-shadow: 1px 1px 0 #fff, -1px 1px 0 #fff, 0 2px 0 rgba(255, 179, 71, 0.9);
+    transform: rotate(-7deg);
+    animation: omNewWiggle 2.6s ease-in-out infinite;
+}
+@keyframes omNewWiggle {
+    0%, 70%, 100% { transform: rotate(-7deg) scale(1); }
+    78% { transform: rotate(4deg) scale(1.12); }
+    86% { transform: rotate(-10deg) scale(1.05); }
+    93% { transform: rotate(-5deg) scale(1); }
+}
+@media (prefers-reduced-motion: reduce) { .om-online .om-soon { animation: none; } }
