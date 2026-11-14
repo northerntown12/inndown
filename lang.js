@@ -1,6 +1,6 @@
 /* 한국어 / English 전환 (2026-11-14)
    - 모든 페이지 <head> 맨 위에서 다른 js보다 먼저 읽어요.
-   - 페이지 오른쪽 위에 태극기 "한국어" · 성조기 "English" 버튼을 붙여요.
+   - 오른쪽 위에 태극기 "한국어" · 영국 국기+성조기 "English" 버튼을 붙여요. (홈은 배너 오른쪽 끝 바로 위)
      한국어 페이지 이름.html ↔ 영문 페이지 이름-en.html  (예: index.html ↔ index-en.html)
    - 다른 js에서는 T("한국어 글씨", "English text") 로 쓰면
      영문 페이지(<html lang="en">)에서는 영어, 한국어 페이지에서는 한국어가 나와요.
@@ -58,6 +58,18 @@
         if (r % 2 === 1 && c === 5) continue;
         stars += '<circle cx="' + (1.4 + c * 2.45 + (r % 2) * 1.22).toFixed(2) + '" cy="' + (1.3 + r * 2.5).toFixed(2) + '" r=".55" fill="#fff"/>';
     }
+    /* 영국 국기 (유니언 잭) */
+    var FLAG_UK =
+        '<svg class="lang-flag" viewBox="0 0 60 40" preserveAspectRatio="xMidYMid slice" aria-hidden="true">' +
+        '<clipPath id="lsUkT"><path d="M30 20h30v20zv20H0zH0V0zV0h30z"/></clipPath>' +
+        '<rect width="60" height="40" fill="#012169"/>' +
+        '<path d="M-3 -2L63 42M63 -2L-3 42" stroke="#fff" stroke-width="8"/>' +
+        '<path d="M-3 -2L63 42M63 -2L-3 42" stroke="#c8102e" stroke-width="4" clip-path="url(#lsUkT)"/>' +
+        '<path d="M30 0v40M0 20h60" stroke="#fff" stroke-width="12"/>' +
+        '<path d="M30 0v40M0 20h60" stroke="#c8102e" stroke-width="7"/>' +
+        '<rect x=".4" y=".4" width="59.2" height="39.2" fill="none" stroke="rgba(0,0,0,.18)" stroke-width=".8"/>' +
+        '</svg>';
+
     var FLAG_US =
         '<svg class="lang-flag" viewBox="0 0 36 24" aria-hidden="true">' +
         '<rect width="36" height="24" fill="#fff"/>' + stripes +
@@ -74,13 +86,16 @@
         '.lang-switch a:hover{background:#efeeff}' +
         '.lang-switch a.on{background:#DAD9FF;color:#24225e;pointer-events:none}' +
         '.lang-flag{width:20px;height:13.3px;border-radius:2px;display:block;flex:none}' +
+        '.lang-flags{display:inline-flex;gap:3px}' +
+        /* 홈: 배너 바로 위, 배너 오른쪽 끝에 맞춰서 (PC·폰 같은 모양) */
+        '.main-banner .lang-switch.ls-banner{position:absolute;right:0;bottom:calc(100% + 5px)}' +
         /* 홈: 배너 위 오른쪽 끝 (배너 위 여백 안) */
         '.lang-switch.ls-float{position:absolute;top:5px;right:28px}' +
         /* 블로그·안내·게임 페이지: 위 막대 오른쪽 */
         '.lang-switch.ls-inbar{margin-left:auto;margin-right:12px}' +
         '@media (max-width:768px){.lang-switch.ls-float{top:6px;right:10px}' +
         '.lang-switch{font-size:11px}.lang-switch a{padding:3px 7px 3px 5px;gap:4px}.lang-flag{width:18px;height:12px}' +
-        '.lang-switch.ls-inbar{margin-right:8px}}' +
+        '.lang-switch.ls-inbar{margin-right:8px}.main-banner .lang-switch.ls-banner{bottom:calc(100% + 6px)}}' +
         '@media (max-width:480px){.om-brand,.g-brand{display:none}.lang-switch.ls-inbar{margin-right:0}}' +
         '@media print{.lang-switch{display:none}}';
 
@@ -95,7 +110,7 @@
         box.setAttribute("aria-label", EN ? "Language" : "언어 선택");
         box.innerHTML =
             '<a href="' + koUrl + '" lang="ko" hreflang="ko"' + (EN ? "" : ' class="on" aria-current="true"') + '>' + FLAG_KR + '한국어</a>' +
-            '<a href="' + enUrl + '" lang="en" hreflang="en"' + (EN ? ' class="on" aria-current="true"' : "") + '>' + FLAG_US + 'English</a>';
+            '<a href="' + enUrl + '" lang="en" hreflang="en"' + (EN ? ' class="on" aria-current="true"' : "") + '><span class="lang-flags">' + FLAG_UK + FLAG_US + '</span>English</a>';
 
         /* 위 막대가 있는 페이지는 막대 안 오른쪽 끝 글자(홈으로·브랜드) 앞에 */
         var bar = document.querySelector(".bp-top-in, .om-top-in, .g-top-in");
@@ -103,6 +118,9 @@
             var ref = bar.querySelector(".bp-home, .om-brand, .g-brand");
             box.classList.add("ls-inbar");
             bar.insertBefore(box, ref || null);
+        } else if (document.querySelector(".main-banner")) {
+            box.classList.add("ls-banner");           // 홈: 배너 오른쪽 끝 위
+            document.querySelector(".main-banner").appendChild(box);
         } else {
             box.classList.add("ls-float");
             document.body.appendChild(box);
