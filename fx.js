@@ -18,7 +18,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
     var CHECK_EVERY_MS = 30 * 60 * 1000;    // 30분마다 '갱신할 때가 됐나' 확인
 
     // 표시할 통화: 코드 → 몇 단위 기준으로 보여줄지
-    var UNITS = { USD: 1, JPY: 100, EUR: 1, CNY: 1, GBP: 1 };
+    var UNITS = { USD: 1, JPY: 100, EUR: 1, CNY: 1, GBP: 1, VND: 100, THB: 1, TWD: 1 };   // 2026-11-15 베트남 동(100동)·태국 바트·대만 달러 추가
 
     var dateEl = document.getElementById("fx-date");
     var rows = widget.querySelectorAll("li[data-code]");

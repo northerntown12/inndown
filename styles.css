@@ -1899,3 +1899,10 @@ button:active {
 @media screen and (max-width: 768px), screen and (hover: none) and (pointer: coarse) and (max-width: 1000px) {
     .banner-happy { aspect-ratio: 1024 / 350; }
 }
+
+/* 환율: "자동갱신" 글씨 바로 위에 글씨 길이만큼만 가는 구분선 (2026-11-15) */
+#fx-date {
+    border-top: 1px solid rgba(255, 255, 255, 0.5);
+    padding-top: 3px;
+    margin-top: 1px;
+}
