@@ -153,10 +153,12 @@
     left: -4px; top: 0;
     width: 4px; height: 100%;
 }
+/* 2026-11-15: 게임 막대를 마우스로 누르면 포커스가 남아(:focus-within) 펼쳐진 5칸이 안 닫히던 문제
+   → 키보드(Tab)로 들어왔을 때만 열리게 :has(:focus-visible)로 바꿈 (마우스는 :hover만) */
 .info-bar .ib-pop-ic { width: 18px; height: 18px; flex: none; order: 1; }   /* 아이콘은 "오목" 글씨 오른쪽 */
-.info-bar .ib-game:hover .ib-pop,
-.info-bar .ib-game:focus-within .ib-pop { clip-path: inset(0 0 0 0 round 5px); pointer-events: auto; }
-.info-bar .ib-game:focus-within::before { clip-path: inset(0 0 0 0 round 5px); transition-delay: 0.12s; }
+.info-bar .ib-game:hover .ib-pop { clip-path: inset(0 0 0 0 round 5px); pointer-events: auto; }
+.info-bar .ib-game:is(:focus-visible, :has(:focus-visible)) .ib-pop { clip-path: inset(0 0 0 0 round 5px); pointer-events: auto; }
+.info-bar .ib-game:is(:focus-visible, :has(:focus-visible))::before { clip-path: inset(0 0 0 0 round 5px); transition-delay: 0.12s; }
 .info-bar .ib-pop:hover { filter: brightness(1.06) saturate(1.1); }
 .info-bar .ib-pop:focus-visible { outline: 2px solid #36347a; outline-offset: 1px; }
 
@@ -174,13 +176,13 @@
     left: 0; top: -4px;
     width: 100%; height: 4px;
 }
-.info-bar .ib-game:hover .ib-pop2,
-.info-bar .ib-game:focus-within .ib-pop2 { transition-delay: 0.12s; }   /* 나올 땐 오목 다음에 */
+.info-bar .ib-game:hover .ib-pop2 { transition-delay: 0.12s; }
+.info-bar .ib-game:is(:focus-visible, :has(:focus-visible)) .ib-pop2 { transition-delay: 0.12s; }   /* 나올 땐 오목 다음에 */
 /* 틈 메우는 투명 칸(::before 왼쪽, ::after 위쪽)이 clip-path에 잘리지 않게, 펼쳐졌을 때 잘라내는 범위를 4px 넓힘 */
-.info-bar .ib-game:hover .ib-pop,
-.info-bar .ib-game:focus-within .ib-pop { clip-path: inset(0 0 0 -4px round 5px); }
-.info-bar .ib-game:hover .ib-pop2,
-.info-bar .ib-game:focus-within .ib-pop2 { clip-path: inset(-4px 0 0 -4px round 5px); }
+.info-bar .ib-game:hover .ib-pop { clip-path: inset(0 0 0 -4px round 5px); }
+.info-bar .ib-game:is(:focus-visible, :has(:focus-visible)) .ib-pop { clip-path: inset(0 0 0 -4px round 5px); }
+.info-bar .ib-game:hover .ib-pop2 { clip-path: inset(-4px 0 0 -4px round 5px); }
+.info-bar .ib-game:is(:focus-visible, :has(:focus-visible)) .ib-pop2 { clip-path: inset(-4px 0 0 -4px round 5px); }
 .info-bar .ib-pop2:focus-visible { outline-color: #7a3e1c; }
 
 /* 2026-11-13: 2048 아래로 "빈란" 막대 3개 더 (나중에 게임을 넣을 자리, 지금은 링크 없음).
@@ -195,9 +197,12 @@
     left: 0; top: -4px;
     width: 100%; height: 4px;
 }
-.info-bar .ib-game:hover .ib-pop3, .info-bar .ib-game:focus-within .ib-pop3 { transition-delay: 0.24s; clip-path: inset(-4px 0 0 -4px round 5px); }
-.info-bar .ib-game:hover .ib-pop4, .info-bar .ib-game:focus-within .ib-pop4 { transition-delay: 0.36s; clip-path: inset(-4px 0 0 -4px round 5px); }
-.info-bar .ib-game:hover .ib-pop5, .info-bar .ib-game:focus-within .ib-pop5 { transition-delay: 0.48s; clip-path: inset(-4px 0 0 -4px round 5px); }
+.info-bar .ib-game:hover .ib-pop3 { transition-delay: 0.24s; clip-path: inset(-4px 0 0 -4px round 5px); }
+.info-bar .ib-game:is(:focus-visible, :has(:focus-visible)) .ib-pop3 { transition-delay: 0.24s; clip-path: inset(-4px 0 0 -4px round 5px); }
+.info-bar .ib-game:hover .ib-pop4 { transition-delay: 0.36s; clip-path: inset(-4px 0 0 -4px round 5px); }
+.info-bar .ib-game:is(:focus-visible, :has(:focus-visible)) .ib-pop4 { transition-delay: 0.36s; clip-path: inset(-4px 0 0 -4px round 5px); }
+.info-bar .ib-game:hover .ib-pop5 { transition-delay: 0.48s; clip-path: inset(-4px 0 0 -4px round 5px); }
+.info-bar .ib-game:is(:focus-visible, :has(:focus-visible)) .ib-pop5 { transition-delay: 0.48s; clip-path: inset(-4px 0 0 -4px round 5px); }
 
 /* 색: 막대 / 첫째 튀어나옴 / 둘째 튀어나옴 */
 .info-bar .ib-about         { background: linear-gradient(180deg, #9b4a8f, #84387a); color: #fff; }   /* 자주 */
