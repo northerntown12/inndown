@@ -1900,9 +1900,21 @@ button:active {
     .banner-happy { aspect-ratio: 1024 / 350; }
 }
 
-/* 환율: "자동갱신" 글씨 바로 위에 글씨 길이만큼만 가는 구분선 (2026-11-15) */
+/* 환율: "자동갱신" 글씨 바로 위 가는 구분선 (2026-11-15)
+   길이 = 글씨 길이 + 양옆 빈 공간의 30%씩 더 (선 너비 = 글씨 70% + 칸 30%).
+   15%는 글씨 너비 기준, 15cqw는 칸(.fx-foot) 너비 기준. 늘리려면 두 숫자를 같이 키우기 (예: 25%·25cqw = 50%) */
+.fx-foot { container-type: inline-size; }
 #fx-date {
-    border-top: 1px solid rgba(255, 255, 255, 0.5);
+    position: relative;
     padding-top: 3px;
     margin-top: 1px;
+}
+#fx-date::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0; right: 0;                      /* 옛 브라우저: 글씨 길이만큼 */
+    left: calc(15% - 15cqw);
+    right: calc(15% - 15cqw);
+    border-top: 1px solid rgba(255, 255, 255, 0.5);
 }
