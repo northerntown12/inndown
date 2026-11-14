@@ -12,6 +12,9 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
     function load(k, def) { try { var v = JSON.parse(localStorage.getItem(k)); return v == null ? def : v; } catch (e) { return def; } }
     function save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
 
+    /* 온라인 대결 서버 주소 (Cloudflare Worker "omok-online") — 다른 이름으로 만들었으면 여기만 바꾸기 */
+    var ONLINE_URL = window.OMOK_ONLINE_URL || "https://omok-online.sumerboy.workers.dev";
+
     var LEVEL_NAME = { easy: T("쉬움", "Easy"), normal: T("보통", "Normal"), hard: T("어려움", "Hard") };
     var settings = load("omokSettings.v1", { level: "normal", color: 1 });
     if (!LEVEL_NAME[settings.level]) settings.level = "normal";
@@ -24,7 +27,10 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
     var pendingSettings = false;
     var started = false;                       // 시작 버튼을 눌렀나
     var TIME_LIMIT = 15;                       // 한 수 제한 시간(초). 넘기면 시간 초과 패배
-    var timerId = 0, turnEnd = 0, lastTick = 0;
+    var timerId = 0, turnEnd = 0, lastTick = 0, timerMine = true;
+    var mode = "ai";                           // "ai" 컴퓨터와 / "online" 온라인 대결
+    var ON = null;                             // 온라인 방 정보 {code, token, ver, ...}
+    var onlineRecord = load("omokOnlineRecord.v1", { w: 0, l: 0, d: 0 });
 
     /* ---------- 화면 요소 ---------- */
     var $ = function (id) { return document.getElementById(id); };
@@ -222,7 +228,10 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
     }
 
     /* ======================= 게임 진행 ======================= */
-    function canPlay() { return started && !over && !thinking && turn() === human; }
+    function canPlay() {
+        if (mode === "online") return !!(ON && ON.status === "playing" && !ON.sending && started && !over && turn() === human);
+        return started && !over && !thinking && turn() === human;
+    }
     function turn() { return history.length % 2 === 0 ? 1 : 2; }
 
     function setStatus(text, cls) {
@@ -275,24 +284,29 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
     }
 
     /* ---------- 제한 시간 ---------- */
-    function startTimer() {
+    function startTimer(ms, mine) {
         stopTimer();
-        turnEnd = Date.now() + TIME_LIMIT * 1000;
+        timerMine = mine !== false;
+        turnEnd = Date.now() + (ms == null ? TIME_LIMIT * 1000 : ms);
         lastTick = TIME_LIMIT + 1;
-        timerShow("run");
+        timerShow(timerMine ? "run" : "opp");
         timerId = setInterval(timerStep, 100);
         timerStep();
     }
     function stopTimer() { if (timerId) { clearInterval(timerId); timerId = 0; } }
     function timerStep() {
         var rem = Math.max(0, (turnEnd - Date.now()) / 1000);
-        var sec = Math.ceil(rem);
+        var sec = Math.min(TIME_LIMIT, Math.ceil(rem));
         elTimerNum.textContent = sec;
-        elTimerRing.style.strokeDashoffset = (RING * (1 - rem / TIME_LIMIT)).toFixed(2);
-        elTimer.classList.toggle("warn", sec <= 5);
-        if (sec <= 5 && sec >= 1 && sec < lastTick) sndTick(sec === 1);
+        elTimerRing.style.strokeDashoffset = (RING * (1 - Math.min(1, rem / TIME_LIMIT))).toFixed(2);
+        elTimer.classList.toggle("warn", sec <= 5 && timerMine);
+        if (timerMine && sec <= 5 && sec >= 1 && sec < lastTick) sndTick(sec === 1);
         lastTick = sec;
-        if (rem <= 0) { stopTimer(); finish("timeout", null); }
+        if (rem <= 0) {
+            stopTimer();
+            if (mode === "online") { elTimerNum.textContent = "0"; return; }   // 온라인: 서버가 판정
+            finish("timeout", null);
+        }
     }
     /* idle: 시작 전 / run: 내 차례 / ai: 컴퓨터 차례 / end: 끝 */
     function timerShow(mode) {
@@ -322,6 +336,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         }
         preview = null; hover = null; forbid = [];
         stopTimer();
+        if (mode === "online") { onlineMove(x, y); return; }
         if (place(x, y, human)) return;
         aiMove();
     }
@@ -390,7 +405,289 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
             var r = record[k] || { w: 0, l: 0, d: 0 };
             return "<span class=\"om-rec\"><b>" + LEVEL_NAME[k] + "</b> " + T(r.w + "승 " + r.l + "패" + (r.d ? " " + r.d + "무" : ""), r.w + "W " + r.l + "L" + (r.d ? " " + r.d + "D" : "")) + "</span>";
         });
+        var o = onlineRecord;
+        rows.push("<span class=\"om-rec\"><b>" + T("온라인", "Online") + "</b> " + T(o.w + "승 " + o.l + "패" + (o.d ? " " + o.d + "무" : ""), o.w + "W " + o.l + "L" + (o.d ? " " + o.d + "D" : "")) + "</span>");
         $("omRecord").innerHTML = T("내 전적 (이 기기)<br>", "My record (this device)<br>") + rows.join(" · ");
+    }
+
+    /* ======================= 온라인 대결 =======================
+       서버: Cloudflare Worker (omok-online-worker.js) + D1
+       - 방 만들기(코드 4자리, 링크 공유) / 코드로 입장 / 빠른 매칭
+       - 상대 수는 /state 로 기다렸다 받음 (서버가 최대 20초 붙잡고 있다가 바뀌면 바로 대답)
+       - 시간 초과·금수·승리는 서버가 최종 판정
+       - 새로고침해도 같은 방으로 돌아옴 (sessionStorage omokOnline.v1)
+       ========================================================= */
+    var elOnBox = $("omOnlineBox"), elOnLobby = $("omOnLobby"), elOnWait = $("omOnWait"), elOnPlay = $("omOnPlay");
+    var elOnErr = $("omOnErr"), elOnInfo = $("omOnInfo"), elWaitMsg = $("omWaitMsg"), elCodeBox = $("omCodeBox");
+    var btnResign = $("omResign"), btnRematch = $("omRematch"), inCode = $("omCodeIn");
+    var SESSION_KEY = "omokOnline.v1";
+
+    function api(path, body, signal) {
+        /* Content-Type을 안 붙이면 text/plain 요청이라 사전 확인(OPTIONS) 없이 바로 감 */
+        return fetch(ONLINE_URL + path, { method: "POST", body: JSON.stringify(body || {}), signal: signal, cache: "no-store" })
+            .then(function (r) { return r.json(); });
+    }
+    function onErr(msg) { elOnErr.textContent = msg || ""; elOnErr.hidden = !msg; }
+    function netErrText() { return T("온라인 서버에 연결하지 못했어요. 잠시 뒤 다시 해 보세요.", "Couldn't reach the online server. Please try again shortly."); }
+    function showView(v) {
+        elOnLobby.hidden = v !== "lobby"; elOnWait.hidden = v !== "wait"; elOnPlay.hidden = v !== "play";
+    }
+    function setBusy(b) { [].forEach.call(elOnLobby.querySelectorAll("button, input"), function (el) { el.disabled = b; }); }
+
+    function enterOnline() {
+        stopTimer(); clearTimeout(aiTimer);
+        mode = "online";
+        document.body.classList.add("om-mode-online");
+        elOnBox.hidden = false;
+        resetBoard();
+        showView("lobby"); onErr(""); setBusy(false);
+        setStatus(T("온라인 대결 · 빠른 매칭이나 방 만들기를 고르세요", "Online · choose Quick match or Create a room"));
+        timerShow("idle");
+        draw();
+    }
+    function resetBoard() {
+        board = new Int8Array(N * N);
+        history = []; over = false; thinking = false; winCells = null; hover = null; preview = null; forbid = [];
+        started = false; elResult.hidden = true;
+    }
+    function leaveOnline(silent) {
+        if (ON) {
+            var b = JSON.stringify({ code: ON.code, token: ON.token });
+            try { if (!(navigator.sendBeacon && navigator.sendBeacon(ONLINE_URL + "/leave", b))) api("/leave", { code: ON.code, token: ON.token }).catch(function () {}); } catch (e) {}
+            if (ON.abort) ON.abort.abort();
+        }
+        ON = null;
+        try { sessionStorage.removeItem(SESSION_KEY); } catch (e) {}
+        if (!silent) {
+            mode = "ai"; document.body.classList.remove("om-mode-online"); elOnBox.hidden = true;
+            $("omAgain").textContent = T("한 판 더", "Play again"); $("omAgain").hidden = false;
+            newGame();
+        }
+    }
+    function backToLobby(msg) {
+        if (ON && ON.abort) ON.abort.abort();
+        ON = null;
+        try { sessionStorage.removeItem(SESSION_KEY); } catch (e) {}
+        enterOnline();
+        if (msg) onErr(msg);
+    }
+
+    /* 방 만들기 / 빠른 매칭 / 코드로 입장 */
+    function begin(path, body) {
+        audio(); onErr(""); setBusy(true);
+        api(path, body).then(function (res) {
+            setBusy(false);
+            if (res.error) {
+                onErr(res.error === "noroom" ? T("그런 방이 없어요. 코드를 다시 확인해 주세요.", "No room with that code. Please check it.")
+                    : res.error === "full" ? T("이미 대결이 시작된 방이에요.", "That room is already playing.")
+                    : res.error === "badcode" ? T("방 코드 4자리를 넣어 주세요.", "Please enter the 4-character room code.")
+                    : netErrText());
+                return;
+            }
+            ON = { code: res.code, token: res.token, ver: 0, status: "waiting", quick: !!res.quick || path === "/quick", gameKey: "" };
+            try { sessionStorage.setItem(SESSION_KEY, JSON.stringify({ code: ON.code, token: ON.token, quick: ON.quick })); } catch (e) {}
+            showWaiting();
+            poll();
+        }).catch(function () { setBusy(false); onErr(netErrText()); });
+    }
+    function showWaiting() {
+        showView("wait");
+        resetBoard(); draw();
+        timerShow("idle");
+        $("omCodeShow").textContent = ON.code;
+        elCodeBox.hidden = ON.quick;
+        elWaitMsg.textContent = ON.quick ? T("상대를 찾는 중이에요…", "Looking for an opponent…")
+                                         : T("친구에게 방 코드나 링크를 보내 주세요. 들어오면 바로 시작해요.", "Send the room code or link to a friend. The game starts when they join.");
+        setStatus(ON.quick ? T("빠른 매칭 · 상대를 찾는 중", "Quick match · finding an opponent") : T("방 ", "Room ") + ON.code + T(" · 상대를 기다리는 중", " · waiting for your opponent"), "thinking");
+    }
+
+    /* 상태 받기 (끊기면 2초 뒤 다시) */
+    function poll() {
+        var me = ON; if (!me) return;
+        if (me.abort) me.abort.abort();
+        var ctl = window.AbortController ? new AbortController() : null;
+        me.abort = ctl;
+        api("/state", { code: me.code, token: me.token, ver: me.ver }, ctl && ctl.signal).then(function (s) {
+            if (ON !== me) return;
+            if (s.error === "noroom" || s.error === "notyou") { backToLobby(T("방이 사라졌어요. 다시 시작해 주세요.", "The room is gone. Please start again.")); return; }
+            if (s.error) throw new Error(s.error);
+            me.netFail = 0; onErr("");
+            applyState(s);
+            setTimeout(function () { if (ON === me) poll(); }, 30);
+        }).catch(function (e) {
+            if (ON !== me || (e && e.name === "AbortError")) return;
+            me.netFail = (me.netFail || 0) + 1;
+            if (me.netFail >= 2) onErr(T("연결이 불안정해요. 다시 연결하는 중…", "Connection is unstable. Reconnecting…"));
+            setTimeout(function () { if (ON === me) poll(); }, 2000);
+        });
+    }
+
+    function applyState(s) {
+        if (!ON || !s || s.ver < ON.ver) return;
+        ON.ver = s.ver; ON.status = s.status; ON.state = s;
+        if (s.status === "waiting") { showWaiting(); return; }
+
+        showView("play");
+        human = s.you; ai = 3 - human;
+        var gameKey = ON.code + ":" + s.games;
+        var newGameStarted = ON.gameKey !== gameKey;
+        if (newGameStarted) { ON.gameKey = gameKey; ON.recorded = false; elResult.hidden = true; }
+
+        /* 판 다시 맞추기 (상대 새 수면 소리) */
+        var prevLen = newGameStarted ? 0 : history.length;
+        var oppNew = false;
+        board = new Int8Array(N * N); history = [];
+        s.moves.forEach(function (m, i) {
+            var c = i % 2 === 0 ? 1 : 2;
+            board[m[1] * N + m[0]] = c; history.push([m[0], m[1], c]);
+            if (i >= prevLen && c !== human) oppNew = true;
+        });
+        if (oppNew) sndStone(true);
+        if (newGameStarted && s.status === "playing") sndClick();
+        started = true; thinking = false; preview = null;
+
+        if (s.status === "over") { onlineFinish(s); updateOnlinePanel(s); draw(); return; }
+
+        over = false; winCells = null;
+        if (s.toMove === human) {
+            refreshForbid();
+            startTimer(s.left, true);
+            setStatus((s.startIn > 300 ? T("시작! ", "Go! ") : "") + T("내 차례예요 (", "Your turn (") + stoneTag(human) + ") · " + T(TIME_LIMIT + "초 안에 두세요", TIME_LIMIT + "s to move"));
+        } else {
+            forbid = [];
+            startTimer(s.left, false);
+            setStatus(T("상대 차례예요 (", "Opponent's turn (") + stoneTag(ai) + ")" + (s.oppHere ? "" : T(" · 상대 연결 확인 중", " · checking opponent")), "thinking");
+        }
+        updateOnlinePanel(s);
+        draw();
+    }
+
+    function updateOnlinePanel(s) {
+        var opp = s.oppLeft ? T("나감", "left") : (s.oppHere ? T("접속 중", "online") : T("연결 끊김?", "offline?"));
+        elOnInfo.innerHTML = T("방 ", "Room ") + "<b>" + s.code + "</b> · " + T("나 ", "Me ") + stoneTag(s.you) +
+            " · " + T("상대 ", "Opponent ") + '<span class="om-opp ' + (s.oppHere && !s.oppLeft ? "on" : "off") + '">' + opp + "</span>";
+        var playing = s.status === "playing";
+        btnResign.hidden = !playing;
+        btnRematch.hidden = playing;
+        if (!playing) {
+            btnRematch.disabled = s.oppLeft || s.rematchMe;
+            btnRematch.textContent = s.oppLeft ? T("상대가 나갔어요", "Opponent left")
+                : s.rematchMe ? T("상대를 기다리는 중…", "Waiting for opponent…")
+                : s.rematchOpp ? T("한 판 더! (상대가 원해요)", "Rematch! (opponent wants one)")
+                : T("한 판 더 (흑백 바꿔서)", "Rematch (swap colors)");
+            btnRematch.classList.toggle("om-primary", !!s.rematchOpp && !s.rematchMe && !s.oppLeft);
+        }
+    }
+
+    function onlineMove(x, y) {
+        var me = ON; if (!me) return;
+        /* 먼저 내 화면에 놓고 서버에 보냄 */
+        board[y * N + x] = human; history.push([x, y, human]);
+        sndStone(false);
+        me.sending = true;
+        setStatus(T("보내는 중", "Sending"), "thinking");
+        startTimer(TIME_LIMIT * 1000, false);
+        draw();
+        api("/move", { code: me.code, token: me.token, x: x, y: y }).then(function (res) {
+            if (ON !== me) return;
+            me.sending = false;
+            if (res.error && res.error !== "busy") {
+                if (res.error === "forbidden") sndBuzz();
+                onErr(res.error === "forbidden" ? T("금수 자리라서 둘 수 없어요.", "That's a forbidden point.")
+                    : res.error === "notyourturn" ? T("지금은 상대 차례예요.", "It's your opponent's turn.")
+                    : res.error === "notplaying" ? "" : T("그 자리에 둘 수 없어요.", "You can't play there."));
+            }
+            if (res.state) applyState(res.state);
+            poll();
+        }).catch(function () {
+            if (ON !== me) return;
+            me.sending = false;
+            onErr(netErrText());
+            poll();                                   // 서버 상태로 다시 맞춤
+        });
+    }
+
+    function onlineFinish(s) {
+        over = true; forbid = []; preview = null; hover = null;
+        stopTimer(); timerShow("end");
+        var last = history[history.length - 1];
+        winCells = (s.reason === "five" && last) ? E.winLine(board, last[0], last[1]) : null;
+        var iWin = s.winner === human, draw0 = s.winner === 0;
+        var msg, title;
+        if (draw0) { msg = T("무승부예요", "It's a draw"); title = T("무승부", "Draw"); }
+        else if (s.reason === "timeout") { msg = iWin ? T("상대 시간 초과! 이겼어요 🎉", "Opponent ran out of time! You win 🎉") : T("시간 초과로 졌어요", "You ran out of time"); title = iWin ? T("승리! 🎉", "Victory! 🎉") : T("시간 초과 ⏰", "Time's up ⏰"); }
+        else if (s.reason === "resign") { msg = iWin ? T("상대가 기권했어요. 이겼어요 🎉", "Your opponent resigned. You win 🎉") : T("기권했어요", "You resigned"); title = iWin ? T("승리! 🎉", "Victory! 🎉") : T("기권", "Resigned"); }
+        else if (s.reason === "left") { msg = iWin ? T("상대가 나갔어요. 이겼어요", "Your opponent left. You win") : T("나가서 졌어요", "You left the game"); title = iWin ? T("승리!", "Victory!") : T("패배", "Defeat"); }
+        else { msg = iWin ? T("이겼어요! 🎉", "You win! 🎉") : T("상대가 이겼어요", "Your opponent wins"); title = iWin ? T("승리! 🎉", "Victory! 🎉") : T("패배", "Defeat"); }
+        setStatus(msg, draw0 ? "" : (iWin ? "win" : "lose"));
+        if (!ON.recorded) {
+            ON.recorded = true;
+            if (draw0) onlineRecord.d++; else if (iWin) onlineRecord.w++; else onlineRecord.l++;
+            save("omokOnlineRecord.v1", onlineRecord);
+            showRecord();
+            if (iWin) sndWin(); else if (!draw0) sndLose();
+            var key = ON.gameKey;
+            setTimeout(function () {
+                if (!ON || ON.gameKey !== key || ON.status !== "over") return;
+                elResultTitle.textContent = title;
+                elResultSub.innerHTML = T("온라인", "Online") + " · " + stoneTag(human) + " · " + history.length + T("수", " moves");
+                $("omAgain").textContent = T("한 판 더", "Rematch");
+                $("omAgain").hidden = !!s.oppLeft;
+                elResult.hidden = false;
+            }, 900);
+        }
+    }
+
+    function onlineRematch() {
+        var me = ON; if (!me || me.status !== "over") return;
+        btnRematch.disabled = true;
+        api("/rematch", { code: me.code, token: me.token }).then(function (res) {
+            if (ON !== me) return;
+            if (res.state) applyState(res.state);
+        }).catch(function () { onErr(netErrText()); btnRematch.disabled = false; });
+    }
+
+    $("omOnlineBtn").addEventListener("click", function () { sndClick(); enterOnline(); });
+    $("omQuick").addEventListener("click", function () { sndClick(); begin("/quick"); });
+    $("omCreate").addEventListener("click", function () { sndClick(); begin("/create"); });
+    $("omJoin").addEventListener("click", function () { sndClick(); begin("/join", { code: inCode.value }); });
+    inCode.addEventListener("keydown", function (ev) { if (ev.key === "Enter") { ev.preventDefault(); $("omJoin").click(); } });
+    inCode.addEventListener("input", function () { inCode.value = inCode.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 4); });
+    $("omCancel").addEventListener("click", function () { sndClick(); var q = ON; leaveOnline(true); if (q) enterOnline(); });
+    $("omCopy").addEventListener("click", function () {
+        sndClick();
+        if (!ON) return;
+        var link = location.origin + location.pathname + "?room=" + ON.code;
+        var done = function () { $("omCopy").textContent = T("복사했어요 ✓", "Copied ✓"); setTimeout(function () { $("omCopy").textContent = T("링크 복사", "Copy link"); }, 1800); };
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(link).then(done, function () { prompt(T("이 링크를 복사하세요", "Copy this link"), link); });
+        else prompt(T("이 링크를 복사하세요", "Copy this link"), link);
+    });
+    btnResign.addEventListener("click", function () {
+        sndClick();
+        var me = ON; if (!me || me.status !== "playing") return;
+        if (!confirm(T("정말 기권할까요?", "Resign this game?"))) return;
+        api("/resign", { code: me.code, token: me.token }).then(function (res) { if (ON === me && res.state) applyState(res.state); }).catch(function () { onErr(netErrText()); });
+    });
+    btnRematch.addEventListener("click", function () { sndClick(); onlineRematch(); });
+    $("omBack").addEventListener("click", function () {
+        sndClick();
+        if (ON && ON.status === "playing" && !confirm(T("두는 중에 나가면 기권으로 져요. 나갈까요?", "Leaving now counts as resigning. Leave?"))) return;
+        leaveOnline(false);
+    });
+
+    /* 주소에 ?room=ABCD 가 있으면 바로 그 방으로 / 새로고침이면 하던 방으로 */
+    function autoOnline() {
+        var saved = null;
+        try { saved = JSON.parse(sessionStorage.getItem(SESSION_KEY)); } catch (e) {}
+        var m = /[?&]room=([A-Za-z0-9]{4})/.exec(location.search);
+        if (saved && saved.code && saved.token && (!m || m[1].toUpperCase() === saved.code)) {
+            enterOnline();
+            ON = { code: saved.code, token: saved.token, ver: 0, status: "waiting", quick: !!saved.quick, gameKey: "" };
+            showWaiting();
+            poll();
+            return;
+        }
+        if (m) { enterOnline(); inCode.value = m[1].toUpperCase(); begin("/join", { code: m[1] }); }
     }
 
     /* ======================= 입력 ======================= */
@@ -440,12 +737,17 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         sndClick(); settings.color = +b.dataset.v; changeSetting();
     });
     btnStart.addEventListener("click", function () { sndClick(); startGame(); });
-    $("omAgain").addEventListener("click", function () { sndClick(); newGame(); startGame(); });
+    $("omAgain").addEventListener("click", function () {
+        sndClick();
+        if (mode === "online") { elResult.hidden = true; onlineRematch(); return; }
+        newGame(); startGame();
+    });
     btnUndo.addEventListener("click", function () { sndClick(); undo(); });
     /* 종료: 오목 창 닫기. 홈에서 새 창으로 연 경우만 닫힘 → 안 닫히면(주소로 직접 연 경우 등) 홈으로 */
     $("omExit").addEventListener("click", function () {
         sndClick();
         stopTimer(); clearTimeout(aiTimer);
+        if (ON) leaveOnline(true);
         setTimeout(function () {
             window.close();
             setTimeout(function () { if (!window.closed) location.href = T("index.html", "index-en.html"); }, 250);
@@ -473,4 +775,5 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
     showRecord();
     newGame();
     resize();
+    autoOnline();
 })();

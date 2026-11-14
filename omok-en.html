@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <script src="lang.js?v=1"></script>
+    <script src="lang.js?v=2"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Omok · Records after work</title>
-    <meta name="description" content="Omok (Gomoku) with Renju rules against the computer. Easy, normal and hard levels.">
+    <meta name="description" content="Omok (Gomoku) with Renju rules against the computer. Easy, normal and hard levels, or play online with a room code or quick match.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
@@ -14,7 +14,7 @@
 <body>
     <header class="om-top">
         <div class="om-top-in">
-            <h1 class="om-title">Omok <small>Renju rules · vs. computer</small></h1>
+            <h1 class="om-title">Omok <small>Renju rules · computer · online</small></h1>
             <span class="om-brand">Records after work</span>
         </div>
     </header>
@@ -48,7 +48,7 @@
             <p class="om-hint" id="omHint">Click where you want to place your stone.</p>
         </section>
         <aside class="om-panel">
-            <div class="om-group">
+            <div class="om-group om-ai-only">
                 <span class="om-label">Level</span>
                 <div class="om-seg" id="omLevel">
                     <button type="button" data-v="easy">Easy</button>
@@ -56,23 +56,48 @@
                     <button type="button" data-v="hard">Hard</button>
                 </div>
             </div>
-            <div class="om-group">
+            <div class="om-group om-ai-only">
                 <span class="om-label">My stones</span>
                 <div class="om-seg" id="omColor">
                     <button type="button" data-v="1"><i class="om-dot om-black"></i>Black (first)</button>
                     <button type="button" data-v="2"><i class="om-dot om-white"></i>White (second)</button>
                 </div>
             </div>
-            <p class="om-note" id="omNote" hidden>New settings apply when you <b>Restart</b>.</p>
+            <p class="om-note om-ai-only" id="omNote" hidden>New settings apply when you <b>Restart</b>.</p>
 
-            <div class="om-actions">
+            <div class="om-actions om-ai-only">
                 <button type="button" class="om-btn om-primary" id="omStart">Start</button>
                 <button type="button" class="om-btn" id="omUndo">Undo</button>
                 <button type="button" class="om-btn om-exit" id="omExit" title="Close the Omok window">Exit</button>
             </div>
-            <button type="button" class="om-btn om-online" disabled aria-disabled="true">
-                🌐 Play online <span class="om-soon">Coming later</span>
-            </button>
+            <!-- Online play (server: Cloudflare Worker omok-online, ONLINE_URL at top of omok.js) -->
+            <button type="button" class="om-btn om-online om-ai-only" id="omOnlineBtn">🌐 Play online <span class="om-soon">NEW</span></button>
+            <div class="om-online-box" id="omOnlineBox" hidden>
+                <div class="om-on-head">🌐 Play online <small>15s per move · Renju</small></div>
+                <div id="omOnLobby" class="om-on-sec">
+                    <button type="button" class="om-btn om-primary" id="omQuick">⚡ Quick match <small>anyone</small></button>
+                    <button type="button" class="om-btn" id="omCreate">🏠 Create a room <small>friends</small></button>
+                    <div class="om-join">
+                        <input type="text" id="omCodeIn" maxlength="4" placeholder="Room code" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="4-character room code">
+                        <button type="button" class="om-btn" id="omJoin">Join</button>
+                    </div>
+                </div>
+                <div id="omOnWait" class="om-on-sec" hidden>
+                    <p class="om-on-msg" id="omWaitMsg"></p>
+                    <div class="om-code-box" id="omCodeBox">
+                        <span>Room code</span><b id="omCodeShow">----</b>
+                        <button type="button" class="om-btn" id="omCopy">Copy link</button>
+                    </div>
+                    <button type="button" class="om-btn" id="omCancel">Cancel</button>
+                </div>
+                <div id="omOnPlay" class="om-on-sec" hidden>
+                    <p class="om-on-info" id="omOnInfo"></p>
+                    <button type="button" class="om-btn" id="omResign">🏳️ Resign</button>
+                    <button type="button" class="om-btn" id="omRematch" hidden>Rematch</button>
+                </div>
+                <p class="om-on-err" id="omOnErr" role="alert" hidden></p>
+                <button type="button" class="om-btn om-exit" id="omBack">← Play the computer</button>
+            </div>
 
             <label class="om-check"><input type="checkbox" id="omShowForbid" checked> Show Black's forbidden points (×)</label>
 

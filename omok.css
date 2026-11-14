@@ -194,3 +194,41 @@ body {
     .om-seg button { padding: 10px 4px; font-size: 0.92rem; }
     .om-btn { padding: 12px 14px; }
 }
+
+/* ===== 온라인 대결 (2026-11-14) ===== */
+.om-online:hover { background: #cfcdfb; }
+.om-mode-online .om-ai-only { display: none !important; }
+.om-timer.opp .om-tr { stroke: #9aa6c4; }
+.om-timer.opp span { color: #6b7799; }
+.om-online-box {
+    display: flex; flex-direction: column; gap: 10px;
+    background: linear-gradient(180deg, #f1f0ff, #e6e5ff); border: 1px solid #c3c1f0; border-radius: 12px; padding: 12px;
+}
+.om-online-box[hidden] { display: none; }
+.om-on-head { font-weight: 800; color: var(--om-plum); font-size: 1rem; }
+.om-on-head small { font-weight: 600; font-size: 0.75rem; color: #6d6aa8; margin-left: 4px; }
+.om-on-sec { display: flex; flex-direction: column; gap: 8px; }
+.om-on-sec[hidden] { display: none; }
+.om-on-sec .om-btn small { font-weight: 600; font-size: 0.75rem; opacity: 0.8; margin-left: 4px; }
+.om-join { display: flex; gap: 6px; }
+.om-join input {
+    flex: 1; min-width: 0; font: inherit; font-size: 1rem; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; text-align: center;
+    padding: 9px 8px; border: 1px solid #c3c1f0; border-radius: 10px; background: #fff; color: var(--om-plum);
+}
+.om-join input::placeholder { letter-spacing: 0.02em; font-weight: 600; color: #a5a3cf; }
+.om-join .om-btn { flex: none; }
+.om-on-msg { margin: 0; font-size: 0.86rem; color: #4b4880; line-height: 1.5; }
+.om-code-box { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; background: #fff; border: 1px dashed #a9a6e8; border-radius: 10px; padding: 8px 10px; }
+.om-code-box[hidden] { display: none; }
+.om-code-box span { flex-basis: 100%; white-space: nowrap; font-size: 0.75rem; font-weight: 700; color: #6d6aa8; }
+.om-code-box b { font-size: 1.5rem; letter-spacing: 0.18em; color: var(--om-plum); font-variant-numeric: tabular-nums; flex: 1; }
+.om-code-box .om-btn { padding: 7px 10px; font-size: 0.82rem; white-space: nowrap; }
+.om-on-info { margin: 0; font-size: 0.86rem; color: #3f3c74; line-height: 1.6; }
+.om-opp { font-weight: 700; }
+.om-opp.on { color: #23905a; }
+.om-opp.off { color: #c2412b; }
+.om-on-err { margin: 0; font-size: 0.82rem; color: #b8321f; background: #fff1ee; border-radius: 8px; padding: 7px 9px; }
+.om-on-err[hidden] { display: none; }
+@media (max-width: 760px) {
+    .om-join input { font-size: 16px; }
+}
