@@ -46,6 +46,9 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
 
     var title = el("h3", "stk-title", T("오늘의 주식시장", "Today's Stock Market"));
     widget.appendChild(title);
+    /* 거래일 (2026-11-15): 한국·미국 거래일이 같으면 한 번, 다르면 각각 */
+    var dateEl = el("div", "stk-date", "");
+    widget.appendChild(dateEl);
 
     GROUPS.forEach(function (g) {
         widget.appendChild(el("div", "stk-group", g.title));
@@ -87,6 +90,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
     }
 
     function paint(quotes) {
+        paintDate(quotes);
         allSymbols.forEach(function (sym) {
             var c = cells[sym];
             var q = quotes && quotes[sym];
@@ -117,6 +121,45 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
     }
 
     function pad2(n) { return (n < 10 ? "0" : "") + n; }
+
+    /* 시세 시각(ms)을 그 나라 시간 기준 날짜로: {key:"2026-11-14", text:"11/14(금)"} */
+    var KO_DAYS = ["일", "월", "화", "수", "목", "금", "토"];
+    var EN_DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    var EN_MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    function marketDay(ms, tz) {
+        if (!ms) return null;
+        try {
+            var parts = {};
+            new Intl.DateTimeFormat("en-US", { timeZone: tz, year: "numeric", month: "numeric", day: "numeric" })
+                .formatToParts(new Date(ms)).forEach(function (p) { parts[p.type] = p.value; });
+            var y = +parts.year, m = +parts.month, d = +parts.day;
+            var wd = new Date(Date.UTC(y, m - 1, d)).getUTCDay();
+            return {
+                key: y + "-" + pad2(m) + "-" + pad2(d),
+                text: window.SITE_EN ? EN_DAYS[wd] + ", " + EN_MON[m - 1] + " " + d : m + "/" + d + "(" + KO_DAYS[wd] + ")"
+            };
+        } catch (e) { return null; }
+    }
+    function firstTime(quotes, list) {
+        for (var i = 0; i < list.length; i++) {
+            var q = quotes && quotes[list[i]];
+            if (q && q.t) return q.t;
+        }
+        return 0;
+    }
+    function paintDate(quotes) {
+        var kr = marketDay(firstTime(quotes, ["^KS11", "^KQ11", "005930.KS"]), "Asia/Seoul");
+        var us = marketDay(firstTime(quotes, ["^GSPC", "^DJI", "^IXIC", "NVDA"]), "America/New_York");
+        if (!kr && !us) { dateEl.textContent = ""; return; }
+        if (kr && us && kr.key === us.key) {
+            dateEl.textContent = T("거래일 ", "Trading day ") + kr.text;
+        } else {
+            var parts = [];
+            if (kr) parts.push(T("한국 ", "KR ") + kr.text);
+            if (us) parts.push(T("미국 ", "US ") + us.text);
+            dateEl.textContent = T("거래일 · ", "Trading day · ") + parts.join(" · ");
+        }
+    }
 
     function setStatus(ts, failed) {
         var d = new Date(ts);
