@@ -1,3 +1,4 @@
+window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 한국어로 동작 */
 /* ===== 로또 칸 아래: 지난 당첨 결과 (번호 + 1등 당첨금) =====
    - 로또 당첨 정보 중계 서버(lotto-worker.js)에서 가장 최근 회차를 받아 와요.
    - 한 번 받은 결과는 이 브라우저에 저장해 두고, 못 받을 땐 저장된 결과를 보여줘요.
@@ -28,15 +29,15 @@
 
     var head = el("div", "ll-head");
     var left = el("span", "");
-    var title = el("a", "ll-title", "지난 당첨 결과");
+    var title = el("a", "ll-title", T("지난 당첨 결과", "Last draw"));
     title.href = OFFICIAL_URL;
     title.target = "_blank";
     title.rel = "noopener noreferrer";
-    title.title = "동행복권 공식 사이트";
+    title.title = T("동행복권 공식 사이트", "Official Korean lottery site (Dhlottery)");
     var round = el("span", "ll-round", "");
     left.appendChild(title);
     left.appendChild(round);
-    var prizeEl = el("span", "ll-prize", "불러오는 중...");
+    var prizeEl = el("span", "ll-prize", T("불러오는 중...", "Loading..."));
     head.appendChild(left);
     head.appendChild(prizeEl);
 
@@ -59,8 +60,8 @@
             var m = window.lottoSound.isMuted();
             muteBtn.innerHTML = m ? SPK_OFF : SPK_ON;
             muteBtn.setAttribute("aria-pressed", m ? "true" : "false");
-            muteBtn.setAttribute("aria-label", m ? "로또 소리 켜기" : "로또 소리 끄기");
-            muteBtn.title = m ? "소리 켜기" : "소리 끄기";
+            muteBtn.setAttribute("aria-label", m ? T("로또 소리 켜기", "Turn lottery sound on") : T("로또 소리 끄기", "Turn lottery sound off"));
+            muteBtn.title = m ? T("소리 켜기", "Sound on") : T("소리 끄기", "Sound off");
         };
         muteBtn.addEventListener("click", function () {
             window.lottoSound.setMuted(!window.lottoSound.isMuted());
@@ -91,6 +92,10 @@
 
     // 1197250000 -> "11억 9,725만원"
     function fmtWon(n) {
+        if (window.SITE_EN) {          // 영문: ₩2.03B, ₩950M
+            if (n >= 1e9) return "₩" + (n / 1e9).toFixed(2).replace(/\.?0+$/, "") + "B";
+            return "₩" + Math.round(n / 1e6).toLocaleString("en-US") + "M";
+        }
         var eok = Math.floor(n / 100000000);
         var man = Math.floor((n % 100000000) / 10000);
         var manText = man.toLocaleString("ko-KR") + "만원";
@@ -109,16 +114,17 @@
     }
 
     function paint(d) {
-        round.textContent = d.round + "회";
+        round.textContent = T(d.round + "회", "#" + d.round);
         ballsEl.innerHTML = "";
         d.nums.forEach(function (n) { ballsEl.appendChild(ball(n)); });
         ballsEl.appendChild(el("span", "plus-sign", "+"));
         ballsEl.appendChild(ball(d.bonus, "bonus"));
 
         var w = d.first && d.first.winners;
-        prizeEl.textContent = "1등 " + fmtWon(d.first.amount);
-        prizeEl.appendChild(el("span", "ll-more", w ? " · " + w + "명" : ""));
-        panel.title = d.round + "회 (" + shortDate(d.date) + " 추첨)" + (w ? " · 1등 " + w + "명" : "");
+        prizeEl.textContent = T("1등 ", "1st ") + fmtWon(d.first.amount);
+        prizeEl.appendChild(el("span", "ll-more", w ? " · " + T(w + "명", w + (w === 1 ? " winner" : " winners")) : ""));
+        panel.title = T(d.round + "회 (" + shortDate(d.date) + " 추첨)" + (w ? " · 1등 " + w + "명" : ""),
+                         "Draw #" + d.round + " (" + shortDate(d.date) + ")" + (w ? " · 1st prize: " + w + (w === 1 ? " winner" : " winners") : ""));
         layout();
     }
 
@@ -197,7 +203,7 @@
                         paint(c);
                         shown = c;
                     } else {
-                        prizeEl.textContent = "당첨 정보를 불러오지 못했어요";
+                        prizeEl.textContent = T("당첨 정보를 불러오지 못했어요", "Couldn't load the results");
                         placeMute();
                     }
                 }

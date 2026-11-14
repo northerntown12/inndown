@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="lang.js?v=1"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>2048 · Records after work</title>
+    <meta name="description" content="A puzzle game: slide and merge matching number tiles to make 2048.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="game2048.css?v=4">
+</head>
+<body>
+    <header class="g-top">
+        <div class="g-top-in">
+            <h1 class="g-title">2048 <small>Number merging puzzle</small></h1>
+            <span class="g-brand">Records after work</span>
+        </div>
+    </header>
+
+    <main class="g-main">
+        <section class="g-board-wrap">
+            <div class="g-statusrow">
+                <div class="g-score"><span>Score</span><b id="gScore">0</b><i class="g-plus" id="gPlus"></i></div>
+                <div class="g-score g-best"><span>Best</span><b id="gBest">0</b></div>
+                <button type="button" class="g-mute" id="gSound" aria-label="Sound off" title="Sound off">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path class="g-spk" d="M4 9.2h3.6L12.4 5v14l-4.8-4.2H4z"/>
+                        <path class="g-wave" d="M15.3 9.2a4 4 0 0 1 0 5.6M17.8 6.8a7.4 7.4 0 0 1 0 10.4"/>
+                        <path class="g-slash" d="M20.5 3.5 4 20"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="g-board" id="gBoard" aria-label="2048 board" role="application">
+                <div class="g-cells" aria-hidden="true">
+                    <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                    <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                </div>
+                <div class="g-tiles" id="gTiles"></div>
+                <div class="g-result" id="gResult" hidden>
+                    <div class="g-result-card">
+                        <p class="g-result-title" id="gResultTitle"></p>
+                        <p class="g-result-sub" id="gResultSub"></p>
+                        <div class="g-result-btns">
+                            <button type="button" class="g-btn" id="gKeep">Keep going</button>
+                            <button type="button" class="g-btn g-primary" id="gAgain">New game</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p class="g-hint" id="gHint">Use the arrow keys (← ↑ → ↓) to merge matching numbers.</p>
+        </section>
+        <aside class="g-panel">
+            <div class="g-actions">
+                <button type="button" class="g-btn g-primary" id="gNew">New game</button>
+                <button type="button" class="g-btn" id="gUndo">Undo</button>
+                <button type="button" class="g-btn g-exit" id="gExit" title="Close the 2048 window">Exit</button>
+            </div>
+
+            <div class="g-record" id="gRecord"></div>
+
+            <details class="g-rules">
+                <summary>How to play</summary>
+                <ul>
+                    <li>Slide the board with the arrow keys or your finger, and every tile moves as far as it can that way.</li>
+                    <li>When two tiles with the same number touch, <b>they merge into one</b> (2+2=4, 4+4=8 …). Your score goes up by the merged number.</li>
+                    <li>Each move adds a new tile (a 2, sometimes a 4) in an empty spot.</li>
+                    <li>Make <b>a single 2048 tile</b> to win! You can keep going for bigger numbers.</li>
+                    <li>The game ends when the board is full and nothing can merge. <b>Undo</b> works for the last move only.</li>
+                    <li>Your game is saved on this device, so you can close the window and pick up where you left off.</li>
+                </ul>
+            </details>
+        </aside>
+    </main>
+
+    <footer class="g-foot">Copyright © 2026 Choi Yunhyok. All rights reserved.</footer>
+
+    <script src="game2048.js?v=2"></script>
+</body>
+</html>

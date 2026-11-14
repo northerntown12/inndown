@@ -16,31 +16,34 @@
 //     sub     : 작은 분류 id (아래 cats 의 subs 참고)
 //     summary : 목록에 보이는 한두 줄 소개
 //     thumb   : (선택) 목록 사진. 예) "posts/img/jeju-1.webp"  — 없으면 빼도 돼요
+//     titleEn·summaryEn : (선택) 영문 페이지(blog-en.html 등)에 보일 영어 제목·소개 — 없으면 한국어 그대로
 // =========================================================
 window.BLOG = {
     title: "Records after work",
     tagline: "여행 · 영미문화 · 음악 · 일상",
 
     cats: [
-        { id: "travel",  name: "여행", color: "#2a9d8f",
-          subs: [ { id: "korea",  name: "국내 여행" },
-                  { id: "abroad", name: "해외 여행" } ] },
-        { id: "culture", name: "영미문화", color: "#3d6fb6",
-          subs: [ { id: "english", name: "영어 표현" },
-                  { id: "screen",  name: "영화·드라마" },
-                  { id: "custom",  name: "생활·풍습" } ] },
-        { id: "music",   name: "음악", color: "#a05195",
-          subs: [ { id: "kpop", name: "가요" },
-                  { id: "pop",  name: "팝" },
-                  { id: "jazz", name: "재즈·클래식" } ] },
-        { id: "life",    name: "일상", color: "#e76f51",
-          subs: [ { id: "after",  name: "퇴근 후" },
-                  { id: "notice", name: "블로그 소식" } ] }
+        { id: "travel",  name: "여행", en: "Travel", color: "#2a9d8f",
+          subs: [ { id: "korea",  name: "국내 여행", en: "Korea" },
+                  { id: "abroad", name: "해외 여행", en: "Abroad" } ] },
+        { id: "culture", name: "영미문화", en: "Anglo Culture", color: "#3d6fb6",
+          subs: [ { id: "english", name: "영어 표현", en: "English" },
+                  { id: "screen",  name: "영화·드라마", en: "Film & TV" },
+                  { id: "custom",  name: "생활·풍습", en: "Customs" } ] },
+        { id: "music",   name: "음악", en: "Music", color: "#a05195",
+          subs: [ { id: "kpop", name: "가요", en: "K-pop" },
+                  { id: "pop",  name: "팝", en: "Pop" },
+                  { id: "jazz", name: "재즈·클래식", en: "Jazz & Classical" } ] },
+        { id: "life",    name: "일상", en: "Daily Life", color: "#e76f51",
+          subs: [ { id: "after",  name: "퇴근 후", en: "After Work" },
+                  { id: "notice", name: "블로그 소식", en: "Blog News" } ] }
     ],
 
     posts: [
         { id: "2026-11-09-start", title: "블로그를 시작하며", date: "2026-11-09",
           cat: "life", sub: "notice",
-          summary: "퇴근 후의 시간을 기록해 보려고 합니다. 이 블로그에서 다룰 이야기들을 소개해요." }
+          summary: "퇴근 후의 시간을 기록해 보려고 합니다. 이 블로그에서 다룰 이야기들을 소개해요.",
+          titleEn: "Starting This Blog",
+          summaryEn: "A record of my time after work, and what this blog will cover. (Written in Korean)" }
     ]
 };

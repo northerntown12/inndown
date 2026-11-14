@@ -1,3 +1,4 @@
+window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 한국어로 동작 */
 /* =========================================================
    오목 화면 (omok.html) — 판 그리기, 누르기, 소리, 기록
    규칙·컴퓨터 생각은 omok-engine.js (OmokEngine)
@@ -11,7 +12,7 @@
     function load(k, def) { try { var v = JSON.parse(localStorage.getItem(k)); return v == null ? def : v; } catch (e) { return def; } }
     function save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
 
-    var LEVEL_NAME = { easy: "쉬움", normal: "보통", hard: "어려움" };
+    var LEVEL_NAME = { easy: T("쉬움", "Easy"), normal: T("보통", "Normal"), hard: T("어려움", "Hard") };
     var settings = load("omokSettings.v1", { level: "normal", color: 1 });
     if (!LEVEL_NAME[settings.level]) settings.level = "normal";
     if (settings.color !== 1 && settings.color !== 2) settings.color = 1;
@@ -228,7 +229,7 @@
         elStatus.innerHTML = text;          // 돌 그림(<i>)이 들어가서 HTML로 넣음 (글은 모두 이 파일 안 문구)
         elStatus.className = "om-status" + (cls ? " " + cls : "");
     }
-    function stoneName(c) { return c === 1 ? "흑" : "백"; }
+    function stoneName(c) { return c === 1 ? T("흑", "Black") : T("백", "White"); }
     /* "흑"·"백" 글자 바로 뒤에 작은 검은 돌·흰 돌 그림 */
     function stoneTag(c) { return stoneName(c) + '<i class="om-dot om-inline ' + (c === 1 ? "om-black" : "om-white") + '"></i>'; }
 
@@ -245,9 +246,9 @@
         elResult.hidden = true;
         started = false;
         stopTimer(); timerShow("idle");
-        btnStart.textContent = "시작";
+        btnStart.textContent = T("시작", "Start");
         syncButtons();
-        setStatus("시작 버튼을 누르세요 · " + LEVEL_NAME[level] + " · 내 돌 " + stoneTag(human));
+        setStatus(T("시작 버튼을 누르세요 · ", "Press Start · ") + LEVEL_NAME[level] + T(" · 내 돌 ", " · You: ") + stoneTag(human));
         updateUndo();
         draw();
     }
@@ -256,7 +257,7 @@
     function startGame() {
         if (started) newGame();
         started = true;
-        btnStart.textContent = "다시 시작";
+        btnStart.textContent = T("다시 시작", "Restart");
         /* 폰에서는 시작 버튼이 판 아래에 있어서, 판이 보이게 위로 올려 줌 */
         if (window.matchMedia && window.matchMedia("(max-width: 760px)").matches) {
             var row = document.querySelector(".om-statusrow");
@@ -267,7 +268,7 @@
 
     function humanTurn(prefix) {
         refreshForbid();
-        setStatus((prefix || "") + "내 차례예요 (" + stoneTag(human) + ") · " + TIME_LIMIT + "초 안에 두세요");
+        setStatus((prefix || "") + T("내 차례예요 (", "Your turn (") + stoneTag(human) + ") · " + T(TIME_LIMIT + "초 안에 두세요", TIME_LIMIT + "s to move"));
         startTimer();
         updateUndo();
         draw();
@@ -315,7 +316,7 @@
         if (!canPlay() || board[y * N + x]) return;
         if (human === 1 && E.isForbidden(board, x, y)) {
             sndBuzz();
-            setStatus("금수 자리예요 (" + E.forbiddenReason(board, x, y) + "). 다른 곳에 두세요.", "warn");
+            setStatus(T("금수 자리예요 (", "Forbidden move (") + E.forbiddenReason(board, x, y) + T("). 다른 곳에 두세요.", "). Play somewhere else."), "warn");
             preview = null; draw();
             return;
         }
@@ -328,7 +329,7 @@
     function aiMove() {
         thinking = true;
         stopTimer(); timerShow("ai");
-        setStatus("컴퓨터 차례예요 (" + stoneTag(ai) + ") · 생각 중", "thinking");
+        setStatus(T("컴퓨터 차례예요 (", "Computer's turn (") + stoneTag(ai) + T(") · 생각 중", ") · thinking"), "thinking");
         updateUndo();
         draw();
         var start = Date.now();
@@ -348,20 +349,20 @@
         over = true; thinking = false; winCells = line; forbid = []; preview = null; hover = null;
         stopTimer(); timerShow("end");
         if (kind === "timeout") elTimerNum.textContent = "0";
-        btnStart.textContent = "시작";
+        btnStart.textContent = T("시작", "Start");
         var r = record[level] || (record[level] = { w: 0, l: 0, d: 0 });
-        if (kind === "win") { r.w++; setStatus("이겼어요! 🎉", "win"); sndWin(); }
-        else if (kind === "lose") { r.l++; setStatus("컴퓨터가 이겼어요", "lose"); sndLose(); }
-        else if (kind === "timeout") { r.l++; setStatus("시간 초과! " + TIME_LIMIT + "초가 지나 졌어요", "lose"); sndLose(); }
-        else { r.d++; setStatus("무승부예요"); }
+        if (kind === "win") { r.w++; setStatus(T("이겼어요! 🎉", "You win! 🎉"), "win"); sndWin(); }
+        else if (kind === "lose") { r.l++; setStatus(T("컴퓨터가 이겼어요", "The computer wins"), "lose"); sndLose(); }
+        else if (kind === "timeout") { r.l++; setStatus(T("시간 초과! " + TIME_LIMIT + "초가 지나 졌어요", "Time's up! You lost after " + TIME_LIMIT + "s"), "lose"); sndLose(); }
+        else { r.d++; setStatus(T("무승부예요", "It's a draw")); }
         save("omokRecord.v1", record);
         showRecord();
         updateUndo();
         draw();
         setTimeout(function () {
             if (!over) return;
-            elResultTitle.textContent = kind === "win" ? "승리! 🎉" : kind === "lose" ? "패배" : kind === "timeout" ? "시간 초과 ⏰" : "무승부";
-            elResultSub.innerHTML = LEVEL_NAME[level] + " · " + stoneTag(human) + " · " + history.length + "수";
+            elResultTitle.textContent = kind === "win" ? T("승리! 🎉", "Victory! 🎉") : kind === "lose" ? T("패배", "Defeat") : kind === "timeout" ? T("시간 초과 ⏰", "Time's up ⏰") : T("무승부", "Draw");
+            elResultSub.innerHTML = LEVEL_NAME[level] + " · " + stoneTag(human) + " · " + history.length + T("수", " moves");
             elResult.hidden = false;
         }, 900);
     }
@@ -377,7 +378,7 @@
         if (!removed) return;
         preview = null; hover = null;
         refreshForbid();
-        humanTurn("한 수 물렀어요 · ");
+        humanTurn(T("한 수 물렀어요 · ", "Move undone · "));
     }
     function updateUndo() {
         var mine = history.some(function (h) { return h[2] === human; });
@@ -387,9 +388,9 @@
     function showRecord() {
         var rows = ["easy", "normal", "hard"].map(function (k) {
             var r = record[k] || { w: 0, l: 0, d: 0 };
-            return "<span class=\"om-rec\"><b>" + LEVEL_NAME[k] + "</b> " + r.w + "승 " + r.l + "패" + (r.d ? " " + r.d + "무" : "") + "</span>";
+            return "<span class=\"om-rec\"><b>" + LEVEL_NAME[k] + "</b> " + T(r.w + "승 " + r.l + "패" + (r.d ? " " + r.d + "무" : ""), r.w + "W " + r.l + "L" + (r.d ? " " + r.d + "D" : "")) + "</span>";
         });
-        $("omRecord").innerHTML = "내 전적 (이 기기)<br>" + rows.join(" · ");
+        $("omRecord").innerHTML = T("내 전적 (이 기기)<br>", "My record (this device)<br>") + rows.join(" · ");
     }
 
     /* ======================= 입력 ======================= */
@@ -447,13 +448,13 @@
         stopTimer(); clearTimeout(aiTimer);
         setTimeout(function () {
             window.close();
-            setTimeout(function () { if (!window.closed) location.href = "index.html"; }, 250);
+            setTimeout(function () { if (!window.closed) location.href = T("index.html", "index-en.html"); }, 250);
         }, 120);
     });
     function syncSound() {
         btnSound.classList.toggle("muted", muted);
-        btnSound.setAttribute("aria-label", muted ? "소리 켜기" : "소리 끄기");
-        btnSound.title = muted ? "소리 켜기" : "소리 끄기";
+        btnSound.setAttribute("aria-label", muted ? T("소리 켜기", "Sound on") : T("소리 끄기", "Sound off"));
+        btnSound.title = muted ? T("소리 켜기", "Sound on") : T("소리 끄기", "Sound off");
     }
     btnSound.addEventListener("click", function () {
         muted = !muted; save("omokMuted.v1", muted); syncSound();
@@ -462,8 +463,8 @@
     chkForbid.addEventListener("change", draw);
 
     elHint.textContent = coarse
-        ? "한 번 누르면 미리보기, 같은 자리를 한 번 더 누르면 돌이 놓여요."
-        : "놓고 싶은 자리를 누르세요.";
+        ? T("한 번 누르면 미리보기, 같은 자리를 한 번 더 누르면 돌이 놓여요.", "Tap once to preview, tap the same spot again to place your stone.")
+        : T("놓고 싶은 자리를 누르세요.", "Click where you want to place your stone.");
 
     window.addEventListener("resize", resize);
     if (window.ResizeObserver) new ResizeObserver(resize).observe(box);

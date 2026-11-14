@@ -1,3 +1,4 @@
+window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 한국어로 동작 */
 /* ===== 환율 위젯 (오른쪽 광고칸 왼쪽 3칸) =====
    - 데이터: ExchangeRate-API 무료 공개 주소 (API 키 필요 없음, 출처 표기 필요)
      https://open.er-api.com/v6/latest/USD
@@ -65,9 +66,9 @@
 
         var t = new Date((data.time_last_update_unix || 0) * 1000);
         if (!isNaN(t.getTime()) && data.time_last_update_unix) {
-            dateEl.textContent = (t.getMonth() + 1) + "/" + t.getDate() + " 기준 (1일 1회 자동갱신)";
+            dateEl.textContent = (t.getMonth() + 1) + "/" + t.getDate() + T(" 기준 (1일 1회 자동갱신)", " · updated daily");
         } else {
-            dateEl.textContent = "1일 1회 자동갱신";
+            dateEl.textContent = T("1일 1회 자동갱신", "Updated once a day");
         }
         return true;
     }
@@ -84,7 +85,7 @@
             })
             .catch(function () {
                 // 실패하면 저장해 둔 값을 계속 보여줘요. 저장된 값도 없으면 안내 문구만.
-                if (!cache) dateEl.textContent = "환율을 불러오지 못했어요";
+                if (!cache) dateEl.textContent = T("환율을 불러오지 못했어요", "Couldn't load exchange rates");
             });
     }
 

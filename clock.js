@@ -1,3 +1,4 @@
+window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 한국어로 동작 */
 
 (function () {
     "use strict";
@@ -67,7 +68,7 @@
 
     /* ---------- 시계 그리기 (watchsample 이미지 위에 바늘·숫자를 얹어요) ---------- */
     var FACE_URL = new URL("clock-face.webp", document.baseURI).href;
-    var svg = el("svg", { viewBox: "0 0 " + VB_W + " " + VB_H, class: "dc-svg", role: "img", "aria-label": "시계" });
+    var svg = el("svg", { viewBox: "0 0 " + VB_W + " " + VB_H, class: "dc-svg", role: "img", "aria-label": T("시계", "Clock") });
     var defs = el("defs", {}, svg);
     grad(defs, "dcSilver", "linearGradient", [["0", "#ffffff"], ["0.5", "#cfd5dd"], ["1", "#8a93a0"]], { x1: "0", y1: "0", x2: "1", y2: "0" });
     var glow = el("filter", { id: "dcGlow", x: "-20%", y: "-20%", width: "140%", height: "140%" }, defs);
@@ -145,18 +146,18 @@
 
     // 아주 작은 안내 문구
     var hint = el("text", { x: 309, y: 762, "font-size": 12, fill: "rgba(255,255,255,0.5)", "text-anchor": "middle", "font-family": "'Malgun Gothic', sans-serif" }, svg);
-    hint.textContent = "더블클릭: 최소화";
+    hint.textContent = T("더블클릭: 최소화", "Double-click: minimize");
 
     /* ---------- 화면에 넣기 ---------- */
     var home = document.createElement("div");
     home.className = "dc-home";
     var wrap = document.createElement("div");
     wrap.className = "dc-wrap";
-    wrap.title = "더블클릭하면 시계만 작게 떠요";
+    wrap.title = T("더블클릭하면 시계만 작게 떠요", "Double-click to pop the clock out in a small window");
     wrap.appendChild(svg);
     var ph = document.createElement("div");
     ph.className = "dc-ph";
-    ph.textContent = "시계가 작은 창으로 떠 있어요. 여기를 클릭하면 돌아와요.";
+    ph.textContent = T("시계가 작은 창으로 떠 있어요. 여기를 클릭하면 돌아와요.", "The clock is in a small window. Click here to bring it back.");
     var slot = document.createElement("div");
     slot.className = "dc-slot";
     slot.appendChild(wrap);
@@ -364,7 +365,7 @@
         wrap.classList.remove("dc-float");
         if (wrap.parentNode !== slot) slot.insertBefore(wrap, ph);
         home.classList.remove("dc-away");
-        hint.textContent = "더블클릭: 최소화";
+        hint.textContent = T("더블클릭: 최소화", "Double-click: minimize");
         pipWin = null;
         restartTimer(window);
     }
@@ -401,10 +402,10 @@
                     ".dc-wrap{width:100%;height:100%;cursor:pointer;user-select:none;-webkit-user-select:none}" +
                     ".dc-svg{display:block;width:100%;height:100%}";
                 w.document.head.appendChild(st);
-                w.document.title = "시계";
+                w.document.title = T("시계", "Clock");
                 w.document.body.appendChild(wrap);
                 home.classList.add("dc-away");
-                hint.textContent = "더블클릭: 원래대로";
+                hint.textContent = T("더블클릭: 원래대로", "Double-click: restore");
                 pipWin = w;
                 restartTimer(w);   // 떠 있는 창 기준으로 갱신 (탭이 가려져도 멈추지 않게)
                 w.addEventListener("pagehide", backHome);
@@ -416,7 +417,7 @@
         document.body.appendChild(wrap);
         wrap.classList.add("dc-float");
         home.classList.add("dc-away");
-        hint.textContent = "더블클릭: 원래대로";
+        hint.textContent = T("더블클릭: 원래대로", "Double-click: restore");
     }
 
     wrap.addEventListener("dblclick", function (e) { e.preventDefault(); popOut(); });

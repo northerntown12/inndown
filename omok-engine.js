@@ -410,7 +410,7 @@
     function forbiddenReason(board, x, y) {
         var b = Int8Array.from(board), id = y * N + x, d;
         b[id] = 1;
-        for (d = 0; d < 4; d++) if (run(b, x, y, DIRS[d][0], DIRS[d][1], 1) > 5) { return "장목(6목 이상)"; }
+        for (d = 0; d < 4; d++) if (run(b, x, y, DIRS[d][0], DIRS[d][1], 1) > 5) { return (window.T ? T("장목(6목 이상)", "overline, 6+ in a row") : "장목(6목 이상)"); }
         var fours = 0;
         for (d = 0; d < 4; d++) fours += fourCountFromPts(fivePointsDir(b, x, y, DIRS[d][0], DIRS[d][1], 1));
         return fours >= 2 ? "4-4" : "3-3";

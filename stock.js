@@ -1,3 +1,4 @@
+window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 한국어로 동작 */
 
 (function () {
     "use strict";
@@ -14,21 +15,21 @@
     var STORAGE_KEY = "stockQuotes.v1";
 
     var GROUPS = [
-        { title: "주요 지수", items: [
-            { sym: "^KS11",  name: "코스피",     kind: "idx", url: "https://finance.naver.com/sise/sise_index.naver?code=KOSPI" },
-            { sym: "^KQ11",  name: "코스닥",     kind: "idx", url: "https://finance.naver.com/sise/sise_index.naver?code=KOSDAQ" },
-            { sym: "^DJI",   name: "다우존스",   kind: "idx", url: "https://finance.naver.com/world/sise.naver?symbol=DJI@DJI" },
-            { sym: "^IXIC",  name: "나스닥",     kind: "idx", url: "https://finance.naver.com/world/sise.naver?symbol=NAS@IXIC" },
+        { title: T("주요 지수", "Major indices"), items: [
+            { sym: "^KS11",  name: T("코스피", "KOSPI"),     kind: "idx", url: "https://finance.naver.com/sise/sise_index.naver?code=KOSPI" },
+            { sym: "^KQ11",  name: T("코스닥", "KOSDAQ"),     kind: "idx", url: "https://finance.naver.com/sise/sise_index.naver?code=KOSDAQ" },
+            { sym: "^DJI",   name: T("다우존스", "Dow Jones"),   kind: "idx", url: "https://finance.naver.com/world/sise.naver?symbol=DJI@DJI" },
+            { sym: "^IXIC",  name: T("나스닥", "Nasdaq"),     kind: "idx", url: "https://finance.naver.com/world/sise.naver?symbol=NAS@IXIC" },
             { sym: "^GSPC",  name: "S&P 500",    kind: "idx", url: "https://finance.naver.com/world/sise.naver?symbol=SPI@SPX" },
-            { sym: "^N225",  name: "닛케이225",  kind: "idx", url: "https://finance.naver.com/world/sise.naver?symbol=NII@NI225" }
+            { sym: "^N225",  name: T("닛케이225", "Nikkei 225"),  kind: "idx", url: "https://finance.naver.com/world/sise.naver?symbol=NII@NI225" }
         ]},
-        { title: "인기 종목", items: [
-            { sym: "005930.KS", name: "삼성전자",   kind: "krw", url: "https://finance.naver.com/item/main.naver?code=005930" },
-            { sym: "000660.KS", name: "SK하이닉스", kind: "krw", url: "https://finance.naver.com/item/main.naver?code=000660" },
+        { title: T("인기 종목", "Popular stocks"), items: [
+            { sym: "005930.KS", name: T("삼성전자", "Samsung Elec."),   kind: "krw", url: "https://finance.naver.com/item/main.naver?code=005930" },
+            { sym: "000660.KS", name: T("SK하이닉스", "SK hynix"), kind: "krw", url: "https://finance.naver.com/item/main.naver?code=000660" },
             { sym: "035420.KS", name: "NAVER",      kind: "krw", url: "https://finance.naver.com/item/main.naver?code=035420" },
-            { sym: "NVDA",      name: "엔비디아",   kind: "usd", url: "https://m.stock.naver.com/worldstock/stock/NVDA.O/total" },
-            { sym: "TSLA",      name: "테슬라",     kind: "usd", url: "https://m.stock.naver.com/worldstock/stock/TSLA.O/total" },
-            { sym: "AAPL",      name: "애플",       kind: "usd", url: "https://m.stock.naver.com/worldstock/stock/AAPL.O/total" }
+            { sym: "NVDA",      name: T("엔비디아", "NVIDIA"),   kind: "usd", url: "https://m.stock.naver.com/worldstock/stock/NVDA.O/total" },
+            { sym: "TSLA",      name: T("테슬라", "Tesla"),     kind: "usd", url: "https://m.stock.naver.com/worldstock/stock/TSLA.O/total" },
+            { sym: "AAPL",      name: T("애플", "Apple"),       kind: "usd", url: "https://m.stock.naver.com/worldstock/stock/AAPL.O/total" }
         ]}
     ];
 
@@ -43,7 +44,7 @@
         return e;
     }
 
-    var title = el("h3", "stk-title", "오늘의 주식시장");
+    var title = el("h3", "stk-title", T("오늘의 주식시장", "Today's Stock Market"));
     widget.appendChild(title);
 
     GROUPS.forEach(function (g) {
@@ -56,7 +57,7 @@
             name.href = it.url;
             name.target = "_blank";
             name.rel = "noopener noreferrer";
-            name.title = "네이버 증권에서 보기";
+            name.title = T("네이버 증권에서 보기", "View on Naver Finance");
             var price = el("b", "stk-price", "--");
             var chg = el("span", "stk-chg", "--");
             li.appendChild(name);
@@ -69,9 +70,9 @@
     });
 
     var foot = el("div", "stk-foot");
-    var statusEl = el("span", "", "불러오는 중...");
+    var statusEl = el("span", "", T("불러오는 중...", "Loading..."));
     foot.appendChild(statusEl);
-    foot.appendChild(el("span", "", "시세는 지연될 수 있어요 · Yahoo Finance"));
+    foot.appendChild(el("span", "", T("시세는 지연될 수 있어요 · Yahoo Finance", "Quotes may be delayed · Yahoo Finance")));
     widget.appendChild(foot);
 
     /* ---------- 표시 ---------- */
@@ -80,7 +81,7 @@
     }
 
     function fmtPrice(item, p) {
-        if (item.kind === "krw") return fmtNum(p, 0) + "원";
+        if (item.kind === "krw") return fmtNum(p, 0) + T("원", " KRW");
         if (item.kind === "usd") return "$" + fmtNum(p, 2);
         return fmtNum(p, 2);
     }
@@ -120,7 +121,7 @@
     function setStatus(ts, failed) {
         var d = new Date(ts);
         var t = pad2(d.getHours()) + ":" + pad2(d.getMinutes());
-        statusEl.textContent = failed ? t + " 기준 (새로 받지 못했어요)" : t + " 갱신";
+        statusEl.textContent = failed ? t + T(" 기준 (새로 받지 못했어요)", " (couldn't refresh)") : T(t + " 갱신", "Updated " + t);
     }
 
     /* ---------- 저장값 ---------- */
@@ -143,7 +144,7 @@
         if (busy) return;
 
         if (WORKER_URL.indexOf("YOUR-WORKER") >= 0) {
-            statusEl.textContent = "중계 서버 주소(stock.js의 WORKER_URL)를 설정해 주세요";
+            statusEl.textContent = T("중계 서버 주소(stock.js의 WORKER_URL)를 설정해 주세요", "Please set the relay server address (WORKER_URL in stock.js)");
             return;
         }
 
@@ -171,7 +172,7 @@
                     paint(c.data);
                     setStatus(c.fetchedAt, true);
                 } else {
-                    statusEl.textContent = "시세를 불러오지 못했어요";
+                    statusEl.textContent = T("시세를 불러오지 못했어요", "Couldn't load quotes");
                 }
             })
             .then(function () {

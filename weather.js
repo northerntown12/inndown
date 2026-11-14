@@ -1,6 +1,25 @@
+window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 한국어로 동작 */
 /* ===== 날씨 정보 (Open-Meteo, API 키 필요 없음) ===== */
 (function () {
     "use strict";
+
+    /* 2026-11-13: 회사망 등에서 날씨 서버(api.open-meteo.com)가 막힐 때를 대비해,
+       직접 받아오기가 실패하면 Cloudflare Worker를 거쳐 다시 받아와요 (코드: worker-weather.js).
+       Worker를 만든 뒤 나온 주소를 아래에 넣어 주세요 (끝에 / 포함). 비워 두면 예전처럼 직접만 받아와요. */
+    var WEATHER_PROXY = "";
+
+    function fetchJson(url) {
+        function get(u) {
+            return fetch(u).then(function (res) {
+                if (!res.ok) throw new Error("HTTP " + res.status);
+                return res.json();
+            });
+        }
+        return get(url).catch(function (err) {
+            if (!WEATHER_PROXY) throw err;
+            return get(WEATHER_PROXY + "?url=" + encodeURIComponent(url));
+        });
+    }
 
     var widget = document.getElementById("weather-widget");
     if (!widget) return;
@@ -24,8 +43,8 @@
     var tipEl = document.getElementById("weather-tip");
     var tipTimer = null;
     var tipOwner = null;
-    var DEFAULT_NOTE = "업데이트 주기: 10분";
-    var INPUT_HINT = "도시 입력 (예: 뉴욕)";
+    var DEFAULT_NOTE = T("업데이트 주기: 10분", "Updates every 10 min");
+    var INPUT_HINT = T("도시 입력 (예: 뉴욕)", "City (e.g. New York)");
 
     // 검색창이 비어 있을 때는 항상 이 안내문이 보여요.
     inputEl.placeholder = INPUT_HINT;
@@ -37,31 +56,31 @@
 
     /* 목록에 나오는 지역들 (맨 위: 경기 포천, 강원 인제 / 그 아래: 인구 많은 대도시 + 천안 수신면, 제주) */
     var PRESETS = [
-        { label: "포천",   lat: 37.8949, lon: 127.2002, aliases: ["경기포천", "경기도포천", "pocheon"] },
-        { label: "인제",   lat: 38.0697, lon: 128.1706, aliases: ["인제군", "강원인제", "강원도인제", "inje"] },
-        { label: "서울",   lat: 37.5665, lon: 126.9780 },
-        { label: "부산",   lat: 35.1796, lon: 129.0756 },
-        { label: "인천",   lat: 37.4563, lon: 126.7052 },
-        { label: "대구",   lat: 35.8714, lon: 128.6014 },
-        { label: "대전",   lat: 36.3504, lon: 127.3845 },
-        { label: "광주",   lat: 35.1595, lon: 126.8526 },
-        { label: "울산",   lat: 35.5384, lon: 129.3114 },
-        { label: "수원",   lat: 37.2636, lon: 127.0286 },
-        { label: "창원",   lat: 35.2279, lon: 128.6811 },
-        { label: "고양",   lat: 37.6584, lon: 126.8320 },
-        { label: "용인",   lat: 37.2411, lon: 127.1776 },
-        { label: "성남",   lat: 37.4200, lon: 127.1265 },
-        { label: "청주",   lat: 36.6424, lon: 127.4890 },
-        { label: "부천",   lat: 37.5034, lon: 126.7660 },
-        { label: "화성",   lat: 37.1996, lon: 126.8312 },
-        { label: "안산",   lat: 37.3219, lon: 126.8309 },
-        { label: "남양주", lat: 37.6360, lon: 127.2165 },
-        { label: "안양",   lat: 37.3943, lon: 126.9568 },
-        { label: "전주",   lat: 35.8242, lon: 127.1480 },
-        { label: "천안",   lat: 36.8151, lon: 127.1139, aliases: ["cheonan"] },
+        { label: "포천", en: "Pocheon",   lat: 37.8949, lon: 127.2002, aliases: ["경기포천", "경기도포천", "pocheon"] },
+        { label: "인제", en: "Inje",   lat: 38.0697, lon: 128.1706, aliases: ["인제군", "강원인제", "강원도인제", "inje"] },
+        { label: "서울", en: "Seoul",   lat: 37.5665, lon: 126.9780 },
+        { label: "부산", en: "Busan",   lat: 35.1796, lon: 129.0756 },
+        { label: "인천", en: "Incheon",   lat: 37.4563, lon: 126.7052 },
+        { label: "대구", en: "Daegu",   lat: 35.8714, lon: 128.6014 },
+        { label: "대전", en: "Daejeon",   lat: 36.3504, lon: 127.3845 },
+        { label: "광주", en: "Gwangju",   lat: 35.1595, lon: 126.8526 },
+        { label: "울산", en: "Ulsan",   lat: 35.5384, lon: 129.3114 },
+        { label: "수원", en: "Suwon",   lat: 37.2636, lon: 127.0286 },
+        { label: "창원", en: "Changwon",   lat: 35.2279, lon: 128.6811 },
+        { label: "고양", en: "Goyang",   lat: 37.6584, lon: 126.8320 },
+        { label: "용인", en: "Yongin",   lat: 37.2411, lon: 127.1776 },
+        { label: "성남", en: "Seongnam",   lat: 37.4200, lon: 127.1265 },
+        { label: "청주", en: "Cheongju",   lat: 36.6424, lon: 127.4890 },
+        { label: "부천", en: "Bucheon",   lat: 37.5034, lon: 126.7660 },
+        { label: "화성", en: "Hwaseong",   lat: 37.1996, lon: 126.8312 },
+        { label: "안산", en: "Ansan",   lat: 37.3219, lon: 126.8309 },
+        { label: "남양주", en: "Namyangju", lat: 37.6360, lon: 127.2165 },
+        { label: "안양", en: "Anyang",   lat: 37.3943, lon: 126.9568 },
+        { label: "전주", en: "Jeonju",   lat: 35.8242, lon: 127.1480 },
+        { label: "천안", en: "Cheonan",   lat: 36.8151, lon: 127.1139, aliases: ["cheonan"] },
         // ※ 수신면 좌표는 장산리(홍대용과학관) 부근 값이라 대략적이에요. 정확히 바꾸려면 lat, lon을 수정하세요.
-        { label: "천안 수신면", lat: 36.7396, lon: 127.2960, aliases: ["수신면", "천안시수신면", "충남천안수신면"] },
-        { label: "제주",   lat: 33.4996, lon: 126.5312, aliases: ["제주도", "제주시"] }
+        { label: "천안 수신면", en: "Susin-myeon, Cheonan", lat: 36.7396, lon: 127.2960, aliases: ["수신면", "천안시수신면", "충남천안수신면"] },
+        { label: "제주", en: "Jeju",   lat: 33.4996, lon: 126.5312, aliases: ["제주도", "제주시"] }
     ];
 
     /* 검색용 이름(공백 제거)을 미리 만들어 둬요: 이름, 이름+시, 별칭 */
@@ -69,7 +88,18 @@
         var base = normalize(p.label);
         p.keys = [base, base + "시"];
         (p.aliases || []).forEach(function (a) { p.keys.push(normalize(a)); });
+        if (p.en) p.keys.push(normalize(p.en));        // 영어 이름으로도 찾기
     });
+
+    /* 화면에 보일 이름: 영문 페이지에서는 영어 이름 (목록에 있는 도시·현재 위치) */
+    function nameOf(place) {
+        if (!place) return "";
+        if (!window.SITE_EN) return place.label;
+        if (place.en) return place.en;
+        for (var i = 0; i < PRESETS.length; i++) if (PRESETS[i].label === place.label) return PRESETS[i].en || place.label;
+        if (place.label === "📍 현재 위치") return "📍 My location";
+        return place.label;
+    }
 
     var STORAGE_KEY = "weatherPlace";
     var DEFAULT_PLACE = PRESETS.filter(function (p) { return p.label === "천안"; })[0];
@@ -80,35 +110,35 @@
     function describe(code, isDay) {
         var day = !!isDay;
         switch (code) {
-            case 0:  return { text: "맑음", icon: day ? "☀️" : "🌙", cond: "clear" };
-            case 1:  return { text: "대체로 맑음", icon: day ? "🌤️" : "🌙", cond: "clear" };
-            case 2:  return { text: "구름 조금", icon: day ? "⛅" : "☁️", cond: "partly" };
-            case 3:  return { text: "흐림", icon: "☁️", cond: "cloudy" };
+            case 0:  return { text: T("맑음", "Clear"), icon: day ? "☀️" : "🌙", cond: "clear" };
+            case 1:  return { text: T("대체로 맑음", "Mostly clear"), icon: day ? "🌤️" : "🌙", cond: "clear" };
+            case 2:  return { text: T("구름 조금", "Partly cloudy"), icon: day ? "⛅" : "☁️", cond: "partly" };
+            case 3:  return { text: T("흐림", "Cloudy"), icon: "☁️", cond: "cloudy" };
             case 45:
-            case 48: return { text: "안개", icon: "🌫️", cond: "fog" };
+            case 48: return { text: T("안개", "Fog"), icon: "🌫️", cond: "fog" };
             case 51:
             case 53:
-            case 55: return { text: "이슬비", icon: "🌦️", cond: "rain" };
+            case 55: return { text: T("이슬비", "Drizzle"), icon: "🌦️", cond: "rain" };
             case 56:
-            case 57: return { text: "어는 이슬비", icon: "🌧️", cond: "rain" };
-            case 61: return { text: "약한 비", icon: "🌧️", cond: "rain" };
-            case 63: return { text: "비", icon: "🌧️", cond: "rain" };
-            case 65: return { text: "강한 비", icon: "🌧️", cond: "rain" };
+            case 57: return { text: T("어는 이슬비", "Freezing drizzle"), icon: "🌧️", cond: "rain" };
+            case 61: return { text: T("약한 비", "Light rain"), icon: "🌧️", cond: "rain" };
+            case 63: return { text: T("비", "Rain"), icon: "🌧️", cond: "rain" };
+            case 65: return { text: T("강한 비", "Heavy rain"), icon: "🌧️", cond: "rain" };
             case 66:
-            case 67: return { text: "어는 비", icon: "🌧️", cond: "rain" };
-            case 71: return { text: "약한 눈", icon: "🌨️", cond: "snow" };
-            case 73: return { text: "눈", icon: "🌨️", cond: "snow" };
-            case 75: return { text: "강한 눈", icon: "❄️", cond: "snow" };
-            case 77: return { text: "싸락눈", icon: "❄️", cond: "snow" };
+            case 67: return { text: T("어는 비", "Freezing rain"), icon: "🌧️", cond: "rain" };
+            case 71: return { text: T("약한 눈", "Light snow"), icon: "🌨️", cond: "snow" };
+            case 73: return { text: T("눈", "Snow"), icon: "🌨️", cond: "snow" };
+            case 75: return { text: T("강한 눈", "Heavy snow"), icon: "❄️", cond: "snow" };
+            case 77: return { text: T("싸락눈", "Snow grains"), icon: "❄️", cond: "snow" };
             case 80:
-            case 81: return { text: "소나기", icon: "🌦️", cond: "rain" };
-            case 82: return { text: "강한 소나기", icon: "🌧️", cond: "rain" };
+            case 81: return { text: T("소나기", "Showers"), icon: "🌦️", cond: "rain" };
+            case 82: return { text: T("강한 소나기", "Heavy showers"), icon: "🌧️", cond: "rain" };
             case 85:
-            case 86: return { text: "소낙눈", icon: "🌨️", cond: "snow" };
-            case 95: return { text: "천둥번개", icon: "⛈️", cond: "storm" };
+            case 86: return { text: T("소낙눈", "Snow showers"), icon: "🌨️", cond: "snow" };
+            case 95: return { text: T("천둥번개", "Thunderstorm"), icon: "⛈️", cond: "storm" };
             case 96:
-            case 99: return { text: "우박 동반 천둥번개", icon: "⛈️", cond: "storm" };
-            default: return { text: "날씨 정보 없음", icon: "🌡️", cond: "partly" };
+            case 99: return { text: T("우박 동반 천둥번개", "Thunderstorm with hail"), icon: "⛈️", cond: "storm" };
+            default: return { text: T("날씨 정보 없음", "No weather data"), icon: "🌡️", cond: "partly" };
         }
     }
 
@@ -149,8 +179,8 @@
     msgSrcEl.href = "https://open-meteo.com/";
     msgSrcEl.target = "_blank";
     msgSrcEl.rel = "noopener noreferrer";
-    msgSrcEl.textContent = "출처: Open-Meteo·CAMS";
-    msgSrcEl.title = "날씨: Open-Meteo.com / 대기질: CAMS (Copernicus) via Open-Meteo";
+    msgSrcEl.textContent = T("출처: Open-Meteo·CAMS", "Source: Open-Meteo·CAMS");
+    msgSrcEl.title = T("날씨: Open-Meteo.com / 대기질: CAMS (Copernicus) via Open-Meteo", "Weather: Open-Meteo.com / Air quality: CAMS (Copernicus) via Open-Meteo");
 
     var msgNoteEl = document.createElement("span");
     msgNoteEl.className = "wm-note";
@@ -232,9 +262,9 @@
         if (!/^\d{4}-\d{2}-\d{2}$/.test(today)) return;
 
         var days = [];
-        if (!isNaN(hour) && hour < 6) days.push({ label: "오늘", date: today });
-        days.push({ label: "내일", date: addDays(today, 1) });
-        days.push({ label: "모레", date: addDays(today, 2) });
+        if (!isNaN(hour) && hour < 6) days.push({ label: T("오늘", "Today"), date: today });
+        days.push({ label: T("내일", "Tomorrow"), date: addDays(today, 1) });
+        days.push({ label: T("모레", "In 2 days"), date: addDays(today, 2) });
 
         days.forEach(function (day) {
             var idx = hourly && hourly.time ? hourly.time.indexOf(day.date + "T06:00") : -1;
@@ -255,7 +285,7 @@
             var temp = document.createElement("span");
             temp.className = "fb-temp";
 
-            var tipText = "예보를 받아오지 못했어요";
+            var tipText = T("예보를 받아오지 못했어요", "Couldn't get the forecast");
 
             if (idx === -1) {
                 icon.textContent = "-";
@@ -264,7 +294,7 @@
                 var info = describe(hourly.weather_code[idx], hourly.is_day ? hourly.is_day[idx] : 1);
                 icon.textContent = info.icon;
                 temp.textContent = Math.round(hourly.temperature_2m[idx]) + "°";
-                box.title = day.label + " 오전 6시: " + info.text;
+                box.title = day.label + T(" 오전 6시: ", " 6 AM: ") + info.text;
                 tipText = info.text;
             }
 
@@ -304,14 +334,15 @@
                       "T" + pad2(d.getUTCHours()) + ":00";
             var idx = hourly && hourly.time ? hourly.time.indexOf(key) : -1;
             var hh = d.getUTCHours();
-            var clock = (hh < 12 ? "오전 " : "오후 ") + (hh % 12 === 0 ? 12 : hh % 12) + "시";
+            var clock = window.SITE_EN ? (hh % 12 === 0 ? 12 : hh % 12) + (hh < 12 ? " AM" : " PM")
+                                    : (hh < 12 ? "오전 " : "오후 ") + (hh % 12 === 0 ? 12 : hh % 12) + "시";
 
             var box = document.createElement("div");
             box.className = "weather-fbox";
 
             var label = document.createElement("span");
             label.className = "fb-label";
-            label.textContent = h + "시간 후";
+            label.textContent = T(h + "시간 후", "In " + h + "h");
 
             var row = document.createElement("span");
             row.className = "fb-row";
@@ -322,7 +353,7 @@
             var temp = document.createElement("span");
             temp.className = "fb-temp";
 
-            var tipText = "예보를 받아오지 못했어요";
+            var tipText = T("예보를 받아오지 못했어요", "Couldn't get the forecast");
 
             if (idx === -1) {
                 icon.textContent = "-";
@@ -332,7 +363,7 @@
                 icon.textContent = info.icon;
                 temp.textContent = Math.round(hourly.temperature_2m[idx]) + "°";
                 tipText = clock + " " + info.text;
-                box.title = h + "시간 후(" + tipText + ")";
+                box.title = T(h + "시간 후(" + tipText + ")", "In " + h + " hours (" + tipText + ")");
             }
 
             box.setAttribute("role", "button");
@@ -355,10 +386,10 @@
 
     /* ===== 미세먼지 / 초미세먼지 (Open-Meteo 대기질 API, 한국 환경부 등급 기준) =====
        현재 날씨 왼쪽에 작은 칸 두 개를 만들어요. 칸을 누르면 수치(μg/m³)가 말풍선으로 나와요. */
-    var AIR_GRADES = ["좋음", "보통", "나쁨", "매우나쁨"];
+    var AIR_GRADES = [T("좋음", "Good"), T("보통", "Fair"), T("나쁨", "Poor"), T("매우나쁨", "V. poor")];
     var AIR_ITEMS = [
-        { key: "pm10",  label: "미세먼지",   name: "미세먼지(PM10)",    short: "PM10",  limits: [30, 80, 150] },
-        { key: "pm2_5", label: "초미세먼지", name: "초미세먼지(PM2.5)", short: "PM2.5", limits: [15, 35, 75] }
+        { key: "pm10",  label: T("미세먼지", "PM10"),   name: T("미세먼지(PM10)", "Fine dust (PM10)"),    short: "PM10",  limits: [30, 80, 150] },
+        { key: "pm2_5", label: T("초미세먼지", "PM2.5"), name: T("초미세먼지(PM2.5)", "Ultrafine dust (PM2.5)"), short: "PM2.5", limits: [15, 35, 75] }
     ];
     var airRequestId = 0;
     var airBoxes = [];
@@ -369,7 +400,7 @@
 
         var airEl = document.createElement("div");
         airEl.className = "weather-air";
-        airEl.setAttribute("aria-label", "미세먼지");
+        airEl.setAttribute("aria-label", T("미세먼지", "PM10"));
 
         AIR_ITEMS.forEach(function (item) {
             var box = document.createElement("div");
@@ -387,7 +418,7 @@
 
             box.appendChild(label);
             box.appendChild(grade);
-            box._tip = item.name + " 불러오는 중...";
+            box._tip = item.name + T(" 불러오는 중...", " loading...");
 
             box.addEventListener("click", function () {
                 toggleTip(box, box._tip, "right");
@@ -413,7 +444,7 @@
         if (isNaN(v)) {
             entry.gradeEl.className = "ab-grade g0";
             entry.gradeEl.textContent = "-";
-            entry.box._tip = item.name + " 정보 없음";
+            entry.box._tip = item.name + T(" 정보 없음", ": no data");
             entry.box.title = entry.box._tip;
             return;
         }
@@ -433,7 +464,7 @@
         airBoxes.forEach(function (entry) {
             entry.gradeEl.className = "ab-grade g0";
             entry.gradeEl.textContent = "…";
-            entry.box._tip = entry.item.name + " 불러오는 중...";
+            entry.box._tip = entry.item.name + T(" 불러오는 중...", " loading...");
         });
 
         var url = "https://air-quality-api.open-meteo.com/v1/air-quality" +
@@ -441,11 +472,7 @@
             "&longitude=" + place.lon +
             "&current=pm10,pm2_5&timezone=auto";
 
-        fetch(url)
-            .then(function (res) {
-                if (!res.ok) throw new Error("HTTP " + res.status);
-                return res.json();
-            })
+        fetchJson(url)
             .then(function (data) {
                 if (myId !== airRequestId) return;      // 오래된 요청은 무시
                 if (!data || !data.current) throw new Error("no data");
@@ -466,7 +493,7 @@
         widget.setAttribute("data-night", current.is_day ? "0" : "1");
         setParticles(info.cond);
 
-        placeEl.textContent = place.label;
+        placeEl.textContent = nameOf(place);
         iconEl.textContent = info.icon;
         tempEl.textContent = Math.round(current.temperature_2m) + "°";
         descEl.textContent = info.text;
@@ -481,8 +508,8 @@
     function loadWeather(place) {
         var myId = ++requestId;
         currentPlace = place;
-        placeEl.textContent = place.label;
-        setMessage("불러오는 중...");
+        placeEl.textContent = nameOf(place);
+        setMessage(T("불러오는 중...", "Loading..."));
         loadAir(place);
 
         var url = "https://api.open-meteo.com/v1/forecast" +
@@ -492,11 +519,7 @@
             "&hourly=temperature_2m,weather_code,is_day&forecast_days=3" +
             "&wind_speed_unit=ms&timezone=auto";
 
-        fetch(url)
-            .then(function (res) {
-                if (!res.ok) throw new Error("HTTP " + res.status);
-                return res.json();
-            })
+        fetchJson(url)
             .then(function (data) {
                 if (myId !== requestId) return;      // 오래된 요청은 무시
                 if (!data || !data.current) throw new Error("no data");
@@ -504,7 +527,7 @@
             })
             .catch(function () {
                 if (myId !== requestId) return;
-                setMessage("날씨를 불러오지 못했어요.");
+                setMessage(T("날씨를 불러오지 못했어요.", "Couldn't load the weather."));
             });
     }
 
@@ -551,7 +574,7 @@
             var btn = document.createElement("button");
             btn.type = "button";
             btn.className = "weather-option" + (p.label === currentPlace.label ? " current" : "");
-            btn.textContent = p.label;
+            btn.textContent = nameOf(p);
             btn.addEventListener("click", function () {
                 choosePreset(p);
             });
@@ -585,7 +608,7 @@
     }
 
     function choosePreset(place) {
-        inputEl.value = place.label;
+        inputEl.value = nameOf(place);
         closeDropdown();
         savePlace(place);
         loadWeather(place);
@@ -594,12 +617,12 @@
     /* ===== 현재 위치 (📍 버튼 / 목록 맨 위) =====
        - 브라우저에 위치 권한을 물어보고, 허락하면 그 자리의 날씨를 보여줘요.
        - 한 번 고르면 기억해서, 다음에 들어올 때도 현재 위치로 자동으로 찾아요. */
-    var LOC_LABEL = "현재 위치";
+    var LOC_LABEL = T("현재 위치", "My location");
 
     function reverseName(lat, lon) {
         // 좌표 → 동네 이름 (키 필요 없음). 실패하면 "현재 위치"로 보여줘요.
         var url = "https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=" + lat +
-                  "&longitude=" + lon + "&localityLanguage=ko";
+                  "&longitude=" + lon + "&localityLanguage=" + T("ko", "en");
         return fetch(url)
             .then(function (res) { if (!res.ok) throw new Error("HTTP " + res.status); return res.json(); })
             .then(function (d) {
@@ -613,11 +636,11 @@
     function useMyLocation(quiet) {
         closeDropdown();
         if (!navigator.geolocation) {
-            if (!quiet) setMessage("이 브라우저는 위치 찾기를 지원하지 않아요.");
+            if (!quiet) setMessage(T("이 브라우저는 위치 찾기를 지원하지 않아요.", "This browser doesn't support location."));
             return;
         }
         var myId = ++requestId;
-        if (!quiet) setMessage("현재 위치 찾는 중...");
+        if (!quiet) setMessage(T("현재 위치 찾는 중...", "Finding your location..."));
         if (locBtn) locBtn.classList.add("busy");
 
         navigator.geolocation.getCurrentPosition(function (pos) {
@@ -639,7 +662,7 @@
             if (locBtn) locBtn.classList.remove("busy");
             if (myId !== requestId) return;
             if (quiet) { loadWeather(currentPlace); return; }
-            setMessage(err && err.code === 1 ? "위치 권한이 꺼져 있어요." : "위치를 찾지 못했어요.");
+            setMessage(err && err.code === 1 ? T("위치 권한이 꺼져 있어요.", "Location permission is off.") : T("위치를 찾지 못했어요.", "Couldn't find your location."));
         }, { enableHighAccuracy: false, timeout: 10000, maximumAge: 10 * 60 * 1000 });
     }
 
@@ -647,8 +670,8 @@
     var locBtn = document.createElement("button");
     locBtn.type = "button";
     locBtn.className = "weather-loc";
-    locBtn.setAttribute("aria-label", "현재 위치 날씨");
-    locBtn.title = "현재 위치 날씨";
+    locBtn.setAttribute("aria-label", T("현재 위치 날씨", "Weather at my location"));
+    locBtn.title = T("현재 위치 날씨", "Weather at my location");
     locBtn.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5.2 7 13 7 13s7-7.8 7-13a7 7 0 0 0-7-7z" fill="currentColor"/><circle cx="12" cy="9" r="2.6" fill="#fff"/></svg>';
     locBtn.addEventListener("click", function () { useMyLocation(false); });
     searchRow.insertBefore(locBtn, searchRow.firstChild);
@@ -659,7 +682,7 @@
 
         var query = inputEl.value.trim();
         if (!query) {
-            setMessage("도시 이름을 입력해 주세요.");
+            setMessage(T("도시 이름을 입력해 주세요.", "Please enter a city name."));
             return;
         }
 
@@ -671,21 +694,17 @@
         }
 
         var myId = ++requestId;
-        setMessage("검색 중...");
+        setMessage(T("검색 중...", "Searching..."));
 
         var url = "https://geocoding-api.open-meteo.com/v1/search?name=" +
-            encodeURIComponent(query) + "&count=1&language=ko&format=json";
+            encodeURIComponent(query) + "&count=1&language=" + T("ko", "en") + "&format=json";
 
-        fetch(url)
-            .then(function (res) {
-                if (!res.ok) throw new Error("HTTP " + res.status);
-                return res.json();
-            })
+        fetchJson(url)
             .then(function (data) {
                 if (myId !== requestId) return;
 
                 if (!data || !data.results || data.results.length === 0) {
-                    setMessage("'" + query + "'을(를) 찾지 못했어요.");
+                    setMessage(T("'" + query + "'을(를) 찾지 못했어요.", "Couldn't find '" + query + "'."));
                     return;
                 }
 
@@ -698,7 +717,7 @@
             })
             .catch(function () {
                 if (myId !== requestId) return;
-                setMessage("검색에 실패했어요.");
+                setMessage(T("검색에 실패했어요.", "Search failed."));
             });
     }
 
@@ -771,7 +790,7 @@
             // 목록에 있는 지역이면 항상 최신 좌표를 사용해요.
             startPlace = findPreset(saved.label) || saved;
             // 이전에 검색한 도시를 검색창에도 바로 보여줘요.
-            inputEl.value = startPlace.label;
+            inputEl.value = nameOf(startPlace);
         }
     } catch (e) { /* 무시 */ }
 

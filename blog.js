@@ -1,3 +1,4 @@
+window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 한국어로 동작 */
 // 블로그 화면 그리기 (글 목록은 posts.js)
 //  - 홈 왼쪽 칸   : 슬라이드 메뉴 (최신 글 / 카테고리 → 작은 분류 → 글)
 //  - blog.html    : 전체 글 목록 (카테고리 탭, 작은 분류 칩)
@@ -7,6 +8,21 @@
 
     var B = window.BLOG;
     if (!B) return;
+
+    /* 영문 페이지: posts.js의 en(카테고리), titleEn·summaryEn(글) 이 있으면 영어로 보여줘요.
+       (글 본문 페이지는 한국어만 있어요) */
+    if (window.SITE_EN) {
+        B = JSON.parse(JSON.stringify(B));
+        B.cats.forEach(function (c) {
+            if (c.en) c.name = c.en;
+            c.subs.forEach(function (s) { if (s.en) s.name = s.en; });
+        });
+        B.posts.forEach(function (p) {
+            if (p.titleEn) p.title = p.titleEn;
+            if (p.summaryEn) p.summary = p.summaryEn;
+        });
+    }
+    var BLOG_PAGE = T("blog.html", "blog-en.html");
 
     // 글 페이지는 posts 폴더 안에 있어서 주소 앞에 "../" 가 필요해요.
     var BASE = document.body.getAttribute("data-base") || "";
@@ -108,10 +124,10 @@
         }
 
         // 최신 글
-        acc.appendChild(section(1, "최신 글", posts.length, null, function (inner) {
+        acc.appendChild(section(1, T("최신 글", "Latest"), posts.length, null, function (inner) {
             if (posts.length) inner.appendChild(postList(posts, 6));
-            else inner.appendChild(emptyNote("첫 글을 준비하고 있어요."));
-            inner.appendChild(moreLink(BASE + "blog.html", "전체 글 보기 →"));
+            else inner.appendChild(emptyNote(T("첫 글을 준비하고 있어요.", "The first post is on its way.")));
+            inner.appendChild(moreLink(BASE + BLOG_PAGE, T("전체 글 보기 →", "See all posts →")));
         }));
 
         // 카테고리 → 작은 분류 → 글
@@ -122,7 +138,7 @@
                     return inCat.some(function (p) { return p.sub === s.id; });
                 });
                 if (!inCat.length) {
-                    inner.appendChild(emptyNote("첫 글을 준비하고 있어요."));
+                    inner.appendChild(emptyNote(T("첫 글을 준비하고 있어요.", "The first post is on its way.")));
                 } else {
                     var box = h("div", "bb-subs");
                     subsWithPosts.forEach(function (s) {
@@ -130,7 +146,7 @@
                         box.appendChild(section(2, s.name, list.length, null, function (sin) {
                             sin.appendChild(postList(list, 6));
                             if (list.length > 6) {
-                                sin.appendChild(moreLink(BASE + "blog.html?cat=" + c.id + "&sub=" + s.id, "더 보기 →"));
+                                sin.appendChild(moreLink(BASE + "blog.html?cat=" + c.id + "&sub=" + s.id, T("더 보기 →", "More →")));
                             }
                         }));
                     });
@@ -139,7 +155,7 @@
                     if (loose.length) box.appendChild(postList(loose, 6));
                     inner.appendChild(box);
                 }
-                inner.appendChild(moreLink(BASE + "blog.html?cat=" + c.id, c.name + " 전체 보기 →"));
+                inner.appendChild(moreLink(BASE + "blog.html?cat=" + c.id, T(c.name + " 전체 보기 →", "All in " + c.name + " →")));
             }));
         });
 
@@ -178,7 +194,7 @@
             return b;
         }
 
-        tabs.appendChild(tab("all", "전체"));
+        tabs.appendChild(tab("all", T("전체", "All")));
         B.cats.forEach(function (c) { tabs.appendChild(tab(c.id, c.name, c.color)); });
         tabs.appendChild(ink);
 
@@ -201,7 +217,7 @@
             chips.innerHTML = "";
             var c = cat(curCat);
             if (c) {
-                [{ id: "all", name: "전체" }].concat(c.subs).forEach(function (s) {
+                [{ id: "all", name: T("전체", "All") }].concat(c.subs).forEach(function (s) {
                     var n = posts.filter(function (p) { return p.cat === c.id && (s.id === "all" || p.sub === s.id); }).length;
                     var b = h("button", "bc-chip" + (curSub === s.id ? " on" : ""), s.name + " " + n);
                     b.type = "button";
@@ -217,7 +233,7 @@
             });
             listEl.innerHTML = "";
             if (!list.length) {
-                listEl.appendChild(h("p", "bl-empty", "아직 글이 없어요. 곧 채워질 거예요."));
+                listEl.appendChild(h("p", "bl-empty", T("아직 글이 없어요. 곧 채워질 거예요.", "No posts yet. Coming soon.")));
                 return;
             }
             list.forEach(function (p) {
@@ -261,8 +277,8 @@
             if (crumb && c2) {
                 crumb.innerHTML = "";
                 var parts = [
-                    ["홈", BASE + "index.html"],
-                    ["블로그", BASE + "blog.html"],
+                    [T("홈", "Home"), BASE + T("index.html", "index-en.html")],
+                    [T("블로그", "Blog"), BASE + BLOG_PAGE],
                     [c2.name, BASE + "blog.html?cat=" + c2.id]
                 ];
                 if (subName(c2, me.sub)) parts.push([subName(c2, me.sub), BASE + "blog.html?cat=" + c2.id + "&sub=" + me.sub]);
@@ -298,14 +314,14 @@
                     var a = h("a", "pn-link " + cls);
                     if (p) { a.href = postUrl(p); } else { a.classList.add("off"); }
                     a.appendChild(h("span", "pn-label", label));
-                    a.appendChild(h("span", "pn-title", p ? p.title : "없음"));
+                    a.appendChild(h("span", "pn-title", p ? p.title : T("없음", "None")));
                     return a;
                 }
-                nav.appendChild(navLink(older, "← 이전 글", "pn-prev"));
-                var mid = h("a", "pn-list", "목록");
-                mid.href = BASE + "blog.html" + (c2 ? "?cat=" + c2.id : "");
+                nav.appendChild(navLink(older, T("← 이전 글", "← Previous"), "pn-prev"));
+                var mid = h("a", "pn-list", T("목록", "List"));
+                mid.href = BASE + BLOG_PAGE + (c2 ? "?cat=" + c2.id : "");
                 nav.appendChild(mid);
-                nav.appendChild(navLink(newer, "다음 글 →", "pn-next"));
+                nav.appendChild(navLink(newer, T("다음 글 →", "Next →"), "pn-next"));
             }
         }
     }

@@ -1,3 +1,4 @@
+window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 한국어로 동작 */
 
 (function () {
     "use strict";
@@ -70,7 +71,7 @@
         } catch (e) {
             if (!storageWarned) {
                 storageWarned = true;
-                toast("저장 공간을 쓸 수 없어요. 창을 닫으면 사라져요.");
+                toast(T("저장 공간을 쓸 수 없어요. 창을 닫으면 사라져요.", "Storage is unavailable. Notes will be lost when you close the window."));
             }
         }
     }
@@ -118,7 +119,7 @@
             var cb = document.createElement("input");
             cb.type = "checkbox";
             cb.checked = todo.done;
-            cb.setAttribute("aria-label", todo.text + " 완료");
+            cb.setAttribute("aria-label", todo.text + T(" 완료", " done"));
             var box = document.createElement("span");
             box.className = "memo-box";
             box.setAttribute("aria-hidden", "true");
@@ -133,7 +134,7 @@
             var del = document.createElement("button");
             del.type = "button";
             del.className = "memo-del";
-            del.setAttribute("aria-label", todo.text + " 삭제");
+            del.setAttribute("aria-label", todo.text + T(" 삭제", " delete"));
             del.textContent = "\u2715";
 
             li.appendChild(label);
@@ -145,7 +146,7 @@
         listEl.scrollTop = scrollTop;
 
         var left = state.todos.filter(function (t) { return !t.done; }).length;
-        tabTodo.textContent = left > 0 ? "할 일 " + left : "할 일";
+        tabTodo.textContent = left > 0 ? T("할 일 ", "To-do ") + left : T("할 일", "To-do");
     }
 
     function setTab(name, focus) {
@@ -166,7 +167,7 @@
         if (!text) { inputEl.value = ""; inputEl.focus(); return; }
 
         if (state.todos.length >= MAX_TODOS) {
-            toast("할 일은 최대 " + MAX_TODOS + "개까지 적을 수 있어요.");
+            toast(T("할 일은 최대 " + MAX_TODOS + "개까지 적을 수 있어요.", "You can add up to " + MAX_TODOS + " to-dos."));
             return;
         }
 
@@ -262,9 +263,9 @@
             a.click();
             document.body.removeChild(a);
             setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
-            toast("파일로 저장했어요.");
+            toast(T("파일로 저장했어요.", "Saved to a file."));
         } catch (e) {
-            toast("내보내기에 실패했어요.");
+            toast(T("내보내기에 실패했어요.", "Export failed."));
         }
     });
 
@@ -277,18 +278,18 @@
         if (!file) return;
 
         if (file.size > MAX_IMPORT_BYTES) {
-            toast("파일이 너무 커요. (1MB 이하)");
+            toast(T("파일이 너무 커요. (1MB 이하)", "The file is too big (1 MB max)."));
             return;
         }
 
         var reader = new FileReader();
-        reader.onerror = function () { toast("파일을 읽지 못했어요."); };
+        reader.onerror = function () { toast(T("파일을 읽지 못했어요.", "Couldn't read the file.")); };
         reader.onload = function () {
             var data;
             try { data = JSON.parse(String(reader.result)); } catch (e) { data = null; }
 
             if (!data || typeof data !== "object" || (!Array.isArray(data.todos) && typeof data.memo !== "string")) {
-                toast("불러올 수 없는 파일이에요. 기존 내용은 그대로예요.");
+                toast(T("불러올 수 없는 파일이에요. 기존 내용은 그대로예요.", "This file can't be imported. Your current notes are unchanged."));
                 return;
             }
 
@@ -302,9 +303,9 @@
         var overwrite = false;
 
         if (hasCurrent) {
-            if (!window.confirm("가져온 내용을 지금 내용에 합칠까요?\n[확인] 합치기   [취소] 다음 단계")) {
-                if (!window.confirm("지금 내용을 모두 지우고, 가져온 내용으로 바꿀까요?\n[확인] 덮어쓰기   [취소] 가져오기 중단")) {
-                    toast("가져오기를 취소했어요.");
+            if (!window.confirm(T("가져온 내용을 지금 내용에 합칠까요?\n[확인] 합치기   [취소] 다음 단계", "Merge the imported items with your current ones?\n[OK] Merge   [Cancel] Next step"))) {
+                if (!window.confirm(T("지금 내용을 모두 지우고, 가져온 내용으로 바꿀까요?\n[확인] 덮어쓰기   [취소] 가져오기 중단", "Replace everything with the imported items?\n[OK] Replace   [Cancel] Stop importing"))) {
+                    toast(T("가져오기를 취소했어요.", "Import canceled."));
                     return;
                 }
                 overwrite = true;
@@ -329,7 +330,7 @@
         textEl.value = state.memo;
         render();
         save();
-        toast("가져왔어요. (할 일 " + state.todos.length + "개)");
+        toast(T("가져왔어요. (할 일 " + state.todos.length + "개)", "Imported (" + state.todos.length + " to-dos)."));
     }
 
     /* ---------- 왼쪽 스프링 코일 그리기 ---------- */

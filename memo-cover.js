@@ -1,3 +1,4 @@
+window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 한국어로 동작 */
 
 (function () {
     "use strict";
@@ -58,8 +59,8 @@
     // 탭 줄 열쇠 버튼: 비밀번호 바꾸기 (비밀번호가 있을 때만)
     var keyBtn = mk("button", "memo-icon memo-cover-key");
     keyBtn.type = "button";
-    keyBtn.title = "커버 비밀번호 바꾸기";
-    keyBtn.setAttribute("aria-label", "커버 비밀번호 바꾸기");
+    keyBtn.title = T("커버 비밀번호 바꾸기", "Change cover password");
+    keyBtn.setAttribute("aria-label", T("커버 비밀번호 바꾸기", "Change cover password"));
     keyBtn.innerHTML = KEY_SVG;
     tabs.appendChild(keyBtn);
 
@@ -73,8 +74,8 @@
     face.style.backgroundImage = 'url("' + COVER_IMG + '")';
     var plate = mk("div", "mc-plate");          // 글씨 영역 (광고 스크랩 위의 남색 이름표)
     var emblem = mk("div", "mc-emblem"); emblem.innerHTML = LOCK_SVG;
-    var title = mk("div", "mc-title", "커버 씌워짐");
-    var sub = mk("div", "mc-sub", "비밀번호 3자리로 열 수 있어요");
+    var title = mk("div", "mc-title", T("커버 씌워짐", "Cover on"));
+    var sub = mk("div", "mc-sub", T("비밀번호 3자리로 열 수 있어요", "Open it with your 3-digit password"));
     var pinBox = mk("div", "mc-pin");
     pinBox.hidden = true;
     /* 비밀번호 칸: type="password"를 쓰면 크롬이 "비밀번호 저장/업데이트" 창을 띄워요.
@@ -95,12 +96,12 @@
     pinField(pinInput);
     pinInput.inputMode = "numeric";
     pinInput.maxLength = 3;
-    pinInput.setAttribute("aria-label", "비밀번호 3자리");
+    pinInput.setAttribute("aria-label", T("비밀번호 3자리", "3-digit password"));
     pinInput.placeholder = "• • •";
     var pinMsg = mk("div", "mc-pin-msg", "");
     var pinRow = mk("div", "mc-pin-row");
-    var pinCancel = mk("button", "mc-link", "닫기"); pinCancel.type = "button";
-    var pinForgot = mk("button", "mc-link", "잊었어요"); pinForgot.type = "button";
+    var pinCancel = mk("button", "mc-link", T("닫기", "Close")); pinCancel.type = "button";
+    var pinForgot = mk("button", "mc-link", T("잊었어요", "Forgot it")); pinForgot.type = "button";
     pinRow.appendChild(pinCancel); pinRow.appendChild(pinForgot);
     pinBox.appendChild(pinInput); pinBox.appendChild(pinMsg); pinBox.appendChild(pinRow);
     plate.appendChild(mk("div", "mc-stitch"));
@@ -119,11 +120,11 @@
     var dlgInput = mk("input", "mc-pin-input");
     pinField(dlgInput);
     dlgInput.inputMode = "numeric"; dlgInput.maxLength = 3; dlgInput.placeholder = "• • •";
-    dlgInput.setAttribute("aria-label", "비밀번호 3자리");
+    dlgInput.setAttribute("aria-label", T("비밀번호 3자리", "3-digit password"));
     var dlgMsg = mk("div", "mc-pin-msg", "");
     var dlgRow = mk("div", "mc-dlg-row");
     var dlgOk = mk("button", "mc-btn mc-btn-main"); dlgOk.type = "button";
-    var dlgNo = mk("button", "mc-btn", "취소"); dlgNo.type = "button";
+    var dlgNo = mk("button", "mc-btn", T("취소", "Cancel")); dlgNo.type = "button";
     dlgRow.appendChild(dlgNo); dlgRow.appendChild(dlgOk);
     [dlgTitle, dlgText, dlgInput, dlgMsg, dlgRow].forEach(function (n) { dlgCard.appendChild(n); });
     dlg.appendChild(dlgCard);
@@ -147,8 +148,8 @@
     }
 
     function setBtn(covered) {
-        btn.innerHTML = (covered ? OPEN_SVG : LOCK_SVG) + "<span>" + (covered ? "커버 열기" : "커버 덮기") + "</span>";
-        btn.setAttribute("aria-label", covered ? "커버 열기" : "커버 덮기");
+        btn.innerHTML = (covered ? OPEN_SVG : LOCK_SVG) + "<span>" + (covered ? T("커버 열기", "Open cover") : T("커버 덮기", "Close cover")) + "</span>";
+        btn.setAttribute("aria-label", covered ? T("커버 열기", "Open cover") : T("커버 덮기", "Close cover"));
         btn.classList.toggle("is-covered", covered);
         keyBtn.hidden = covered || !st.hash;
     }
@@ -171,7 +172,7 @@
     function openCover() {
         busy = true;
         st.covered = false; st.fails = 0; st.lockUntil = 0; save();
-        title.textContent = "커버 열림";
+        title.textContent = T("커버 열림", "Cover open");
         pinBox.hidden = true;
         sub.hidden = false;
         sub.textContent = "";
@@ -181,8 +182,8 @@
             setTimeout(function () {
                 pad.classList.remove("mc-flipping");
                 setInert(false);
-                title.textContent = "커버 씌워짐";
-                sub.textContent = "비밀번호 3자리로 열 수 있어요";
+                title.textContent = T("커버 씌워짐", "Cover on");
+                sub.textContent = T("비밀번호 3자리로 열 수 있어요", "Open it with your 3-digit password");
                 setBtn(false);
                 busy = false;
             }, ANIM_MS);
@@ -214,7 +215,7 @@
             if (left > 0) {
                 pinInput.disabled = true;
                 pinMsg.className = "mc-pin-msg bad";
-                pinMsg.textContent = left + "초 뒤에 다시 입력할 수 있어요";
+                pinMsg.textContent = T(left + "초 뒤에 다시 입력할 수 있어요", "Try again in " + left + "s");
             } else {
                 clearInterval(lockTimer);
                 if (pinInput.disabled) {
@@ -254,7 +255,7 @@
                 if (st.lockUntil > Date.now()) updateLock();
                 else {
                     pinMsg.className = "mc-pin-msg bad";
-                    pinMsg.textContent = "비밀번호가 달라요 (" + st.fails + "/" + MAX_FAIL + ")";
+                    pinMsg.textContent = T("비밀번호가 달라요 (", "Wrong password (") + st.fails + "/" + MAX_FAIL + ")";
                 }
             }
         });
@@ -287,19 +288,19 @@
         dlgInput.hidden = mode === "forgot";
         dlgOk.hidden = mode !== "forgot";
         if (mode === "forgot") {
-            dlgTitle.textContent = "비밀번호 초기화";
-            dlgText.textContent = "초기화하면 할 일과 메모가 모두 지워져요. (다른 사람이 열어 보지 못하게 하려는 거예요)";
-            dlgOk.textContent = "지우고 초기화";
+            dlgTitle.textContent = T("비밀번호 초기화", "Reset password");
+            dlgText.textContent = T("초기화하면 할 일과 메모가 모두 지워져요. (다른 사람이 열어 보지 못하게 하려는 거예요)", "Resetting erases all your to-dos and notes (so no one else can open them).");
+            dlgOk.textContent = T("지우고 초기화", "Erase and reset");
             dlgOk.classList.add("danger");
             return;
         }
         dlgOk.classList.remove("danger");
         if (mode === "change" && step === 0) {
-            dlgTitle.textContent = "비밀번호 바꾸기";
-            dlgText.textContent = "지금 비밀번호 3자리를 입력해 주세요";
+            dlgTitle.textContent = T("비밀번호 바꾸기", "Change password");
+            dlgText.textContent = T("지금 비밀번호 3자리를 입력해 주세요", "Enter your current 3-digit password");
         } else {
-            dlgTitle.textContent = mode === "change" ? "새 비밀번호" : "커버 비밀번호 정하기";
-            dlgText.textContent = firstPin ? "확인을 위해 한 번 더 입력해 주세요" : "커버를 열 때 쓸 숫자 3자리를 정해 주세요";
+            dlgTitle.textContent = mode === "change" ? T("새 비밀번호", "New password") : T("커버 비밀번호 정하기", "Set a cover password");
+            dlgText.textContent = firstPin ? T("확인을 위해 한 번 더 입력해 주세요", "Enter it once more to confirm") : T("커버를 열 때 쓸 숫자 3자리를 정해 주세요", "Choose 3 digits to open the cover");
         }
         setTimeout(function () { try { dlgInput.focus(); } catch (e) {} }, 30);
     }
@@ -314,7 +315,7 @@
         if (mode === "change" && step === 0) {
             hashPin(pin, st.salt).then(function (h) {
                 if (h === st.hash) { step = 1; renderDialog(); }
-                else { dlgMsg.className = "mc-pin-msg bad"; dlgMsg.textContent = "비밀번호가 달라요"; shake(dlgCard); }
+                else { dlgMsg.className = "mc-pin-msg bad"; dlgMsg.textContent = T("비밀번호가 달라요", "Wrong password"); shake(dlgCard); }
             });
             return;
         }
@@ -322,7 +323,7 @@
         if (pin !== firstPin) {
             firstPin = "";
             dlgMsg.className = "mc-pin-msg bad";
-            dlgMsg.textContent = "두 번 입력한 숫자가 달라요. 처음부터 다시 입력해 주세요";
+            dlgMsg.textContent = T("두 번 입력한 숫자가 달라요. 처음부터 다시 입력해 주세요", "The two entries don't match. Please start again");
             shake(dlgCard);
             renderDialog();
             return;
@@ -334,7 +335,7 @@
             closeDialog();
             setBtn(false);
             if (wasSetup) closeCover();
-            else flash("비밀번호를 바꿨어요");
+            else flash(T("비밀번호를 바꿨어요", "Password changed"));
         });
     });
     dlgInput.addEventListener("keydown", function (e) { if (e.key === "Escape") closeDialog(); });

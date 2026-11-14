@@ -1,3 +1,4 @@
+window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 한국어로 동작 */
 /* =========================================================
    2048 (game2048.html) — 2026-11-13
    - 방향키·WASD, 손가락/마우스로 밀기
@@ -177,9 +178,9 @@
     }
     function showRecord() {
         elRecord.innerHTML =
-            "최고 점수 <b>" + record.best.toLocaleString() + "</b><br>" +
-            "가장 큰 타일 <b>" + (record.maxTile || "-") + "</b><br>" +
-            "끝낸 판 <b>" + record.games + "</b> · 2048 달성 <b>" + record.wins + "</b>번";
+            T("최고 점수 <b>", "Best score <b>") + record.best.toLocaleString() + "</b><br>" +
+            T("가장 큰 타일 <b>", "Biggest tile <b>") + (record.maxTile || "-") + "</b><br>" +
+            T("끝낸 판 <b>" + record.games + "</b> · 2048 달성 <b>" + record.wins + "</b>번", "Games played <b>" + record.games + "</b> · Reached 2048 <b>" + record.wins + "</b>×");
     }
 
     /* ======================= 움직이기 ======================= */
@@ -302,7 +303,7 @@
             won = true;
             record.wins++; save("g2048Record.v1", record); showRecord();
             persist();
-            showResult("2048 달성! 🎉", "점수 " + score.toLocaleString() + " · 계속해서 더 큰 숫자에 도전할 수 있어요", true);
+            showResult(T("2048 달성! 🎉", "You made 2048! 🎉"), T("점수 ", "Score ") + score.toLocaleString() + T(" · 계속해서 더 큰 숫자에 도전할 수 있어요", " · Keep going for an even bigger tile"), true);
             sndWin();
             return;
         }
@@ -310,7 +311,7 @@
             over = true;
             record.games++; save("g2048Record.v1", record); showRecord();
             try { localStorage.removeItem("g2048State.v1"); } catch (e) { /* 무시 */ }
-            showResult("더 움직일 수 없어요", "점수 " + score.toLocaleString() + " · 가장 큰 타일 " + m, false);
+            showResult(T("더 움직일 수 없어요", "No more moves"), T("점수 ", "Score ") + score.toLocaleString() + T(" · 가장 큰 타일 ", " · Biggest tile ") + m, false);
             sndLose();
         }
     }
@@ -404,14 +405,14 @@
         finishPending();
         setTimeout(function () {
             window.close();
-            setTimeout(function () { if (!window.closed) location.href = "index.html"; }, 250);
+            setTimeout(function () { if (!window.closed) location.href = T("index.html", "index-en.html"); }, 250);
         }, 120);
     });
 
     function syncSound() {
         btnSound.classList.toggle("muted", muted);
-        btnSound.setAttribute("aria-label", muted ? "소리 켜기" : "소리 끄기");
-        btnSound.title = muted ? "소리 켜기" : "소리 끄기";
+        btnSound.setAttribute("aria-label", muted ? T("소리 켜기", "Sound on") : T("소리 끄기", "Sound off"));
+        btnSound.title = muted ? T("소리 켜기", "Sound on") : T("소리 끄기", "Sound off");
     }
     btnSound.addEventListener("click", function () {
         muted = !muted; save("g2048Muted.v1", muted); syncSound();
@@ -420,14 +421,14 @@
 
     /* ======================= 시작 ======================= */
     elHint.textContent = coarse
-        ? "판을 손가락으로 밀어서 같은 숫자를 합치세요."
-        : "방향키(← ↑ → ↓)나 마우스로 밀어서 같은 숫자를 합치세요.";
+        ? T("판을 손가락으로 밀어서 같은 숫자를 합치세요.", "Swipe the board to merge matching numbers.")
+        : T("방향키(← ↑ → ↓)나 마우스로 밀어서 같은 숫자를 합치세요.", "Use the arrow keys (← ↑ → ↓) or drag with the mouse to merge matching numbers.");
     syncSound();
     var saved = load("g2048State.v1", null);
     if (validSave(saved)) {
         restore(saved);
         rebuild();
-        if (!canMove()) { over = true; showResult("더 움직일 수 없어요", "점수 " + score.toLocaleString(), false); }
+        if (!canMove()) { over = true; showResult(T("더 움직일 수 없어요", "No more moves"), T("점수 ", "Score ") + score.toLocaleString(), false); }
     } else {
         newGame(false);
     }

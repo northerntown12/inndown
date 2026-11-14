@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="lang.js?v=1"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Omok · Records after work</title>
+    <meta name="description" content="Omok (Gomoku) with Renju rules against the computer. Easy, normal and hard levels.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="omok.css?v=5">
+</head>
+<body>
+    <header class="om-top">
+        <div class="om-top-in">
+            <h1 class="om-title">Omok <small>Renju rules · vs. computer</small></h1>
+            <span class="om-brand">Records after work</span>
+        </div>
+    </header>
+
+    <main class="om-main">
+        <section class="om-board-wrap">
+            <div class="om-statusrow">
+                <div class="om-status" id="omStatus" role="status" aria-live="polite">Starting a new game</div>
+                <div class="om-timer idle" id="omTimer" role="timer" aria-label="Time left (seconds)">
+                    <svg viewBox="0 0 44 44" aria-hidden="true"><circle class="om-tr-bg" cx="22" cy="22" r="19"/><circle class="om-tr" id="omTimerRing" cx="22" cy="22" r="19"/></svg>
+                    <span id="omTimerNum">15</span>
+                </div>
+                <button type="button" class="om-mute" id="omSound" aria-label="Sound off" title="Sound off">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path class="om-spk" d="M4 9.2h3.6L12.4 5v14l-4.8-4.2H4z"/>
+                        <path class="om-wave" d="M15.3 9.2a4 4 0 0 1 0 5.6M17.8 6.8a7.4 7.4 0 0 1 0 10.4"/>
+                        <path class="om-slash" d="M20.5 3.5 4 20"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="om-board" id="omBoardBox">
+                <canvas id="omBoard" aria-label="Omok board"></canvas>
+                <div class="om-result" id="omResult" hidden>
+                    <div class="om-result-card">
+                        <p class="om-result-title" id="omResultTitle"></p>
+                        <p class="om-result-sub" id="omResultSub"></p>
+                        <button type="button" class="om-btn om-primary" id="omAgain">Play again</button>
+                    </div>
+                </div>
+            </div>
+            <p class="om-hint" id="omHint">Click where you want to place your stone.</p>
+        </section>
+        <aside class="om-panel">
+            <div class="om-group">
+                <span class="om-label">Level</span>
+                <div class="om-seg" id="omLevel">
+                    <button type="button" data-v="easy">Easy</button>
+                    <button type="button" data-v="normal">Normal</button>
+                    <button type="button" data-v="hard">Hard</button>
+                </div>
+            </div>
+            <div class="om-group">
+                <span class="om-label">My stones</span>
+                <div class="om-seg" id="omColor">
+                    <button type="button" data-v="1"><i class="om-dot om-black"></i>Black (first)</button>
+                    <button type="button" data-v="2"><i class="om-dot om-white"></i>White (second)</button>
+                </div>
+            </div>
+            <p class="om-note" id="omNote" hidden>New settings apply when you <b>Restart</b>.</p>
+
+            <div class="om-actions">
+                <button type="button" class="om-btn om-primary" id="omStart">Start</button>
+                <button type="button" class="om-btn" id="omUndo">Undo</button>
+                <button type="button" class="om-btn om-exit" id="omExit" title="Close the Omok window">Exit</button>
+            </div>
+            <button type="button" class="om-btn om-online" disabled aria-disabled="true">
+                🌐 Play online <span class="om-soon">Coming later</span>
+            </button>
+
+            <label class="om-check"><input type="checkbox" id="omShowForbid" checked> Show Black's forbidden points (×)</label>
+
+            <div class="om-record" id="omRecord"></div>
+
+            <details class="om-rules">
+                <summary>What are Renju rules?</summary>
+                <ul>
+                    <li>Black and White take turns. <b>The first to get 5 in a row</b> horizontally, vertically or diagonally wins. Black moves first.</li>
+                    <li>Because moving first is an advantage, the following moves are forbidden <b>for Black only</b>:
+                        <ul>
+                            <li><b>3-3</b>: a move that makes two open threes at once</li>
+                            <li><b>4-4</b>: a move that makes two fours at once</li>
+                            <li><b>Overline</b>: a move that makes 6 or more in a row</li>
+                        </ul>
+                    </li>
+                    <li>Black needs <b>exactly 5</b> to win; White wins with 5 or more.</li>
+                    <li>A move that makes five for Black wins even if it is also a forbidden shape. 4-3 is allowed.</li>
+                    <li>You have <b>15 seconds</b> per move. Run out of time and you lose.</li>
+                </ul>
+            </details>
+        </aside>
+    </main>
+
+    <footer class="om-foot">Copyright © 2026 Choi Yunhyok. All rights reserved.</footer>
+
+    <script src="omok-engine.js?v=2"></script>
+    <script src="omok.js?v=7"></script>
+</body>
+</html>

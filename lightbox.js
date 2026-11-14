@@ -1,3 +1,4 @@
+window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 한국어로 동작 */
 
 (function () {
     "use strict";
@@ -52,7 +53,7 @@
     overlay.hidden = true;
     overlay.setAttribute("role", "dialog");
     overlay.setAttribute("aria-modal", "true");
-    overlay.setAttribute("aria-label", "이미지 크게 보기");
+    overlay.setAttribute("aria-label", T("이미지 크게 보기", "View larger image"));
 
     var big = document.createElement("img");
     big.className = "img-lightbox-img";
@@ -61,7 +62,7 @@
     var closeBtn = document.createElement("button");
     closeBtn.type = "button";
     closeBtn.className = "img-lightbox-close";
-    closeBtn.setAttribute("aria-label", "닫기");
+    closeBtn.setAttribute("aria-label", T("닫기", "Close"));
     closeBtn.textContent = "✕";
 
     overlay.appendChild(big);

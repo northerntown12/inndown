@@ -1,3 +1,4 @@
+window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 한국어로 동작 */
 /* ===== 계산기 버튼 소리 ===== */
 let calculatorAudioContext;
 
@@ -159,7 +160,7 @@ if (calculatorElement && previousOperandElement && currentOperandElement) {
             case '÷':
             case '/':
                 if (current === 0) {
-                    alert('0으로 나눌 수 없습니다!');
+                    alert(T('0으로 나눌 수 없습니다!', 'Cannot divide by zero!'));
                     return;
                 }
 
@@ -215,7 +216,7 @@ if (calculatorElement && previousOperandElement && currentOperandElement) {
     if (soundButton) {
         const showSoundState = function () {
             soundButton.setAttribute("aria-pressed", calculatorMuted ? "true" : "false");
-            soundButton.setAttribute("aria-label", calculatorMuted ? "키소리 켜기" : "키소리 끄기");
+            soundButton.setAttribute("aria-label", calculatorMuted ? T("키소리 켜기", "Turn key sounds on") : T("키소리 끄기", "Turn key sounds off"));
         };
         soundButton.addEventListener("click", function () {
             calculatorMuted = !calculatorMuted;
@@ -612,7 +613,7 @@ document.addEventListener("DOMContentLoaded", () => {
         );
 
         if (!win) {
-            alert("팝업이 차단되었어요. 주소창의 팝업 허용을 눌러주세요.");
+            alert(T("팝업이 차단되었어요. 주소창의 팝업 허용을 눌러주세요.", "The pop-up was blocked. Please allow pop-ups in the address bar."));
             return;
         }
 
@@ -681,8 +682,8 @@ document.addEventListener("DOMContentLoaded", () => {
     function show() {
         const paused = video.paused;
         btn.innerHTML = paused ? PLAY_SVG : PAUSE_SVG;
-        btn.setAttribute("aria-label", paused ? "배너 동영상 재생" : "배너 동영상 정지");
-        btn.title = paused ? "재생" : "정지";
+        btn.setAttribute("aria-label", paused ? T("배너 동영상 재생", "Play banner video") : T("배너 동영상 정지", "Pause banner video"));
+        btn.title = paused ? T("재생", "Play") : T("정지", "Pause");
     }
 
     let wantPaused = false;
