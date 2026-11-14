@@ -9,7 +9,11 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
     var box = document.getElementById("postal-widget");
     if (!box) return;
 
-    var SCRIPT_URL = "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js";
+    /* 카카오 우편번호 서비스 (2026-11-15: 공식 새 주소 kakaocdn.net으로 바꿈, 안 되면 예전 daumcdn.net으로 한 번 더) */
+    var SCRIPT_URLS = [
+        "https://t1.kakaocdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js",
+        "https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"
+    ];
     var STORAGE_KEY = "postalLast.v1";
 
     function el(tag, cls, text) {
@@ -131,19 +135,31 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
     /* ---------- 검색 팝업 ---------- */
     var loading = false;
 
+    /* 새 이름 kakao.Postcode, 예전 이름 daum.Postcode 둘 다 알아봄 */
+    function PostcodeClass() {
+        return (window.kakao && window.kakao.Postcode) || (window.daum && window.daum.Postcode) || null;
+    }
+
     function loadScript(cb) {
-        if (window.daum && window.daum.Postcode) return cb(true);
+        if (PostcodeClass()) return cb(true);
         if (loading) return;
         loading = true;
-        var s = document.createElement("script");
-        s.src = SCRIPT_URL;
-        s.onload = function () { loading = false; cb(true); };
-        s.onerror = function () { loading = false; cb(false); };
-        document.head.appendChild(s);
+        (function tryUrl(i) {
+            if (i >= SCRIPT_URLS.length) { loading = false; cb(false); return; }
+            var s = document.createElement("script");
+            s.src = SCRIPT_URLS[i];
+            s.onload = function () {
+                if (PostcodeClass()) { loading = false; cb(true); }
+                else tryUrl(i + 1);
+            };
+            s.onerror = function () { tryUrl(i + 1); };
+            document.head.appendChild(s);
+        })(0);
     }
 
     function openSearch() {
-        new window.daum.Postcode({
+        var Postcode = PostcodeClass();
+        new Postcode({
             oncomplete: function (d) {
                 var road = d.roadAddress || "";
                 if (d.buildingName && d.apartment === "Y") road += " (" + d.buildingName + ")";
