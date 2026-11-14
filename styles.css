@@ -1893,3 +1893,9 @@ button:active {
 }
 .lotto-last .ll-mute:hover { background: linear-gradient(160deg, rgba(255, 255, 255, 0.45) 0%, rgba(40, 110, 240, 0.50) 45%, rgba(8, 50, 160, 0.65) 100%); }
 .lotto-last .ll-mute:active { transform: translateX(-50%) scale(0.94); }
+
+/* 폰에서만 맨 위 동영상 배너를 조금 더 크게 (PC는 그대로) — 2026-11-14
+   세로 높이가 약 20% 커지고, 양옆은 살짝 잘려요. 더 키우려면 350을 더 큰 숫자로 */
+@media screen and (max-width: 768px), screen and (hover: none) and (pointer: coarse) and (max-width: 1000px) {
+    .banner-happy { aspect-ratio: 1024 / 350; }
+}
