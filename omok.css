@@ -232,3 +232,9 @@ body {
 @media (max-width: 760px) {
     .om-join input { font-size: 16px; }
 }
+
+/* 그만할래요 (2026-11-15) */
+.om-stop { background: #fff4f1; border-color: #efc2b8; color: #a3402c; }
+.om-stop:hover:not(:disabled) { background: #ffe9e3; }
+.om-stop.om-stop-hot { border-color: #e08a76; box-shadow: 0 0 0 2px rgba(224, 138, 118, 0.25); }
+.om-result-card .om-stop { margin-left: 6px; }

@@ -420,6 +420,10 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
     var elOnBox = $("omOnlineBox"), elOnLobby = $("omOnLobby"), elOnWait = $("omOnWait"), elOnPlay = $("omOnPlay");
     var elOnErr = $("omOnErr"), elOnInfo = $("omOnInfo"), elWaitMsg = $("omWaitMsg"), elCodeBox = $("omCodeBox");
     var btnResign = $("omResign"), btnRematch = $("omRematch"), inCode = $("omCodeIn");
+    /* 예전 omok.html이 브라우저에 남아 있어도 멈추지 않게 (없으면 보이지 않는 빈 버튼) */
+    var btnStop = $("omStop") || document.createElement("button"),
+        btnStop2 = $("omStop2") || document.createElement("button"),
+        btnNewOpp = $("omNewOpp") || document.createElement("button");
     var SESSION_KEY = "omokOnline.v1";
 
     function api(path, body, signal) {
@@ -460,7 +464,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         try { sessionStorage.removeItem(SESSION_KEY); } catch (e) {}
         if (!silent) {
             mode = "ai"; document.body.classList.remove("om-mode-online"); elOnBox.hidden = true;
-            $("omAgain").textContent = T("한 판 더", "Play again"); $("omAgain").hidden = false;
+            $("omAgain").textContent = T("한 판 더", "Play again"); $("omAgain").hidden = false; btnStop2.hidden = true;
             newGame();
         }
     }
@@ -563,19 +567,29 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
     }
 
     function updateOnlinePanel(s) {
-        var opp = s.oppLeft ? T("나감", "left") : (s.oppHere ? T("접속 중", "online") : T("연결 끊김?", "offline?"));
+        var opp = s.oppLeft ? T("나감", "left") : s.oppDeclined ? T("그만함", "done") : (s.oppHere ? T("접속 중", "online") : T("연결 끊김?", "offline?"));
         elOnInfo.innerHTML = T("방 ", "Room ") + "<b>" + s.code + "</b> · " + T("나 ", "Me ") + stoneTag(s.you) +
             " · " + T("상대 ", "Opponent ") + '<span class="om-opp ' + (s.oppHere && !s.oppLeft ? "on" : "off") + '">' + opp + "</span>";
         var playing = s.status === "playing";
+        var ended = !playing && (s.oppLeft || s.oppDeclined || s.meDeclined);   // 이 방에서 더 둘 수 없음
         btnResign.hidden = !playing;
-        btnRematch.hidden = playing;
+        btnRematch.hidden = playing || s.meDeclined;
+        btnStop.hidden = playing || ended;                 // 그만할래요
+        btnNewOpp.hidden = !ended;                         // 새 대결 찾기
+        btnStop.classList.toggle("om-stop-hot", !playing && !!s.rematchOpp && !s.rematchMe);
+        $("omAgain").hidden = ended;
+        btnStop2.hidden = ended;
+        if (ended) elResult.hidden = true;
         if (!playing) {
-            btnRematch.disabled = s.oppLeft || s.rematchMe;
+            btnRematch.disabled = s.oppLeft || s.oppDeclined || s.rematchMe;
             btnRematch.textContent = s.oppLeft ? T("상대가 나갔어요", "Opponent left")
+                : s.oppDeclined ? T("상대가 그만하기로 했어요", "Opponent has stopped")
                 : s.rematchMe ? T("상대를 기다리는 중…", "Waiting for opponent…")
                 : s.rematchOpp ? T("한 판 더! (상대가 원해요)", "Rematch! (opponent wants one)")
                 : T("한 판 더 (흑백 바꿔서)", "Rematch (swap colors)");
-            btnRematch.classList.toggle("om-primary", !!s.rematchOpp && !s.rematchMe && !s.oppLeft);
+            btnRematch.classList.toggle("om-primary", !!s.rematchOpp && !s.rematchMe && !s.oppLeft && !s.oppDeclined);
+            if (s.meDeclined) setStatus(T("그만하기로 했어요 · 새 대결을 찾거나 컴퓨터와 둘 수 있어요", "You stopped · find a new game or play the computer"));
+            else if (s.oppDeclined) setStatus(T("상대가 그만하기로 했어요 👋", "Your opponent doesn't want a rematch 👋"));
         }
     }
 
@@ -628,11 +642,13 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
             if (iWin) sndWin(); else if (!draw0) sndLose();
             var key = ON.gameKey;
             setTimeout(function () {
-                if (!ON || ON.gameKey !== key || ON.status !== "over") return;
+                var st = ON && ON.state;
+                if (!ON || ON.gameKey !== key || ON.status !== "over" || (st && (st.oppLeft || st.oppDeclined || st.meDeclined))) return;
                 elResultTitle.textContent = title;
                 elResultSub.innerHTML = T("온라인", "Online") + " · " + stoneTag(human) + " · " + history.length + T("수", " moves");
                 $("omAgain").textContent = T("한 판 더", "Rematch");
-                $("omAgain").hidden = !!s.oppLeft;
+                $("omAgain").hidden = false;
+                btnStop2.hidden = false;
                 elResult.hidden = false;
             }, 900);
         }
@@ -669,6 +685,19 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         api("/resign", { code: me.code, token: me.token }).then(function (res) { if (ON === me && res.state) applyState(res.state); }).catch(function () { onErr(netErrText()); });
     });
     btnRematch.addEventListener("click", function () { sndClick(); onlineRematch(); });
+    /* 그만할래요: 한 판 더를 하지 않기 (상대에게 알려 줌) */
+    function onlineDecline() {
+        var me = ON; if (!me || me.status !== "over") return;
+        elResult.hidden = true;
+        btnStop.disabled = true;
+        api("/decline", { code: me.code, token: me.token }).then(function (res) {
+            btnStop.disabled = false;
+            if (ON === me && res.state) applyState(res.state);
+        }).catch(function () { btnStop.disabled = false; onErr(netErrText()); });
+    }
+    btnStop.addEventListener("click", function () { sndClick(); onlineDecline(); });
+    btnStop2.addEventListener("click", function () { sndClick(); onlineDecline(); });
+    btnNewOpp.addEventListener("click", function () { sndClick(); leaveOnline(true); enterOnline(); });
     $("omBack").addEventListener("click", function () {
         sndClick();
         if (ON && ON.status === "playing" && !confirm(T("두는 중에 나가면 기권으로 져요. 나갈까요?", "Leaving now counts as resigning. Leave?"))) return;
