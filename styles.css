@@ -1918,3 +1918,10 @@ button:active {
     right: calc(15% - 15cqw);
     border-top: 1px solid rgba(255, 255, 255, 0.5);
 }
+
+/* 계산기: 숫자 위 식 줄이 칸 밖으로 넘치지 않게 (길면 script.js가 앞부분을 …로 줄임) — 2026-11-15 */
+.previous-operand {
+    max-width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+}

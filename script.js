@@ -63,19 +63,35 @@ const currentOperandElement = document.querySelector('.current-operand');
 
 if (calculatorElement && previousOperandElement && currentOperandElement) {
 
-    let currentOperand = '0';
-    let previousOperand = '';
-    let operation = undefined;
+    /* 2026-11-15: 네이버 계산기처럼 — = 를 누를 때까지 지금까지의 식(예: 12 + 5 ×)을 숫자 위에 보여 주고,
+       연산 기호를 누르면 아래 숫자판은 0으로. = 를 누르면 위에 "12 + 5 × 3 =", 아래에 답.
+       계산 순서는 수학 규칙대로 (× ÷ 먼저, + - 나중) */
+    let tokens = [];            // ["12", "+", "5", "×"] 처럼 숫자와 기호가 번갈아
+    let currentOperand = '0';   // 지금 입력 중인 숫자
+    let fresh = false;          // 기호를 막 눌러서 아직 새 숫자를 안 친 상태
+    let justEvaluated = false;  // 방금 = 를 눌렀음
+    let lastExpr = '';          // = 뒤에 위에 보여 줄 식
+
+    function exprText(list) {
+        return list.map(function (t) {
+            return /^[+\-×÷]$/.test(t) ? t : formatNumber(t);
+        }).join(' ');
+    }
+
+    /* 위 줄이 칸보다 길면 앞부분을 "…"로 줄여 끝부분(최근 입력)이 보이게 */
+    function fitPrevious(text) {
+        previousOperandElement.textContent = text;
+        if (!text) return;
+        let cut = 0;
+        while (previousOperandElement.scrollWidth > previousOperandElement.clientWidth + 1 && cut < text.length) {
+            cut += 1;
+            previousOperandElement.textContent = '…' + text.slice(cut);
+        }
+    }
 
     function updateDisplay() {
         currentOperandElement.textContent = formatNumber(currentOperand);
-
-        if (operation !== undefined) {
-            previousOperandElement.textContent =
-                `${formatNumber(previousOperand)} ${operation}`;
-        } else {
-            previousOperandElement.textContent = '';
-        }
+        fitPrevious(justEvaluated ? lastExpr : exprText(tokens));
     }
 
     function formatNumber(number) {
@@ -92,12 +108,20 @@ if (calculatorElement && previousOperandElement && currentOperandElement) {
     }
 
     function clearCalculator() {
+        tokens = [];
         currentOperand = '0';
-        previousOperand = '';
-        operation = undefined;
+        fresh = false;
+        justEvaluated = false;
+        lastExpr = '';
     }
 
     function deleteNumber() {
+        if (justEvaluated) {            // 답이 나온 뒤에는 위의 식만 지움
+            justEvaluated = false;
+            lastExpr = '';
+            return;
+        }
+        if (fresh) return;              // 기호만 누른 상태에서는 지울 숫자가 없음
         currentOperand = currentOperand.slice(0, -1);
 
         if (currentOperand === '' || currentOperand === '-') {
@@ -106,8 +130,18 @@ if (calculatorElement && previousOperandElement && currentOperandElement) {
     }
 
     function appendNumber(number) {
+        if (justEvaluated) {            // 답이 나온 뒤 숫자를 누르면 새 계산
+            clearCalculator();
+        }
+        if (fresh) {
+            currentOperand = '0';
+            fresh = false;
+        }
         if (number === '.' && currentOperand.includes('.')) {
             return;
+        }
+        if (currentOperand.replace(/[^0-9]/g, '').length >= 15 && number !== '.') {
+            return;                     // 너무 긴 숫자는 그만
         }
 
         if (currentOperand === '0' && number !== '.') {
@@ -118,62 +152,68 @@ if (calculatorElement && previousOperandElement && currentOperandElement) {
     }
 
     function chooseOperation(selectedOperation) {
-        if (operation !== undefined) {
-            calculate();
-
-            if (operation !== undefined) return;
+        const op = selectedOperation === '*' ? '×' : selectedOperation === '/' ? '÷' : selectedOperation;
+        if (justEvaluated) {            // 답에 이어서 계산
+            tokens = [currentOperand, op];
+            justEvaluated = false;
+            lastExpr = '';
+        } else if (fresh && tokens.length) {
+            tokens[tokens.length - 1] = op;   // 기호를 연달아 누르면 마지막 기호만 바꿈
+        } else {
+            tokens.push(currentOperand, op);
         }
+        currentOperand = '0';           // 숫자판은 0으로
+        fresh = true;
+    }
 
-        previousOperand = currentOperand;
-        operation = selectedOperation;
-        currentOperand = '0';
+    /* × ÷ 먼저, + - 나중 */
+    function evaluate(list) {
+        const nums = [parseFloat(list[0])];
+        const ops = [];
+        for (let i = 1; i < list.length; i += 2) {
+            const op = list[i];
+            const n = parseFloat(list[i + 1]);
+            if (op === '×') {
+                nums[nums.length - 1] *= n;
+            } else if (op === '÷') {
+                if (n === 0) return null;
+                nums[nums.length - 1] /= n;
+            } else {
+                ops.push(op);
+                nums.push(n);
+            }
+        }
+        let result = nums[0];
+        for (let j = 0; j < ops.length; j++) {
+            result = ops[j] === '+' ? result + nums[j + 1] : result - nums[j + 1];
+        }
+        return result;
     }
 
     function calculate() {
-        const prev = parseFloat(previousOperand);
-        const current = parseFloat(currentOperand);
+        if (justEvaluated || tokens.length === 0) return;
 
-        if (
-            Number.isNaN(prev) ||
-            Number.isNaN(current) ||
-            operation === undefined
-        ) {
+        const list = fresh ? tokens.slice(0, -1) : tokens.concat([currentOperand]);
+        if (list.length < 3) {          // 예: "5 +" 다음 바로 = → 5
+            currentOperand = list[0] || currentOperand;
+            lastExpr = exprText(list) + ' =';
+            tokens = [];
+            fresh = false;
+            justEvaluated = true;
             return;
         }
 
-        let result;
-
-        switch (operation) {
-            case '+':
-                result = prev + current;
-                break;
-
-            case '-':
-                result = prev - current;
-                break;
-
-            case '×':
-            case '*':
-                result = prev * current;
-                break;
-
-            case '÷':
-            case '/':
-                if (current === 0) {
-                    alert(T('0으로 나눌 수 없습니다!', 'Cannot divide by zero!'));
-                    return;
-                }
-
-                result = prev / current;
-                break;
-
-            default:
-                return;
+        const result = evaluate(list);
+        if (result === null || !Number.isFinite(result)) {
+            alert(T('0으로 나눌 수 없습니다!', 'Cannot divide by zero!'));
+            return;
         }
 
+        lastExpr = exprText(list) + ' =';
         currentOperand = String(Number(result.toFixed(8)));
-        previousOperand = '';
-        operation = undefined;
+        tokens = [];
+        fresh = false;
+        justEvaluated = true;
     }
 
     calculatorElement.addEventListener("click", function(event) {
