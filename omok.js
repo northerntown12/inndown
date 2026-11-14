@@ -435,7 +435,19 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
     function netErrText() { return T("온라인 서버에 연결하지 못했어요. 잠시 뒤 다시 해 보세요.", "Couldn't reach the online server. Please try again shortly."); }
     function showView(v) {
         elOnLobby.hidden = v !== "lobby"; elOnWait.hidden = v !== "wait"; elOnPlay.hidden = v !== "play";
+        /* 폰: 고르기·기다리기 동안은 온라인 안내를 판 위로 (한눈에 보이게) */
+        var pre = v === "lobby" || v === "wait";
+        var was = document.body.classList.contains("om-on-pre");
+        document.body.classList.toggle("om-on-pre", pre);
+        if (isPhone()) {
+            if (pre && !was) window.scrollTo(0, 0);
+            if (!pre && was) {                       // 대결 시작: 판이 보이게
+                var row = document.querySelector(".om-statusrow");
+                if (row) setTimeout(function () { row.scrollIntoView({ behavior: "smooth", block: "start" }); }, 50);
+            }
+        }
     }
+    function isPhone() { return !!(window.matchMedia && window.matchMedia("(max-width: 760px)").matches); }
     function setBusy(b) { [].forEach.call(elOnLobby.querySelectorAll("button, input"), function (el) { el.disabled = b; }); }
 
     function enterOnline() {
@@ -463,7 +475,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         ON = null;
         try { sessionStorage.removeItem(SESSION_KEY); } catch (e) {}
         if (!silent) {
-            mode = "ai"; document.body.classList.remove("om-mode-online"); elOnBox.hidden = true;
+            mode = "ai"; document.body.classList.remove("om-mode-online", "om-on-pre"); elOnBox.hidden = true;
             $("omAgain").textContent = T("한 판 더", "Play again"); $("omAgain").hidden = false; btnStop2.hidden = true;
             newGame();
         }

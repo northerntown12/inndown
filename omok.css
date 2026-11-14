@@ -257,3 +257,30 @@ body {
     93% { transform: rotate(-5deg) scale(1); }
 }
 @media (prefers-reduced-motion: reduce) { .om-online .om-soon { animation: none; } }
+
+/* 폰에서 온라인 대결 안내가 한눈에 보이게 (2026-11-15)
+   - 가로로 넘치던 문제(판·소리 버튼이 오른쪽으로 잘림) → 칸 너비를 화면 안으로 고정
+   - 고르기·기다리기 동안은 온라인 안내를 판 위로, 글씨·여백을 조금 작게 */
+@media (max-width: 760px) {
+    .om-main { grid-template-columns: minmax(0, 1fr); }
+    .om-board-wrap, .om-panel { min-width: 0; }
+    .om-mode-online.om-on-pre .om-panel { order: -1; }
+    .om-mode-online .om-panel { padding: 10px; gap: 10px; }
+    .om-online-box { padding: 10px; gap: 7px; border-radius: 10px; }
+    .om-on-head { font-size: 0.92rem; }
+    .om-on-head small { font-size: 0.7rem; }
+    .om-on-sec { gap: 6px; }
+    .om-online-box .om-btn { padding: 9px 10px; font-size: 0.86rem; }
+    .om-on-sec .om-btn small { font-size: 0.7rem; }
+    .om-join input { padding: 7px 6px; }
+    .om-on-msg, .om-on-info { font-size: 0.8rem; line-height: 1.45; }
+    .om-code-box { padding: 6px 9px; }
+    .om-code-box b { font-size: 1.3rem; }
+    .om-code-box .om-btn { padding: 6px 9px; font-size: 0.78rem; }
+    .om-on-err { font-size: 0.76rem; padding: 6px 8px; }
+    /* 끝난 판: 한 판 더 · 그만할래요를 한 줄에 */
+    #omOnPlay { flex-direction: row; flex-wrap: wrap; }
+    #omOnPlay .om-on-info { flex-basis: 100%; }
+    #omOnPlay .om-btn { flex: 1 1 40%; min-width: 0; }
+    .om-mode-online .om-record { padding: 8px 10px; font-size: 0.76rem; line-height: 1.55; }
+}
