@@ -1935,3 +1935,35 @@ button:active {
     .center-panel .calculator .previous-operand { font-size: 1.15rem; }
     .center-panel .calculator .current-operand { font-size: 2rem; }
 }
+
+/* 메모 맨 아래 문구가 길어져서(2026-11-15 "이 기기에만 저장돼요 · 백업해 두세요~") 글씨를 조금 줄이고, 그래도 넘치면 …으로 */
+.memo-note { font-size: max(10.5px, calc(var(--u) * 5.1)); overflow: hidden; text-overflow: ellipsis; }
+
+/* 메모 백업 알림 (2026-11-15): 내용이 바뀐 뒤 30일 넘게 내보내기를 안 하면 내보내기 버튼 오른쪽 위에 빨간 점 (memo.js) */
+.memo-pad .memo-icon { position: relative; }
+.memo-pad .memo-icon.need-backup { border-color: #e0574f; }
+.memo-pad .memo-icon.need-backup::after {
+    content: "";
+    position: absolute;
+    top: calc(var(--u) * -1.2);
+    right: calc(var(--u) * -1.2);
+    width: calc(var(--u) * 3.2);
+    height: calc(var(--u) * 3.2);
+    min-width: 7px;
+    min-height: 7px;
+    border-radius: 50%;
+    background: #e5484d;
+    box-shadow: 0 0 0 1.5px #fff8c8;
+    animation: memoDot 1.6s ease-in-out infinite;
+}
+@keyframes memoDot { 50% { transform: scale(1.25); } }
+@media (prefers-reduced-motion: reduce) { .memo-pad .memo-icon.need-backup::after { animation: none; } }
+/* 백업 알림 안내만 회색 바탕 + 파란 글씨 (2026-11-15 사용자 요청, 다른 안내는 검정 그대로) */
+.memo-toast.is-backup {
+    background: rgba(214, 216, 222, 0.97);
+    color: #1f4fd1;
+    font-weight: 700;
+    border: 1px solid #b9bcc6;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    word-break: keep-all;                /* "파일 / 에"처럼 낱말 중간에서 줄이 안 바뀌게 */
+}

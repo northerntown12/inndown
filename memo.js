@@ -12,6 +12,23 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
     var MAX_TODO_LEN = 60;     // 할 일 한 줄 최대 글자 수
     var MAX_MEMO_LEN = 3000;   // 메모 최대 글자 수
     var MAX_IMPORT_BYTES = 1000000;
+    /* 백업 알림 (2026-11-15): 내용이 바뀐 뒤 이 날짜 수만큼 내보내기(백업)를 안 했으면 내보내기 버튼에 빨간 점 */
+    var BACKUP_KEY = "memoBackup.v1";
+    var BACKUP_REMIND_DAYS = 30;
+    /* 아이폰·아이패드(모든 브라우저)와 맥 사파리는 오래 안 들어오면 저장한 내용을 지울 수 있어서(사파리 "7일" 규칙) 3일로.
+       홈 화면에 추가해서 연 경우는 그 규칙에서 빠지니까 30일 그대로 */
+    var SAFARI_REMIND_DAYS = 3;
+    var isAppleWebKit = (function () {
+        try {
+            var ua = navigator.userAgent || "";
+            var ios = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+            var macSafari = /Macintosh/.test(ua) && /Safari\//.test(ua) && !/Chrome|Chromium|Edg\/|OPR\/|Firefox/.test(ua);
+            var homeScreen = navigator.standalone === true ||
+                (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches);
+            return (ios || macSafari) && !homeScreen;
+        } catch (e) { return false; }
+    })();
+    var remindDays = isAppleWebKit ? SAFARI_REMIND_DAYS : BACKUP_REMIND_DAYS;
 
     /* ---------- 요소 ---------- */
     var pad = root.querySelector(".memo-pad");
@@ -56,16 +73,52 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         return typeof s === "string" ? s.slice(0, MAX_MEMO_LEN) : "";
     }
 
-    function toast(msg) {
+    function toast(msg, ms, kind) {
         toastEl.textContent = msg;
+        toastEl.classList.toggle("is-backup", kind === "backup");   // 백업 알림만 회색 바탕 + 파란 글씨
         toastEl.classList.add("show");
         clearTimeout(toastTimer);
-        toastTimer = setTimeout(function () { toastEl.classList.remove("show"); }, 2600);
+        toastTimer = setTimeout(function () { toastEl.classList.remove("show"); }, ms || 2600);
+    }
+
+    /* ---------- 백업 알림 ----------
+       backup = { at: 마지막 내보내기 시각, sig: 그때 내용, since: 그 뒤 내용이 처음 바뀐 시각 } */
+    var backup = { at: 0, sig: "", since: 0 };
+    try {
+        var b = JSON.parse(localStorage.getItem(BACKUP_KEY) || "null");
+        if (b && typeof b === "object") backup = { at: +b.at || 0, sig: String(b.sig || ""), since: +b.since || 0 };
+    } catch (e) {}
+
+    function contentSig() {
+        return JSON.stringify([state.todos.map(function (t) { return [t.text, t.done]; }), state.memo]);
+    }
+    function hasContent() { return state.todos.length > 0 || state.memo.trim() !== ""; }
+    function storeBackup() { try { localStorage.setItem(BACKUP_KEY, JSON.stringify(backup)); } catch (e) {} }
+
+    function paintBackup() {
+        var need = hasContent() && backup.since > 0 && Date.now() - backup.since > remindDays * 86400000;
+        exportBtn.classList.toggle("need-backup", need);
+        exportBtn.title = !need ? T("내보내기 (파일로 저장)", "Export (save to a file)")
+            : isAppleWebKit ? T("사파리는 오래 안 들어오면 메모가 지워질 수 있어요. 눌러서 백업해 두세요",
+                                "Safari may delete your notes if you don't visit for a while. Tap to back them up")
+            : T("백업한 지 오래됐어요. 눌러서 파일로 저장해 두세요", "It's been a while since your last backup. Click to save a file");
+    }
+
+    /* 내용이 바뀌었는지 보고 "언제부터 백업 안 했는지"를 기록 */
+    function trackBackup() {
+        var sig = contentSig();
+        if (!hasContent() || sig === backup.sig) {
+            if (backup.since) { backup.since = 0; storeBackup(); }
+        } else if (!backup.since) {
+            backup.since = Date.now(); storeBackup();
+        }
+        paintBackup();
     }
 
     /* ---------- 저장 / 불러오기 ---------- */
     function save() {
         clearTimeout(saveTimer);
+        trackBackup();
         try {
             localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
         } catch (e) {
@@ -264,6 +317,9 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
             document.body.removeChild(a);
             setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
             toast(T("파일로 저장했어요.", "Saved to a file."));
+            backup = { at: now.getTime(), sig: contentSig(), since: 0 };
+            storeBackup();
+            paintBackup();
         } catch (e) {
             toast(T("내보내기에 실패했어요.", "Export failed."));
         }
@@ -392,6 +448,16 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
     textEl.value = state.memo;
     render();
     setTab(state.tab, false);
+    trackBackup();
+    /* 빨간 점이 있으면 들어올 때 한 번 짧게 알려 줘요 (폰은 마우스를 올려 안내를 볼 수 없어서). 창 하나에 한 번만 */
+    if (exportBtn.classList.contains("need-backup")) {
+        var told = false;
+        try { told = sessionStorage.getItem("memoBackupTold") === "1"; sessionStorage.setItem("memoBackupTold", "1"); } catch (e) {}
+        if (!told) setTimeout(function () {
+            toast(isAppleWebKit ? T("사파리는 오래 안 들어오면 메모가 지워질 수 있어요. ↑ 버튼으로 백업해 두세요", "Safari may delete notes after a while. Back up with the ↑ button")
+                                : T("백업한 지 오래됐어요. ↑ 버튼으로 파일에 저장해 두세요", "Time to back up. Save a file with the ↑ button"), 5000, "backup");
+        }, 1200);
+    }
 
     // 창을 닫거나 다른 탭으로 가기 전에 마지막으로 저장
     window.addEventListener("pagehide", save);
