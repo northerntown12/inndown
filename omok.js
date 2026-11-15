@@ -523,11 +523,12 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         if (me.abort) me.abort.abort();
         var ctl = window.AbortController ? new AbortController() : null;
         me.abort = ctl;
-        api("/state", { code: me.code, token: me.token, ver: me.ver }, ctl && ctl.signal).then(function (s) {
+        api("/state", { code: me.code, token: me.token, ver: me.ver, cver: me.cver || 0, cid: me.cid || 0 }, ctl && ctl.signal).then(function (s) {
             if (ON !== me) return;
             if (s.error === "noroom" || s.error === "notyou") { backToLobby(T("방이 사라졌어요. 다시 시작해 주세요.", "The room is gone. Please start again.")); return; }
             if (s.error) throw new Error(s.error);
             me.netFail = 0; onErr("");
+            chatSync(s);
             applyState(s);
             setTimeout(function () { if (ON === me) poll(); }, 30);
         }).catch(function (e) {
@@ -674,6 +675,161 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
             if (res.state) applyState(res.state);
         }).catch(function () { onErr(netErrText()); btnRematch.disabled = false; });
     }
+
+    /* ======================= 온라인 대화 (2026-11-15) =======================
+       - 두 사람만 보는 짧은 대화. 서버(/chat)가 하루 뒤 방과 함께 지워요
+       - 방 코드(친구) 방: 자유 글 100자 + 이모지 / 빠른 매칭(모르는 사람): 아래 정해진 말만
+       - 🔇 대화 끄기: 이 기기에서만 숨김 + 소리 안 남 (omokChatOff.v1). 다시 켜면 그동안 온 대화도 보여요
+       - 상대 말이 오면 "톡" (소리 끄기 버튼을 따라감)
+       - 화면은 이 js가 직접 만들어요 (omok.html은 고치지 않아도 됨)
+       ========================================================= */
+    /* 정해진 말 (번호 순서를 바꾸지 마세요: 서버는 번호 0~7만 받아요. 추가하려면 worker의 CHAT_PRESETS도 같이) */
+    var CHAT_PRESETS = [
+        T("안녕하세요 👋", "Hi 👋"),
+        T("잘 부탁해요 🙂", "Have a good game 🙂"),
+        T("좋은 수네요!", "Nice move!"),
+        T("앗, 실수 😅", "Oops 😅"),
+        T("음… 고민 중 🤔", "Hmm… thinking 🤔"),
+        T("한 판 더?", "One more game?"),
+        T("수고하셨어요 👍", "Good game 👍"),
+        T("고마워요 😊", "Thank you 😊")
+    ];
+    var CHAT_EMOJI = ["😀", "😂", "👍", "👏", "😅", "🤔", "🎉", "😭"];
+    var chatOff = !!load("omokChatOff.v1", false);
+    var chatCode = "", chatUnread = 0, chatBusyUntil = 0;
+    var elChat = document.createElement("div");
+    elChat.className = "om-chat";
+    elChat.hidden = true;
+    elChat.innerHTML =
+        '<div class="om-chat-head"><span>💬 ' + T("대화", "Chat") + '</span><button type="button" class="om-chat-off"></button></div>' +
+        '<div class="om-chat-body">' +
+            '<div class="om-chat-log" role="log" aria-live="polite" aria-label="' + T("대화 내용", "Messages") + '"></div>' +
+            '<div class="om-chat-presets" aria-label="' + T("정해진 말", "Quick phrases") + '"></div>' +
+            '<div class="om-chat-free">' +
+                '<div class="om-chat-form"><input type="text" maxlength="100" autocomplete="off" enterkeyhint="send" placeholder="' + T("메시지 (100자까지)", "Message (up to 100 chars)") + '" aria-label="' + T("보낼 메시지", "Message") + '">' +
+                '<button type="button" class="om-btn om-chat-send">' + T("보내기", "Send") + '</button></div>' +
+                '<div class="om-chat-emo"></div>' +
+            '</div>' +
+            '<p class="om-chat-note"></p>' +
+        '</div>' +
+        '<p class="om-chat-offmsg" hidden>' + T("대화를 껐어요. 다시 켜면 그동안 온 대화도 볼 수 있어요.", "Chat is off. Turn it back on to see messages.") + '</p>';
+    elOnPlay.appendChild(elChat);
+    var chatLog = elChat.querySelector(".om-chat-log"), chatIn = elChat.querySelector("input"),
+        chatSendBtn = elChat.querySelector(".om-chat-send"), chatNote = elChat.querySelector(".om-chat-note"),
+        chatOffBtn = elChat.querySelector(".om-chat-off"), chatBody = elChat.querySelector(".om-chat-body"),
+        chatOffMsg = elChat.querySelector(".om-chat-offmsg"), chatFree = elChat.querySelector(".om-chat-free");
+    CHAT_PRESETS.forEach(function (txt, i) {
+        var b = document.createElement("button");
+        b.type = "button"; b.textContent = txt;
+        b.addEventListener("click", function () { sndClick(); sendChat({ p: i }); });
+        elChat.querySelector(".om-chat-presets").appendChild(b);
+    });
+    CHAT_EMOJI.forEach(function (em) {
+        var b = document.createElement("button");
+        b.type = "button"; b.textContent = em; b.setAttribute("aria-label", em);
+        b.addEventListener("click", function () {
+            if (Array.from(chatIn.value).length + Array.from(em).length > 100) return;
+            chatIn.value += em;
+            if (!coarse) chatIn.focus();
+        });
+        elChat.querySelector(".om-chat-emo").appendChild(b);
+    });
+
+    function sndChat() { tones([[880, 0, 0.06], [1320, 0.07, 0.09]], "sine", 0.1); }
+    function chatNoteSet(t, warn) { chatNote.textContent = t; chatNote.classList.toggle("warn", !!warn); }
+    function chatDefaultNote() {
+        chatNoteSet(ON && ON.quick ? T("모르는 상대와는 정해진 말만 보낼 수 있어요.", "With random opponents you can only send quick phrases.")
+                                   : T("두 사람만 보여요 · 하루 뒤 지워져요", "Only you two can see this · deleted after a day"));
+    }
+    function paintChatOff() {
+        chatOffBtn.textContent = chatOff ? "💬 " + T("대화 켜기", "Chat on") + (chatUnread ? " (" + chatUnread + ")" : "") : "🔇 " + T("대화 끄기", "Chat off");
+        chatOffBtn.setAttribute("aria-pressed", chatOff ? "true" : "false");
+        chatOffBtn.classList.toggle("has-new", chatOff && chatUnread > 0);
+        chatBody.hidden = chatOff; chatOffMsg.hidden = !chatOff;
+        if (!chatOff) chatLog.scrollTop = chatLog.scrollHeight;
+    }
+    chatOffBtn.addEventListener("click", function () {
+        sndClick();
+        chatOff = !chatOff; chatUnread = 0;
+        save("omokChatOff.v1", chatOff);
+        paintChatOff();
+    });
+    function chatRow(m) {
+        var row = document.createElement("div");
+        row.className = "om-msg " + (m.mine ? "mine" : "theirs");
+        var who = document.createElement("small");
+        who.textContent = m.mine ? T("나", "Me") : T("상대", "Opponent");
+        var b = document.createElement("span");
+        b.textContent = (m.p !== null && m.p !== undefined) ? (CHAT_PRESETS[m.p] || "…") : (m.text || "");   // 글은 textContent로만 (안전)
+        row.appendChild(who); row.appendChild(b);
+        chatLog.appendChild(row);
+        while (chatLog.children.length > 60) chatLog.removeChild(chatLog.firstChild);
+    }
+    /* 서버에서 온 대화 넣기 (/state, /chat 대답) */
+    function chatReceive(me, list, quiet) {
+        if (!list || !list.length) return;
+        var gotNew = false;
+        list.forEach(function (m) {
+            if (m.id <= (me.cid || 0)) return;
+            me.cid = m.id;
+            chatRow(m);
+            if (!m.mine) gotNew = true;
+        });
+        chatLog.scrollTop = chatLog.scrollHeight;
+        if (gotNew && !quiet) {
+            if (chatOff) { chatUnread++; paintChatOff(); }
+            else sndChat();
+        }
+    }
+    function chatSync(s) {
+        var me = ON; if (!me) return;
+        if (typeof s.cver !== "number") { elChat.hidden = true; return; }    // 서버가 아직 예전 것(대화 없음)
+        if (chatCode !== me.code) {                                          // 새 방: 대화 비우기
+            chatCode = me.code; chatLog.innerHTML = ""; chatUnread = 0;
+            chatFree.hidden = !!me.quick;
+            chatDefaultNote(); paintChatOff();
+        }
+        me.cver = s.cver;
+        var first = !me.chatLoaded; me.chatLoaded = true;
+        chatReceive(me, s.chat, first);                                      // 들어오자마자 받은 예전 대화는 소리 없이
+        elChat.hidden = s.status === "waiting";
+    }
+    function sendChat(payload) {
+        var me = ON; if (!me) return;
+        if (Date.now() < chatBusyUntil) return;
+        if (payload.text !== undefined) {
+            payload.text = payload.text.replace(/\s+/g, " ").trim();
+            if (!payload.text) return;
+        }
+        chatBusyUntil = Date.now() + 1000;                                   // 1초에 1번
+        payload.code = me.code; payload.token = me.token; payload.cid = me.cid || 0;
+        chatSendBtn.disabled = true;
+        setTimeout(function () { chatSendBtn.disabled = false; }, 1000);
+        api("/chat", payload).then(function (res) {
+            if (ON !== me) return;
+            if (res.error) {
+                chatNoteSet(res.error === "slow" ? T("조금 천천히 보내 주세요 🙂", "Please slow down a little 🙂")
+                    : res.error === "presetonly" ? T("모르는 상대와는 정해진 말만 보낼 수 있어요.", "Only quick phrases with random opponents.")
+                    : res.error === "nopartner" ? T("상대가 들어오면 대화할 수 있어요.", "You can chat once your opponent joins.")
+                    : res.error === "path" ? T("대화 기능은 서버를 새로 붙여넣은 뒤에 쓸 수 있어요.", "Chat needs the updated server.")
+                    : T("보내지 못했어요. 다시 해 보세요.", "Couldn't send. Please try again."), true);
+                setTimeout(chatDefaultNote, 3000);
+                return;
+            }
+            if (payload.text !== undefined) chatIn.value = "";
+            chatReceive(me, res.chat, true);
+        }).catch(function () {
+            if (ON !== me) return;
+            chatNoteSet(T("보내지 못했어요. 연결을 확인해 주세요.", "Couldn't send. Check your connection."), true);
+            setTimeout(chatDefaultNote, 3000);
+        });
+    }
+    chatSendBtn.addEventListener("click", function () { sndClick(); sendChat({ text: chatIn.value }); });
+    chatIn.addEventListener("keydown", function (ev) {
+        if (ev.key !== "Enter" || ev.isComposing || ev.keyCode === 229) return;   // 한글 조합 중 Enter는 무시
+        ev.preventDefault();
+        sendChat({ text: chatIn.value });
+    });
 
     $("omOnlineBtn").addEventListener("click", function () { sndClick(); enterOnline(); });
     $("omQuick").addEventListener("click", function () { sndClick(); begin("/quick"); });

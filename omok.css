@@ -284,3 +284,57 @@ body {
     #omOnPlay .om-btn { flex: 1 1 40%; min-width: 0; }
     .om-mode-online .om-record { padding: 8px 10px; font-size: 0.76rem; line-height: 1.55; }
 }
+
+/* ===== 온라인 대화 (2026-11-15, omok.js가 #omOnPlay 안에 만들어요) ===== */
+.om-chat { display: flex; flex-direction: column; gap: 7px; margin-top: 4px; padding-top: 10px; border-top: 1px dashed #b9b6ee; }
+.om-chat[hidden] { display: none; }
+.om-chat-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-weight: 800; color: var(--om-plum); font-size: 0.92rem; }
+.om-chat-off {
+    flex: none; padding: 3px 9px; border-radius: 999px; border: 1px solid #c3c1f0; background: #fff;
+    color: #5a57b5; font: inherit; font-size: 0.74rem; font-weight: 700; cursor: pointer;
+}
+.om-chat-off:hover { background: #f1f0ff; }
+.om-chat-off.has-new { border-color: #ff8fab; color: #d63c6a; box-shadow: 0 0 0 2px rgba(255, 94, 138, 0.18); }
+.om-chat-body { display: flex; flex-direction: column; gap: 7px; }
+.om-chat-body[hidden], .om-chat-free[hidden], .om-chat-offmsg[hidden] { display: none; }
+.om-chat-log {
+    height: 150px; overflow-y: auto; display: flex; flex-direction: column; gap: 5px;
+    padding: 8px; border-radius: 10px; background: #fff; border: 1px solid #d6d4f7;
+    scrollbar-width: thin; overscroll-behavior: contain;
+}
+.om-chat-log:empty::before { content: attr(aria-label); margin: auto; font-size: 0.78rem; color: #b0aed6; }
+.om-msg { display: flex; flex-direction: column; max-width: 86%; }
+.om-msg small { font-size: 0.66rem; color: #9a98c8; margin: 0 4px 1px; }
+.om-msg span {
+    padding: 5px 10px; border-radius: 12px; font-size: 0.86rem; line-height: 1.4;
+    word-break: break-word; overflow-wrap: anywhere; white-space: pre-wrap;
+}
+.om-msg.theirs { align-self: flex-start; }
+.om-msg.theirs span { background: #f1f0ff; color: #2f2c66; border-top-left-radius: 4px; }
+.om-msg.mine { align-self: flex-end; align-items: flex-end; }
+.om-msg.mine span { background: var(--om-plum); color: #fff; border-top-right-radius: 4px; }
+.om-chat-presets { display: flex; flex-wrap: wrap; gap: 5px; }
+.om-chat-presets button, .om-chat-emo button {
+    padding: 4px 9px; border-radius: 999px; border: 1px solid #c3c1f0; background: #fff;
+    color: var(--om-plum); font: inherit; font-size: 0.76rem; cursor: pointer; white-space: nowrap;
+}
+.om-chat-presets button:hover, .om-chat-emo button:hover { background: #f1f0ff; }
+.om-chat-form { display: flex; gap: 6px; }
+.om-chat-form input {
+    flex: 1; min-width: 0; padding: 8px 10px; border: 1px solid #c3c1f0; border-radius: 10px;
+    background: #fff; color: var(--om-ink); font: inherit; font-size: 0.9rem;
+}
+.om-chat-form input:focus { outline: none; border-color: #8f8ce0; box-shadow: 0 0 0 2px rgba(143, 140, 224, 0.25); }
+#omOnPlay .om-chat-form .om-btn, .om-chat-form .om-btn { flex: none; padding: 8px 12px; font-size: 0.84rem; }
+.om-chat-emo { display: flex; flex-wrap: wrap; gap: 4px; }
+.om-chat-emo button { padding: 2px 7px; font-size: 1rem; border-radius: 8px; }
+.om-chat-note { margin: 0; font-size: 0.72rem; color: #8a87bb; }
+.om-chat-note.warn { color: #c2412b; font-weight: 700; }
+.om-chat-offmsg { margin: 0; font-size: 0.78rem; color: #8a87bb; }
+@media (max-width: 760px) {
+    #omOnPlay .om-chat { flex-basis: 100%; }
+    .om-chat-log { height: 120px; }
+    .om-chat-form input { font-size: 16px; }          /* 16px 미만이면 아이폰이 확대해 버려요 */
+    #omOnPlay .om-chat .om-btn { flex: none; }
+    .om-msg span { font-size: 0.84rem; }
+}
