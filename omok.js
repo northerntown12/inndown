@@ -1084,15 +1084,34 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
     });
     btnUndo.addEventListener("click", function () { sndClick(); undo(); });
     /* 종료: 오목 창 닫기. 홈에서 새 창으로 연 경우만 닫힘 → 안 닫히면(주소로 직접 연 경우 등) 홈으로 */
-    $("omExit").addEventListener("click", function () {
-        sndClick();
+    function exitOmok() {
         stopTimer(); clearTimeout(aiTimer);
         if (ON) leaveOnline(true);
         setTimeout(function () {
             window.close();
             setTimeout(function () { if (!window.closed) location.href = T("index.html", "index-en.html"); }, 250);
         }, 120);
-    });
+    }
+    $("omExit").addEventListener("click", function () { sndClick(); exitOmok(); });
+
+    /* 2026-11-16: 온라인 대결에도 종료 버튼 — 판이 끝났거나(이김·짐·그만할래요) 상대가 나갔으면 바로 나가고,
+       두는 중이면 "기권으로 져요" 한 번 묻고 나가요. 대결 칸 아래 + 결과 창 두 곳 (html은 안 고치고 여기서 만듦) */
+    function onlineExit() {
+        sndClick();
+        if (ON && ON.status === "playing" && !confirm(T("두는 중에 나가면 기권으로 져요. 종료할까요?", "Leaving now counts as resigning. Exit?"))) return;
+        exitOmok();
+    }
+    var btnOnExit = document.createElement("button");
+    btnOnExit.type = "button"; btnOnExit.className = "om-btn om-exit om-on-exit"; btnOnExit.id = "omOnExit";
+    btnOnExit.textContent = T("✖ 종료", "✖ Exit");
+    btnOnExit.title = T("오목 창 닫기", "Close Omok");
+    btnOnExit.addEventListener("click", onlineExit);
+    btnNewOpp.insertAdjacentElement("afterend", btnOnExit);
+    var btnResultExit = document.createElement("button");
+    btnResultExit.type = "button"; btnResultExit.className = "om-btn om-exit om-result-exit";
+    btnResultExit.textContent = T("종료", "Exit");
+    btnResultExit.addEventListener("click", onlineExit);
+    btnStop2.insertAdjacentElement("afterend", btnResultExit);
     function syncSound() {
         btnSound.classList.toggle("muted", muted);
         btnSound.setAttribute("aria-label", muted ? T("소리 켜기", "Sound on") : T("소리 끄기", "Sound off"));
