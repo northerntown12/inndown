@@ -338,3 +338,83 @@ body {
     #omOnPlay .om-chat .om-btn { flex: none; }
     .om-msg span { font-size: 0.84rem; }
 }
+
+/* ===== 입장 축하 띠 + 꽃가루 (2026-11-15, omok.js의 celebrateJoin) ===== */
+.om-join-banner {
+    position: absolute; inset: 0; z-index: 6; pointer-events: none; overflow: hidden;
+    display: grid; place-items: center;
+    animation: omJoinIn 0.35s ease-out;
+}
+.om-join-banner p {
+    margin: 0; padding: 12px 22px; border-radius: 999px;
+    background: linear-gradient(135deg, #ff5e8a, #ffb36b);
+    color: #fff; font-size: 1.25rem; font-weight: 800; letter-spacing: 0.01em;
+    box-shadow: 0 8px 24px rgba(180, 60, 90, 0.35), 0 0 0 4px rgba(255, 255, 255, 0.7);
+    animation: omJoinPop 0.5s cubic-bezier(.2, 1.6, .4, 1);
+    text-align: center; word-break: keep-all;
+}
+.om-join-banner i {
+    position: absolute; top: -12px; width: 8px; height: 13px; border-radius: 2px;
+    animation-name: omConfetti; animation-timing-function: ease-in; animation-fill-mode: forwards;
+}
+.om-join-banner.out { opacity: 0; transition: opacity 0.45s; }
+@keyframes omJoinIn { from { opacity: 0; } }
+@keyframes omJoinPop { from { transform: scale(0.4); opacity: 0; } }
+@keyframes omConfetti { to { transform: translateY(110vh) rotate(720deg); } }
+@media (prefers-reduced-motion: reduce) { .om-join-banner i { display: none; } .om-join-banner p { animation: none; } }
+
+/* 📤 카톡 등으로 보내기 (navigator.share 되는 브라우저만) */
+.om-btn.om-share { background: #fee500; border-color: #e6cf00; color: #3a2a00; font-weight: 800; }
+.om-btn.om-share:hover { background: #ffeb3b; }
+
+/* ===== 폰: 대화창을 화면 아래에 붙여 늘 떠 있게 (2026-11-15) ===== */
+.om-chat-min {
+    flex: none; margin-left: auto; padding: 3px 9px; border-radius: 999px; border: 1px solid #c3c1f0; background: #fff;
+    color: #5a57b5; font: inherit; font-size: 0.74rem; font-weight: 700; cursor: pointer;
+}
+.om-chat-min[hidden] { display: none; }
+.om-chat-min.has-new { border-color: #ff8fab; color: #d63c6a; box-shadow: 0 0 0 2px rgba(255, 94, 138, 0.18); }
+.om-chat-head { gap: 6px; }
+.om-chat-head > span { margin-right: auto; }
+.om-chat.om-chat-dock {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 60;
+    margin: 0; padding: 8px 10px calc(8px + env(safe-area-inset-bottom, 0px));
+    gap: 6px; border-top: 2px solid #b9b6ee; border-radius: 14px 14px 0 0;
+    background: rgba(246, 245, 255, 0.98);
+    box-shadow: 0 -6px 18px rgba(54, 52, 122, 0.18);
+    max-width: 640px; margin-left: auto; margin-right: auto;
+}
+.om-chat-dock .om-chat-body { gap: 6px; }
+.om-chat-dock .om-chat-log { height: 72px; padding: 6px 8px; }
+.om-chat-dock .om-msg span { padding: 4px 9px; font-size: 0.84rem; }
+.om-chat-dock .om-msg small { display: none; }
+.om-chat-dock .om-chat-presets { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; padding-bottom: 1px; }
+.om-chat-dock .om-chat-presets::-webkit-scrollbar { display: none; }
+.om-chat-dock .om-chat-presets button { flex: none; }
+.om-chat-dock .om-chat-emo { display: none; }               /* 폰 자판에 이모지가 있어서 숨김 */
+.om-chat-dock .om-chat-note:not(.warn) { display: none; }   /* 경고(천천히 보내 주세요 등)만 */
+.om-chat-dock .om-chat-form input { padding: 7px 10px; }
+.om-chat-dock.is-min .om-chat-body,
+.om-chat-dock.is-min .om-chat-offmsg { display: none; }
+
+/* ===== 시작 카운트다운 5·4·3·2·1 (2026-11-15) ===== */
+.om-countdown {
+    position: absolute; inset: 0; z-index: 5; pointer-events: none;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
+    background: rgba(255, 255, 255, 0.22);
+    border-radius: 10px;
+}
+.om-countdown b {
+    font-size: clamp(4rem, 18vw, 7rem); line-height: 1; font-weight: 900; color: #fff;
+    text-shadow: 0 4px 0 #5a57b5, 0 8px 22px rgba(40, 30, 90, 0.45);
+}
+.om-countdown b.pop { animation: omCdPop 0.9s ease-out; }
+.om-countdown b.go { color: #ffd166; text-shadow: 0 4px 0 #c2410c, 0 8px 22px rgba(120, 50, 0, 0.4); animation: omCdPop 0.5s ease-out; }
+.om-countdown small {
+    padding: 6px 14px; border-radius: 999px; background: rgba(54, 52, 122, 0.88); color: #fff;
+    font-size: 0.92rem; font-weight: 700; text-align: center; word-break: keep-all; max-width: 90%;
+}
+.om-countdown.out { opacity: 0; transition: opacity 0.3s; }
+@keyframes omCdPop { 0% { transform: scale(1.8); opacity: 0; } 25% { transform: scale(1); opacity: 1; } 100% { transform: scale(0.92); opacity: 0.85; } }
+/* 입장 축하 띠는 판 위쪽으로 (가운데엔 숫자) */
+.om-join-banner { place-items: start center; padding-top: 9%; }

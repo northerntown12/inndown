@@ -500,7 +500,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
                     : netErrText());
                 return;
             }
-            ON = { code: res.code, token: res.token, ver: 0, status: "waiting", quick: !!res.quick || path === "/quick", gameKey: "" };
+            ON = { code: res.code, token: res.token, ver: 0, status: "waiting", quick: !!res.quick || path === "/quick", gameKey: "", via: path };
             try { sessionStorage.setItem(SESSION_KEY, JSON.stringify({ code: ON.code, token: ON.token, quick: ON.quick })); } catch (e) {}
             showWaiting();
             poll();
@@ -539,12 +539,96 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         });
     }
 
+    /* ===== 입장 팡파레 (2026-11-15) ===== */
+    function sndFanfare() {
+        tones([[523, 0, 0.12], [659, 0.11, 0.12], [784, 0.22, 0.12], [1047, 0.33, 0.28],
+               [784, 0.62, 0.11], [1047, 0.74, 0.5]], "triangle", 0.22);
+        tones([[262, 0.33, 0.28], [392, 0.74, 0.5]], "sine", 0.12);
+    }
+    function celebrateJoin(via) {
+        var msg = via === "/join" ? T("🎉 방에 들어왔어요! 함께 두어요", "🎉 You're in! Let's play")
+                : via === "/quick" ? T("🎉 상대를 찾았어요!", "🎉 Opponent found!")
+                : T("🎉 친구가 들어왔어요!", "🎉 Your friend joined!");
+        sndFanfare();
+        /* 링크로 바로 들어오면 브라우저가 소리를 막을 수 있어요 → 처음 화면을 누를 때 한 번 더 */
+        if (actx && actx.state !== "running") {
+            var once = function () { document.removeEventListener("pointerdown", once, true); if (Date.now() - t0 < 6000) sndFanfare(); };
+            var t0 = Date.now();
+            document.addEventListener("pointerdown", once, true);
+        }
+        var box = $("omBoardBox");
+        var old = box.querySelector(".om-join-banner"); if (old) old.remove();
+        var el = document.createElement("div");
+        el.className = "om-join-banner";
+        el.setAttribute("role", "status");
+        var html = '<p>' + msg + '</p>';
+        var colors = ["#ff5e8a", "#ffd166", "#7bdcb5", "#8ab4ff", "#c79bff", "#ff9f6b"];
+        for (var i = 0; i < 26; i++) {
+            html += '<i style="left:' + (Math.random() * 100).toFixed(1) + '%;background:' + colors[i % colors.length] +
+                    ';animation-delay:' + (Math.random() * 0.5).toFixed(2) + 's;animation-duration:' + (1.4 + Math.random() * 0.9).toFixed(2) + 's"></i>';
+        }
+        el.innerHTML = html;
+        box.appendChild(el);
+        setTimeout(function () { el.classList.add("out"); }, 2400);
+        setTimeout(function () { el.remove(); }, 2900);
+    }
+
+    /* ===== 시작 카운트다운 (2026-11-15) ===== */
+    function showCountdown(s) {
+        var me = ON;
+        if (me.cdKey === me.gameKey) return;                 // 이미 세는 중
+        me.cdKey = me.gameKey;
+        me.cdUntil = Date.now() + s.startIn;
+        over = false; winCells = null; forbid = [];
+        timerShow("idle");
+        var first = s.you === 1 ? T("내가 흑 ● 이라 먼저 둬요", "You're black ● — you go first")
+                                : T("상대가 흑 ● 이라 먼저 둬요 · 나는 백 ○", "Opponent is black ● and goes first · you're white ○");
+        setStatus(T("곧 시작해요 · ", "Starting soon · ") + first, "thinking");
+        var box = $("omBoardBox");
+        var old = box.querySelector(".om-countdown"); if (old) old.remove();
+        var el = document.createElement("div");
+        el.className = "om-countdown";
+        el.innerHTML = '<b></b><small>' + first + '</small>';
+        box.appendChild(el);
+        var num = el.querySelector("b"), last = -1;
+        (function tick() {
+            if (ON !== me || me.cdKey !== me.gameKey) { el.remove(); return; }
+            var left = me.cdUntil - Date.now();
+            var n = Math.ceil(left / 1000);
+            if (left <= 0) {
+                num.textContent = T("시작!", "Go!"); num.className = "go"; sndClick();
+                setTimeout(function () { el.classList.add("out"); }, 450);
+                setTimeout(function () { el.remove(); }, 800);
+                me.cdUntil = 0;
+                var st = me.state;
+                if (st && st.status === "playing" && st.moves.length === 0) {
+                    var s2 = {}; for (var k in st) s2[k] = st[k];
+                    s2.startIn = 0; s2.left = TIME_LIMIT * 1000; s2._go = true;
+                    applyState(s2);
+                }
+                return;
+            }
+            if (n !== last) {
+                last = n; num.textContent = n; num.className = ""; void num.offsetWidth; num.className = "pop";
+                sndTick(n <= 1);
+            }
+            setTimeout(tick, 100);
+        })();
+    }
+
     function applyState(s) {
         if (!ON || !s || s.ver < ON.ver) return;
+        var wasWaiting = ON.status === "waiting";
         ON.ver = s.ver; ON.status = s.status; ON.state = s;
         if (s.status === "waiting") { showWaiting(); return; }
 
         showView("play");
+        /* 2026-11-15: 상대가 들어와 첫 판이 시작되면 팡파레 + 축하 띠 (새로고침으로 돌아온 경우는 빼고) */
+        if (wasWaiting && !ON.resumed && !ON.joinCelebrated && s.status === "playing" && s.games === 1) {
+            ON.joinCelebrated = true;
+            celebrateJoin(ON.via);
+        }
+        ON.resumed = false;
         human = s.you; ai = 3 - human;
         var gameKey = ON.code + ":" + s.games;
         var newGameStarted = ON.gameKey !== gameKey;
@@ -565,11 +649,14 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
 
         if (s.status === "over") { onlineFinish(s); updateOnlinePanel(s); draw(); return; }
 
+        /* 2026-11-15: 시작 전 카운트다운 (상대가 들어오면 5초, 한 판 더는 1.5초) */
+        if (s.status === "playing" && s.startIn > 400 && s.moves.length === 0) { showCountdown(s); updateOnlinePanel(s); draw(); return; }
+
         over = false; winCells = null;
         if (s.toMove === human) {
             refreshForbid();
             startTimer(s.left, true);
-            setStatus((s.startIn > 300 ? T("시작! ", "Go! ") : "") + T("내 차례예요 (", "Your turn (") + stoneTag(human) + ") · " + T(TIME_LIMIT + "초 안에 두세요", TIME_LIMIT + "s to move"));
+            setStatus((s.startIn > 300 || s._go ? T("시작! ", "Go! ") : "") + T("내 차례예요 (", "Your turn (") + stoneTag(human) + ") · " + T(TIME_LIMIT + "초 안에 두세요", TIME_LIMIT + "s to move"));
         } else {
             forbid = [];
             startTimer(s.left, false);
@@ -608,6 +695,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
 
     function onlineMove(x, y) {
         var me = ON; if (!me) return;
+        if (me.cdUntil && Date.now() < me.cdUntil) { preview = null; draw(); onErr(T("곧 시작해요! 숫자가 끝나면 두세요", "Starting soon! Wait for the countdown")); return; }
         /* 먼저 내 화면에 놓고 서버에 보냄 */
         board[y * N + x] = human; history.push([x, y, human]);
         sndStone(false);
@@ -714,6 +802,45 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         '</div>' +
         '<p class="om-chat-offmsg" hidden>' + T("대화를 껐어요. 다시 켜면 그동안 온 대화도 볼 수 있어요.", "Chat is off. Turn it back on to see messages.") + '</p>';
     elOnPlay.appendChild(elChat);
+    /* 2026-11-15: 폰에서는 대화창을 화면 아래에 붙여 늘 떠 있게 (판을 보면서 바로 대화). 접기/펴기 가능 (omokChatMin.v1) */
+    var chatMinBtn = document.createElement("button");
+    chatMinBtn.type = "button"; chatMinBtn.className = "om-chat-min";
+    elChat.querySelector(".om-chat-head").insertBefore(chatMinBtn, elChat.querySelector(".om-chat-off"));
+    var chatMin = !!load("omokChatMin.v1", false);
+    var dockMq = window.matchMedia ? window.matchMedia("(max-width: 760px)") : { matches: false };
+    function docked() { return elChat.classList.contains("om-chat-dock"); }
+    function paintChatMin() {
+        var min = docked() && chatMin;
+        elChat.classList.toggle("is-min", min);
+        chatMinBtn.hidden = !docked();
+        chatMinBtn.textContent = min ? T("펴기 ▴", "Open ▴") + (chatUnread && !chatOff ? " (" + chatUnread + ")" : "") : T("접기 ▾", "Hide ▾");
+        chatMinBtn.classList.toggle("has-new", min && chatUnread > 0 && !chatOff);
+        syncDockPad();
+    }
+    function syncDockPad() {
+        var v = docked() && !elChat.hidden ? (elChat.offsetHeight + 10) + "px" : "";
+        if (document.body.style.paddingBottom !== v) document.body.style.paddingBottom = v;   // 판·버튼이 대화창에 가리지 않게 아래 여백
+    }
+    function placeChat() {
+        if (dockMq.matches) { if (elChat.parentNode !== document.body) document.body.appendChild(elChat); elChat.classList.add("om-chat-dock"); }
+        else { if (elChat.parentNode !== elOnPlay) elOnPlay.appendChild(elChat); elChat.classList.remove("om-chat-dock"); }
+        paintChatMin();
+    }
+    if (dockMq.addEventListener) dockMq.addEventListener("change", placeChat); else if (dockMq.addListener) dockMq.addListener(placeChat);
+    chatMinBtn.addEventListener("click", function () {
+        sndClick();
+        chatMin = !chatMin; if (!chatMin) chatUnread = chatOff ? chatUnread : 0;
+        save("omokChatMin.v1", chatMin);
+        paintChatMin();
+        if (!chatMin) chatLog.scrollTop = chatLog.scrollHeight;
+    });
+    /* 대화창은 온라인 대결 화면에서만 (기다리는 중·컴퓨터와 둘 때는 숨김) */
+    setInterval(function () {
+        var st = ON && ON.state;
+        var show = !!(st && st.status !== "waiting" && typeof st.cver === "number" && !elOnPlay.hidden && document.body.classList.contains("om-mode-online"));
+        if (elChat.hidden === show) elChat.hidden = !show;
+        syncDockPad();
+    }, 300);
     var chatLog = elChat.querySelector(".om-chat-log"), chatIn = elChat.querySelector("input"),
         chatSendBtn = elChat.querySelector(".om-chat-send"), chatNote = elChat.querySelector(".om-chat-note"),
         chatOffBtn = elChat.querySelector(".om-chat-off"), chatBody = elChat.querySelector(".om-chat-body"),
@@ -747,6 +874,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         chatOffBtn.classList.toggle("has-new", chatOff && chatUnread > 0);
         chatBody.hidden = chatOff; chatOffMsg.hidden = !chatOff;
         if (!chatOff) chatLog.scrollTop = chatLog.scrollHeight;
+        if (typeof paintChatMin === "function" && chatMinBtn) paintChatMin();
     }
     chatOffBtn.addEventListener("click", function () {
         sndClick();
@@ -778,7 +906,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         chatLog.scrollTop = chatLog.scrollHeight;
         if (gotNew && !quiet) {
             if (chatOff) { chatUnread++; paintChatOff(); }
-            else sndChat();
+            else { sndChat(); if (docked() && chatMin) { chatUnread++; paintChatMin(); } }
         }
     }
     function chatSync(s) {
@@ -831,6 +959,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         sendChat({ text: chatIn.value });
     });
 
+    placeChat();
     $("omOnlineBtn").addEventListener("click", function () { sndClick(); enterOnline(); });
     $("omQuick").addEventListener("click", function () { sndClick(); begin("/quick"); });
     $("omCreate").addEventListener("click", function () { sndClick(); begin("/create"); });
@@ -841,11 +970,25 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
     $("omCopy").addEventListener("click", function () {
         sndClick();
         if (!ON) return;
-        var link = location.origin + location.pathname + "?room=" + ON.code;
+        var link = roomLink(), text = inviteText() + "\n" + link;     // 카톡에 붙여넣으면 링크를 눌러 바로 입장
         var done = function () { $("omCopy").textContent = T("복사했어요 ✓", "Copied ✓"); setTimeout(function () { $("omCopy").textContent = T("링크 복사", "Copy link"); }, 1800); };
-        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(link).then(done, function () { prompt(T("이 링크를 복사하세요", "Copy this link"), link); });
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, function () { prompt(T("이 링크를 복사하세요", "Copy this link"), link); });
         else prompt(T("이 링크를 복사하세요", "Copy this link"), link);
     });
+    function roomLink() { return location.origin + location.pathname + "?room=" + (ON ? ON.code : ""); }
+    function inviteText() { return T("🎮 오목 한 판 해요! 아래 링크를 누르면 바로 들어와요 (방 코드 ", "🎮 Let's play Omok! Tap the link to join (room code ") + (ON ? ON.code : "") + ")"; }
+    /* 📤 보내기: 폰에서는 카톡 등 앱을 바로 고를 수 있어요 (navigator.share가 되는 브라우저만 버튼이 보여요) */
+    if (navigator.share) {
+        var shareBtn = document.createElement("button");
+        shareBtn.type = "button"; shareBtn.className = "om-btn om-share"; shareBtn.id = "omShare";
+        shareBtn.textContent = T("📤 카톡 등으로 보내기", "📤 Share (KakaoTalk etc.)");
+        $("omCopy").insertAdjacentElement("afterend", shareBtn);
+        shareBtn.addEventListener("click", function () {
+            sndClick();
+            if (!ON) return;
+            navigator.share({ title: T("오목 한 판 해요!", "Let's play Omok!"), text: inviteText(), url: roomLink() }).catch(function () {});
+        });
+    }
     btnResign.addEventListener("click", function () {
         sndClick();
         var me = ON; if (!me || me.status !== "playing") return;
@@ -879,7 +1022,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         var m = /[?&]room=([A-Za-z0-9]{4})/.exec(location.search);
         if (saved && saved.code && saved.token && (!m || m[1].toUpperCase() === saved.code)) {
             enterOnline();
-            ON = { code: saved.code, token: saved.token, ver: 0, status: "waiting", quick: !!saved.quick, gameKey: "" };
+            ON = { code: saved.code, token: saved.token, ver: 0, status: "waiting", quick: !!saved.quick, gameKey: "", resumed: true };
             showWaiting();
             poll();
             return;
