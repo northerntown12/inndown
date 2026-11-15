@@ -121,6 +121,8 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         a.href = (window.SITE_EN ? "units-en.html" : "units.html");
         a.textContent = T("크게 보기 ›", "Open ›");
         a.title = T("단위 환산 페이지에서 크게 보기", "Open the full unit converter page");
+        a.target = "_blank";           // 새 탭으로 (홈은 그대로 남아요, 2026-11-15)
+        a.rel = "noopener";
         const title = box.querySelector(".uc-title");
         if (title) { box.classList.add("has-more"); title.appendChild(a); }
         else box.appendChild(a);

@@ -129,3 +129,26 @@
     if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", build);
     else build();
 })();
+
+/* 도구 페이지(body.tool-page)의 "← 홈으로"·"다른 도구 보기 → 홈" (2026-11-15)
+   홈에서 새 탭으로 열고 들어왔으면(이전 페이지가 우리 홈) 이 탭을 닫아서 원래 홈 탭으로 돌아가요.
+   닫히지 않으면(검색으로 들어온 경우 등) 예전처럼 홈으로 이동해요. */
+(function () {
+    function fromOurHome() {
+        try {
+            var r = document.referrer ? new URL(document.referrer) : null;
+            if (!r || r.origin !== location.origin) return false;
+            var f = r.pathname.substring(r.pathname.lastIndexOf("/") + 1);
+            return f === "" || /^index(-en)?\.html?$/i.test(f);
+        } catch (e) { return false; }
+    }
+    document.addEventListener("click", function (e) {
+        if (!document.body || !document.body.classList.contains("tool-page")) return;
+        var a = e.target.closest && e.target.closest('a[href^="index"]');
+        if (!a || e.ctrlKey || e.metaKey || e.shiftKey || e.button !== 0) return;
+        if (!fromOurHome() || history.length > 1) return;   // 탭 안에서 다른 도구로 옮겨 다녔으면 그냥 이동
+        e.preventDefault();
+        window.close();
+        setTimeout(function () { location.href = a.href; }, 250);   // 안 닫혔으면 홈으로
+    });
+})();
