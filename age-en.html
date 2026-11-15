@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="lang.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Age Calculator · D-day Counter · 100-Day Anniversary · Records after work</title>
+    <meta name="description" content="Free calculator for your international (Korean 'man') age, year age, next birthday and Chinese zodiac, plus D-day countdowns, 100th/1000th-day anniversaries and the number of days between two dates. Save D-days on this device.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="blog.css">
+    <link rel="stylesheet" href="tools-page.css">
+</head>
+<body class="blog-page tool-page">
+    <header class="bp-top">
+        <div class="bp-top-in">
+            <a class="bp-brand" href="index-en.html">Records after work<small>Everyday Tools</small></a>
+            <a class="bp-home" href="index-en.html">← Home</a>
+        </div>
+    </header>
+
+    <main class="tp-main">
+        <!-- 도구 탭: 새 도구 페이지를 만들면 모든 도구 페이지에 한 칸씩 추가 -->
+        <nav class="tp-tabs" aria-label="Everyday tools"><a href="units-en.html">📏 Unit Converter</a><a href="age-en.html" class="on" aria-current="page">📅 Age &amp; D-day</a></nav>
+        <div class="tp-head">
+            <span class="tp-kicker">EVERYDAY TOOLS</span>
+            <h1>Age &amp; D-day Calculator</h1>
+            <p>Enter a date of birth to get your age and next birthday instantly. You can also count down to exams or trips, find your 100th and 1000th-day anniversaries, and count the days between two dates.</p>
+        </div>
+
+        <div class="tp-grid">
+            <section class="tp-panel" aria-labelledby="age-h">
+                <h2 id="age-h"><span class="tp-num-badge">1</span>Age</h2>
+                <div class="tp-fields">
+                    <label class="tp-field"><span>Date of birth</span><input type="date" id="age-birth" min="1900-01-01" max="2100-12-31"></label>
+                    <div class="tp-field tp-wide"><span>Reference date (usually today)</span>
+                        <div class="tp-field-row"><input type="date" id="age-base" aria-label="Reference date"><button type="button" class="tp-btn" id="age-base-today">Today</button></div>
+                    </div>
+                </div>
+                <div id="age-out" aria-live="polite"></div>
+            </section>
+
+            <section class="tp-card" aria-labelledby="dd-h">
+                <h2 id="dd-h"><span class="tp-num-badge">2</span>D-day</h2>
+                <div class="tp-fields">
+                    <label class="tp-field"><span>Date</span><input type="date" id="dd-date"></label>
+                    <label class="tp-field"><span>Name (optional)</span><input type="text" id="dd-name" maxlength="30" placeholder="e.g. Jeju trip" autocomplete="off"></label>
+                </div>
+                <div class="tp-presets" aria-label="Quick picks">
+                    <button type="button" data-dd-preset="01-01" data-name="New Year">New Year</button>
+                    <button type="button" data-dd-preset="12-25" data-name="Christmas">Christmas</button>
+                    <button type="button" data-dd-preset="12-31" data-name="Last day of the year">Last day of the year</button>
+                </div>
+                <div id="dd-out" aria-live="polite"></div>
+                <div class="tp-fields" style="margin: 12px 0 0;"><button type="button" class="tp-btn solid" id="dd-save">Save this D-day</button></div>
+                <ul class="dd-list" id="dd-list" aria-label="Saved D-days"></ul>
+            </section>
+        </div>
+
+        <div class="tp-grid">
+            <section class="tp-card" aria-labelledby="an-h">
+                <h2 id="an-h"><span class="tp-num-badge">3</span>100 days &amp; anniversaries</h2>
+                <div class="tp-fields">
+                    <label class="tp-field"><span>Start date (first date, birthday, etc.)</span><input type="date" id="an-start"></label>
+                </div>
+                <div id="an-out" aria-live="polite"></div>
+            </section>
+
+            <section class="tp-card" aria-labelledby="df-h">
+                <h2 id="df-h"><span class="tp-num-badge">4</span>Date calculator</h2>
+                <div class="tp-fields">
+                    <label class="tp-field"><span>From</span><input type="date" id="df-a"></label>
+                    <label class="tp-field"><span>To</span><input type="date" id="df-b"></label>
+                </div>
+                <div id="df-out" aria-live="polite"></div>
+
+                <h3 class="tp-sub">What date is N days after or before?</h3>
+                <div class="tp-fields">
+                    <label class="tp-field"><span>Base date</span><input type="date" id="ad-base"></label>
+                    <label class="tp-field" style="flex-basis: 90px;"><span>Days</span><input type="text" id="ad-num" inputmode="numeric" value="100" autocomplete="off"></label>
+                    <label class="tp-field" style="flex-basis: 90px;"><span>Direction</span><select id="ad-dir"><option value="after">after</option><option value="before">before</option></select></label>
+                </div>
+                <div id="ad-out" aria-live="polite"></div>
+            </section>
+        </div>
+
+        <article class="tp-article">
+            <h2>International age, year age and Korean age</h2>
+            <p>Since June 28, 2023, Korea uses <b>international age</b> ("man age") for laws and official documents: you are 0 at birth and gain a year on each birthday — the same way most of the world counts.</p>
+            <table>
+                <thead><tr><th>Method</th><th>Formula</th><th>Born Dec 20, 2000 — as of Nov 15, 2026</th></tr></thead>
+                <tbody>
+                    <tr><td><b>International age</b></td><td>this year − birth year (−1 before your birthday)</td><td class="num">25</td></tr>
+                    <tr><td>Year age</td><td>this year − birth year</td><td class="num">26</td></tr>
+                    <tr><td>Traditional Korean age</td><td>this year − birth year + 1</td><td class="num">27</td></tr>
+                </tbody>
+            </table>
+            <p class="tp-tip">A few Korean laws — such as buying alcohol and tobacco, military service and school entry — still use <b>year age</b>, so this calculator shows it too.</p>
+
+            <h2>How D-days are counted</h2>
+            <p>The target date is "D-Day"; the days before are D-1, D-2… and the days after are D+1, D+2…. If today is Nov 15 and your exam is on Nov 20, it's D-5.</p>
+            <p>"Save this D-day" stores the name and date <b>only in this browser</b>. Next time you open the page the list is recalculated from today. Up to 10 can be saved; use × to delete.</p>
+
+            <h2>Why is the 100th day 99 days later?</h2>
+            <p>Anniversaries such as a couple's or a baby's 100th day usually count <b>the start date as day 1</b>. If you met on March 1, day 100 is June 8 — 99 days later. The anniversary section uses this method for days 100, 200, 1000 and yearly anniversaries.</p>
+            <p>"N days after" in the date calculator counts the base date as day 0, so 100 days after March 1 is June 9.</p>
+
+            <h2>FAQ</h2>
+            <div class="tp-faq">
+                <details>
+                    <summary>When does someone born on Feb 29 get a year older?</summary>
+                    <p>In common years, the calculator treats March 1 as the birthday.</p>
+                </details>
+                <details>
+                    <summary>Is my date of birth sent anywhere?</summary>
+                    <p>No. Everything is calculated in your browser. Your date of birth and saved D-days stay in this browser's storage and are removed when you clear it.</p>
+                </details>
+                <details>
+                    <summary>Which year does the zodiac use?</summary>
+                    <p>It uses the solar birth year. Traditionally the zodiac changes at Lunar New Year or the start of spring, so people born in January or February may belong to the previous year's sign.</p>
+                </details>
+            </div>
+        </article>
+
+        <nav class="tp-more" aria-label="Other tools">
+            <p><b>Try the other tools</b>Use the <a href="units-en.html">unit converter</a>, or the calculator, exchange rates, weather and postcode search on the home page.</p>
+            <a href="index-en.html">See other tools → Home</a>
+        </nav>
+    </main>
+
+    <footer class="bp-foot">
+        <a href="index-en.html">Home</a><a href="blog-en.html">Blog</a><a href="about-en.html">About</a><a href="privacy-en.html">Privacy Policy</a><a href="contact-en.html">Contact</a>
+        <div>Copyright © 2026 Choi Yunhyok. All rights reserved.</div>
+    </footer>
+
+    <script src="age.js"></script>
+</body>
+</html>

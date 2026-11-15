@@ -215,6 +215,34 @@
 .info-bar .ib-ivory::after  { background: linear-gradient(90deg, #b3b1f2, #e6e5ff); color: #36347a; } /* 라벤더 */
 .info-bar .ib-ivory::before { background: linear-gradient(90deg, #f5bf9f, #fde3d2); color: #7a3d1d; } /* 살구 */
 
+/* ---------- 2026-11-15: 2번 진청 막대 = "생활 도구" (게임 막대와 같은 방식으로 오른쪽에 5칸 펼침) ----------
+   1 단위 환산(units.html, 푸른 하늘색) · 2 만 나이·D-day(age.html, 청록) · 3~5 빈란(민트·하늘·분홍, 나중에 도구 넣을 자리)
+   도구를 넣을 땐 index.html의 <span class="ib-pop ib-pop3 ib-empty">빈란</span>을 <a class="ib-pop ib-pop3" href="파일.html">이름<svg class="ib-pop-ic">…</svg></a>로 바꾸기 (-en 파일도) */
+.info-bar .ib-tools { cursor: default; }
+.info-bar .ib-tools[data-href] { cursor: pointer; }   /* 막대를 누르면 단위 환산 (index.html 맨 아래 작은 스크립트) */
+.info-bar .ib-tools::after,
+.info-bar .ib-tools::before { content: none; }
+.info-bar .ib-tools .ib-ic { color: #ffd166; }
+.info-bar .ib-tools .ib-pop  { background: linear-gradient(90deg, #4a6aa8, #8fa9d8); color: #fff; text-shadow: 0 1px 1px rgba(0, 0, 0, 0.2); }
+.info-bar .ib-tools .ib-pop2 { background: linear-gradient(90deg, #3f9c9c, #9fd8d0); color: #fff; }
+.info-bar .ib-tools .ib-pop3 { background: linear-gradient(90deg, #9fd8b8, #dcf3e6); color: #1f5a3c; text-shadow: none; }
+.info-bar .ib-tools .ib-pop4 { background: linear-gradient(90deg, #9cc8ee, #dcecfb); color: #1f4a72; text-shadow: none; }
+.info-bar .ib-tools .ib-pop5 { background: linear-gradient(90deg, #f3a6c8, #fde0ec); color: #7a2450; text-shadow: none; }
+.info-bar .ib-tools .ib-pop:focus-visible { outline-color: #fff; }
+.info-bar .ib-tools:hover .ib-pop { clip-path: inset(0 0 0 -4px round 5px); pointer-events: auto; }
+.info-bar .ib-tools:is(:focus-visible, :has(:focus-visible)) .ib-pop { clip-path: inset(0 0 0 -4px round 5px); pointer-events: auto; }
+.info-bar .ib-tools:hover .ib-pop2 { transition-delay: 0.12s; clip-path: inset(-4px 0 0 -4px round 5px); }
+.info-bar .ib-tools:is(:focus-visible, :has(:focus-visible)) .ib-pop2 { transition-delay: 0.12s; clip-path: inset(-4px 0 0 -4px round 5px); }
+.info-bar .ib-tools:hover .ib-pop3 { transition-delay: 0.24s; clip-path: inset(-4px 0 0 -4px round 5px); }
+.info-bar .ib-tools:is(:focus-visible, :has(:focus-visible)) .ib-pop3 { transition-delay: 0.24s; clip-path: inset(-4px 0 0 -4px round 5px); }
+.info-bar .ib-tools:hover .ib-pop4 { transition-delay: 0.36s; clip-path: inset(-4px 0 0 -4px round 5px); }
+.info-bar .ib-tools:is(:focus-visible, :has(:focus-visible)) .ib-pop4 { transition-delay: 0.36s; clip-path: inset(-4px 0 0 -4px round 5px); }
+.info-bar .ib-tools:hover .ib-pop5 { transition-delay: 0.48s; clip-path: inset(-4px 0 0 -4px round 5px); }
+.info-bar .ib-tools:is(:focus-visible, :has(:focus-visible)) .ib-pop5 { transition-delay: 0.48s; clip-path: inset(-4px 0 0 -4px round 5px); }
+.info-bar .ib-tools .ib-pop:not(.ib-empty) { pointer-events: none; }
+.info-bar .ib-tools:hover .ib-pop:not(.ib-empty),
+.info-bar .ib-tools:is(:focus-visible, :has(:focus-visible)) .ib-pop:not(.ib-empty) { pointer-events: auto; }
+
 /* ---------------- 1) 홈 왼쪽 칸 ---------------- */
 /* 안내 박스 아래를 꽉 채워요. */
 .blog-box {

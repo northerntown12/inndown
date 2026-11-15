@@ -147,6 +147,7 @@
 
 /* ---------- 게임 입구 (2026-11-12, 폰에서만 보임 — 아래 폰 부분) ---------- */
 .ad-grid .game-widget { display: none; }
+.ad-grid .tools-widget { display: none; }   /* 생활 도구 (2026-11-15, 폰에서만) */
 
 /* ---------- 바로가기 (구글 · 네이버 · 유튜브 · 빙) ---------- */
 .ad-grid .quick-links {
@@ -251,7 +252,7 @@
         gap: 14px;
     }
     /* 환율·우편번호·졸라맨·주식은 모바일에서 그대로 숨김 */
-    .ad-sidebar .ad-grid > :not(.unit-widget):not(.quick-links):not(.game-widget):not(.stock-widget) { display: none; }
+    .ad-sidebar .ad-grid > :not(.unit-widget):not(.quick-links):not(.game-widget):not(.tools-widget):not(.stock-widget) { display: none; }
 
     .ad-grid .unit-widget,
     .ad-grid .quick-links {
@@ -298,9 +299,28 @@
     .stk-chg   { font-size: 0.82rem; min-width: 68px; }
     .stk-foot  { font-size: 0.7rem; margin-top: 8px; }
 
-    /* 게임 입구: 주식시장 아래, 위 칸들과 같은 간격(14px) */
-    .ad-grid .game-widget {
+    /* 생활 도구 (2026-11-15): 주식시장 아래, 게임 위. 모양은 게임 칸과 같고 카드만 에메랄드 */
+    .ad-grid .tools-widget {
         order: 4;
+        grid-column: 1;
+        grid-row: auto;
+        height: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 9px;
+        padding: 10px 14px 14px;
+        border-radius: 8px;
+        background: linear-gradient(180deg, #fbf8f1 0%, #f1e9d9 100%);
+        border: 1px solid #d9c9a8;
+        color: #5b4636;
+    }
+    .ad-grid .tools-widget .tw-item { background: #e3efe8; border-color: #b9d3c4; color: #10372f; }
+    .ad-grid .tools-widget .tw-item small,
+    .ad-grid .tools-widget .tw-item .gw-go { color: #2c6a58; }
+
+    /* 게임 입구: 생활 도구 아래, 위 칸들과 같은 간격(14px) */
+    .ad-grid .game-widget {
+        order: 5;
         grid-column: 1;
         grid-row: auto;
         height: auto;
