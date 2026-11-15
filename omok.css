@@ -424,3 +424,27 @@ body {
 body.om-mode-online .om-result-exit { display: inline-block; }
 #omOnPlay .om-on-exit { order: 9; }
 #omOnPlay .om-chat { order: 10; }   /* PC: 종료 버튼은 대화창 위 (그만할래요·새 대결 바로 아래) */
+
+/* ===== 온라인 무르기 요청/대답 (2026-11-16, omok.js가 만듦) ===== */
+.om-undo-ask { position: absolute; inset: 0; z-index: 7; display: grid; place-items: center; background: rgba(30, 24, 60, 0.28); border-radius: 10px; }
+.om-undo-ask[hidden] { display: none; }
+.om-undo-card {
+    width: min(86%, 340px); padding: 16px 18px 12px; border-radius: 14px; text-align: center;
+    background: var(--om-cream, #fffaf0); border: 2px solid var(--om-gold, #d8b25a);
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.3); animation: omPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.om-undo-t { margin: 0 0 4px; font-size: 1.1rem; font-weight: 800; color: #36347a; }
+.om-undo-d { margin: 0 0 12px; font-size: 0.82rem; color: #6b6890; line-height: 1.5; word-break: keep-all; }
+.om-undo-b { display: flex; gap: 8px; justify-content: center; }
+.om-undo-b .om-btn { flex: 1; }
+.om-undo-bar { margin-top: 10px; height: 5px; border-radius: 3px; background: #ece8dc; overflow: hidden; }
+.om-undo-bar i { display: block; height: 100%; width: 100%; background: linear-gradient(90deg, #ff8fab, #ffd166); }
+.om-btn.om-undo-req:disabled { opacity: 0.5; cursor: default; }
+.om-flash {
+    position: absolute; left: 50%; top: 12%; transform: translateX(-50%); z-index: 8; pointer-events: none;
+    padding: 9px 18px; border-radius: 999px; background: rgba(54, 52, 122, 0.92); color: #fff;
+    font-weight: 800; font-size: 0.95rem; white-space: nowrap; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+    animation: omJoinPop 0.4s cubic-bezier(.2, 1.6, .4, 1);
+}
+.om-flash.out { opacity: 0; transition: opacity 0.35s; }
+@media (max-width: 480px) { .om-flash { font-size: 0.85rem; white-space: normal; text-align: center; width: max-content; max-width: 86%; } }

@@ -26,7 +26,19 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
     var board, history, human, ai, level, over, thinking, winCells, forbid, hover, preview, aiTimer;
     var pendingSettings = false;
     var started = false;                       // 시작 버튼을 눌렀나
-    var TIME_LIMIT = 15;                       // 한 수 제한 시간(초). 넘기면 시간 초과 패배
+    var AI_LIMIT = 15, ONLINE_LIMIT = 20;      // 한 수 제한 시간(초): 컴퓨터와 둘 때 15초, 온라인 대결 20초 (2026-11-16, 온라인은 서버가 정한 값을 따라감)
+    var TIME_LIMIT = AI_LIMIT;                 // 지금 쓰는 제한 시간. 넘기면 시간 초과 패배
+    /* html에 적힌 "한 수 15초" 안내를 온라인 20초에 맞게 (html은 안 고침) */
+    (function () {
+        var sm = document.querySelector(".om-on-head small");
+        if (sm) sm.textContent = T("한 수 " + ONLINE_LIMIT + "초 · 렌주룰", ONLINE_LIMIT + "s per move · Renju");
+        document.querySelectorAll("details li").forEach(function (li) {
+            if (/15\s*(초|s\b|sec)/.test(li.textContent) && !li.dataset.limitFixed) {
+                li.dataset.limitFixed = "1";
+                li.insertAdjacentHTML("beforeend", T(" (온라인 대결은 <b>" + ONLINE_LIMIT + "초</b>)", " (online: <b>" + ONLINE_LIMIT + "s</b>)"));
+            }
+        });
+    })();
     var timerId = 0, turnEnd = 0, lastTick = 0, timerMine = true;
     var mode = "ai";                           // "ai" 컴퓨터와 / "online" 온라인 대결
     var ON = null;                             // 온라인 방 정보 {code, token, ver, ...}
@@ -453,6 +465,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
     function enterOnline() {
         stopTimer(); clearTimeout(aiTimer);
         mode = "online";
+        TIME_LIMIT = ONLINE_LIMIT;
         document.body.classList.add("om-mode-online");
         elOnBox.hidden = false;
         resetBoard();
@@ -475,7 +488,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         ON = null;
         try { sessionStorage.removeItem(SESSION_KEY); } catch (e) {}
         if (!silent) {
-            mode = "ai"; document.body.classList.remove("om-mode-online", "om-on-pre"); elOnBox.hidden = true;
+            mode = "ai"; TIME_LIMIT = AI_LIMIT; document.body.classList.remove("om-mode-online", "om-on-pre"); elOnBox.hidden = true;
             $("omAgain").textContent = T("한 판 더", "Play again"); $("omAgain").hidden = false; btnStop2.hidden = true;
             newGame();
         }
@@ -619,6 +632,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
     function applyState(s) {
         if (!ON || !s || s.ver < ON.ver) return;
         var wasWaiting = ON.status === "waiting";
+        if (s.limit) TIME_LIMIT = Math.round(s.limit / 1000);       // 서버가 정한 온라인 제한 시간 (새 서버 20초, 예전 서버 15초)
         ON.ver = s.ver; ON.status = s.status; ON.state = s;
         if (s.status === "waiting") { showWaiting(); return; }
 
@@ -629,6 +643,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
             celebrateJoin(ON.via);
         }
         ON.resumed = false;
+        handleUndoNote(s);
         human = s.you; ai = 3 - human;
         var gameKey = ON.code + ":" + s.games;
         var newGameStarted = ON.gameKey !== gameKey;
@@ -647,12 +662,15 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         if (newGameStarted && s.status === "playing") sndClick();
         started = true; thinking = false; preview = null;
 
-        if (s.status === "over") { onlineFinish(s); updateOnlinePanel(s); draw(); return; }
+        if (s.status === "over") { hideUndo(); onlineFinish(s); updateOnlinePanel(s); draw(); return; }
 
         /* 2026-11-15: 시작 전 카운트다운 (상대가 들어오면 5초, 한 판 더는 1.5초) */
         if (s.status === "playing" && s.startIn > 400 && s.moves.length === 0) { showCountdown(s); updateOnlinePanel(s); draw(); return; }
 
         over = false; winCells = null;
+        /* 2026-11-16 무르기 요청 중: 시계 멈추고 요청/대답 화면 */
+        if (s.status === "playing" && s.undoReq) { showUndo(s); updateOnlinePanel(s); draw(); return; }
+        hideUndo();
         if (s.toMove === human) {
             refreshForbid();
             startTimer(s.left, true);
@@ -667,6 +685,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
     }
 
     function updateOnlinePanel(s) {
+        paintUndo(s);
         var opp = s.oppLeft ? T("나감", "left") : s.oppDeclined ? T("그만함", "done") : (s.oppHere ? T("접속 중", "online") : T("연결 끊김?", "offline?"));
         elOnInfo.innerHTML = T("방 ", "Room ") + "<b>" + s.code + "</b> · " + T("나 ", "Me ") + stoneTag(s.you) +
             " · " + T("상대 ", "Opponent ") + '<span class="om-opp ' + (s.oppHere && !s.oppLeft ? "on" : "off") + '">' + opp + "</span>";
@@ -695,6 +714,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
 
     function onlineMove(x, y) {
         var me = ON; if (!me) return;
+        if (me.state && me.state.undoReq) { preview = null; draw(); onErr(T("무르기 대답을 기다리는 중이에요", "Waiting for the undo answer")); return; }
         if (me.cdUntil && Date.now() < me.cdUntil) { preview = null; draw(); onErr(T("곧 시작해요! 숫자가 끝나면 두세요", "Starting soon! Wait for the countdown")); return; }
         /* 먼저 내 화면에 놓고 서버에 보냄 */
         board[y * N + x] = human; history.push([x, y, human]);
@@ -762,6 +782,108 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
             if (ON !== me) return;
             if (res.state) applyState(res.state);
         }).catch(function () { onErr(netErrText()); btnRematch.disabled = false; });
+    }
+
+    /* ======================= 온라인 무르기 (2026-11-16) =======================
+       ↩ 무르기 요청 → 상대 화면에 [허락]/[거절] (10초 안에 대답 없으면 거절). 기다리는 동안 시계 멈춤
+       허락하면 요청한 사람의 마지막 수까지 되돌리고 그 사람이 새 시간으로 다시 둬요. 한 판에 3번까지 (서버 UNDO_MAX)
+       html은 안 고치고 여기서 버튼·창을 만들어요 */
+    var btnUndoReq = document.createElement("button");
+    btnUndoReq.type = "button"; btnUndoReq.className = "om-btn om-undo-req"; btnUndoReq.id = "omUndoReq"; btnUndoReq.hidden = true;
+    btnResign.insertAdjacentElement("afterend", btnUndoReq);
+    var elUndoAsk = document.createElement("div");
+    elUndoAsk.className = "om-undo-ask"; elUndoAsk.hidden = true;
+    elUndoAsk.innerHTML = '<div class="om-undo-card" role="alertdialog" aria-live="assertive"><p class="om-undo-t"></p><p class="om-undo-d"></p>' +
+        '<div class="om-undo-b"><button type="button" class="om-btn om-primary" data-a="1">' + T("↩ 허락", "↩ Allow") + '</button>' +
+        '<button type="button" class="om-btn om-stop" data-a="0">' + T("✋ 거절", "✋ Decline") + '</button></div>' +
+        '<div class="om-undo-bar"><i></i></div></div>';
+    $("omBoardBox").appendChild(elUndoAsk);
+    var elUndoBar = elUndoAsk.querySelector(".om-undo-bar i");
+
+    function undoErrText(e) {
+        return e === "limit" ? T("이번 판의 무르기를 다 썼어요", "No undos left this game")
+             : e === "nomove" ? T("아직 무를 수가 없어요", "Nothing to undo yet")
+             : e === "pending" ? T("이미 무르기 요청 중이에요", "An undo request is already pending")
+             : e === "notstarted" ? T("시작한 뒤에 쓸 수 있어요", "Wait until the game starts")
+             : e === "path" ? T("무르기는 서버를 새로 붙여넣은 뒤에 쓸 수 있어요", "Undo needs the updated server")
+             : e === "nopending" ? "" : T("무르기를 하지 못했어요", "Couldn't undo");
+    }
+    btnUndoReq.addEventListener("click", function () {
+        sndClick();
+        var me = ON; if (!me || !me.state) return;
+        btnUndoReq.disabled = true;
+        api("/undo", { code: me.code, token: me.token }).then(function (res) {
+            if (ON !== me) return;
+            if (res.error && res.error !== "busy") onErr(undoErrText(res.error));
+            if (res.state) applyState(res.state); else paintUndo(me.state);
+        }).catch(function () { if (ON === me) { onErr(netErrText()); paintUndo(me.state); } });
+    });
+    elUndoAsk.addEventListener("click", function (ev) {
+        var b = ev.target.closest && ev.target.closest("button[data-a]"); if (!b) return;
+        sndClick();
+        var me = ON; if (!me) return;
+        elUndoAsk.hidden = true;
+        api("/undoreply", { code: me.code, token: me.token, accept: b.getAttribute("data-a") === "1" }).then(function (res) {
+            if (ON !== me) return;
+            if (res.error && res.error !== "busy") { var t = undoErrText(res.error); if (t) onErr(t); }
+            if (res.state) applyState(res.state);
+        }).catch(function () { if (ON === me) onErr(netErrText()); });
+    });
+
+    function paintUndo(s) {
+        var playing = s && s.status === "playing";
+        btnUndoReq.hidden = !playing || typeof s.undoLeft !== "number";      // 예전 서버면 숨김
+        if (btnUndoReq.hidden) return;
+        var mine = s.moves.some(function (m, i) { return (i % 2 === 0 ? 1 : 2) === s.you; });
+        btnUndoReq.disabled = !mine || !!s.undoReq || s.undoLeft <= 0 || s.startIn > 300 || (ON && ON.cdUntil > Date.now());
+        btnUndoReq.textContent = s.undoReq === "me" ? T("↩ 무르기 요청 중…", "↩ Undo requested…")
+            : T("↩ 무르기 요청", "↩ Ask to undo") + " (" + T(s.undoLeft + "번 남음", s.undoLeft + " left") + ")";
+    }
+    function showUndo(s) {
+        stopTimer(); timerShow("idle"); elTimerNum.textContent = "⏸";
+        forbid = []; preview = null;
+        var key = s.undoReq + ":" + s.games + ":" + s.moves.length;
+        var fresh = ON.undoKey !== key; ON.undoKey = key;
+        if (s.undoReq === "opp") {
+            elUndoAsk.querySelector(".om-undo-t").textContent = T("상대가 무르기를 요청했어요", "Your opponent asks to undo");
+            elUndoAsk.querySelector(".om-undo-d").textContent = T("허락하면 상대의 마지막 수까지 되돌리고 상대가 다시 둬요", "If you allow, their last move is taken back and they play again");
+            elUndoAsk.hidden = false;
+            if (fresh) {
+                sndChat();
+                elUndoBar.style.transition = "none"; elUndoBar.style.width = (s.undoWait / 100) + "%";
+                void elUndoBar.offsetWidth;
+                elUndoBar.style.transition = "width " + s.undoWait + "ms linear"; elUndoBar.style.width = "0%";
+            }
+            setStatus(T("무르기 요청이 왔어요 · 허락할까요? (시계 멈춤)", "Undo request · allow it? (clock paused)"), "thinking");
+        } else {
+            elUndoAsk.hidden = true;
+            setStatus(T("무르기 요청 중… 상대의 대답을 기다려요 (시계 멈춤)", "Undo requested… waiting for your opponent (clock paused)"), "thinking");
+        }
+    }
+    function hideUndo() { elUndoAsk.hidden = true; if (ON) ON.undoKey = ""; }
+    function flashBoard(msg) {
+        var box = $("omBoardBox");
+        var old = box.querySelector(".om-flash"); if (old) old.remove();
+        var el = document.createElement("div");
+        el.className = "om-flash"; el.textContent = msg; el.setAttribute("role", "status");
+        box.appendChild(el);
+        setTimeout(function () { el.classList.add("out"); }, 2000);
+        setTimeout(function () { el.remove(); }, 2400);
+    }
+    function handleUndoNote(s) {
+        var n = s.undoNote;
+        if (!ON.undoInit) { ON.undoInit = true; ON.undoNoteT = n ? n.t : 0; return; }   // 들어오기 전 결과는 안 보여 줌
+        if (!n || !n.t || ON.undoNoteT === n.t) return;
+        ON.undoNoteT = n.t;
+        var msg = n.mine
+            ? (n.r === "ok" ? T("상대가 무르기를 허락했어요 ↩ 다시 두세요", "Undo allowed ↩ play again")
+               : n.r === "no" ? T("상대가 무르기를 거절했어요", "Your opponent declined the undo")
+               : T("상대가 대답하지 않아 무르기가 취소됐어요", "No answer — undo canceled"))
+            : (n.r === "ok" ? T("무르기를 허락했어요 ↩", "You allowed the undo ↩")
+               : n.r === "no" ? T("무르기를 거절했어요", "You declined the undo")
+               : T("대답 시간이 지나 무르기를 거절했어요", "Time ran out — undo declined"));
+        flashBoard(msg);
+        if (n.r === "ok") sndClick(); else sndBuzz();
     }
 
     /* ======================= 온라인 대화 (2026-11-15) =======================
