@@ -1,0 +1,289 @@
+/* ==========================================================
+   도구 페이지 공통 모양 (2026-11-15)
+   - 홈 위젯을 "크게 보기"로 연 따로 페이지 (예: units.html 단위 환산)
+   - blog.css(위 막대·맨 아래) 다음에 읽어요.
+   - 색: 홈 단위 환산 칸과 같은 에메랄드 + 샴페인 골드 + 아이보리
+   - 다음 도구 페이지도 이 파일을 같이 쓰면 돼요 (body class="blog-page tool-page")
+   ========================================================== */
+
+body.tool-page {
+    --tp-emerald: #10372f;
+    --tp-emerald2: #1b5245;
+    --tp-emerald3: #286654;
+    --tp-gold: #d8c08a;
+    --tp-gold-deep: #a8874b;
+    --tp-ivory: #f7f1e1;
+    --tp-ink: #22302b;
+    --tp-mute: #6f6a5c;
+    background: #faf6ee;
+    color: var(--tp-ink);
+}
+
+/* 위 막대: 에메랄드 */
+.tool-page .bp-top { background: linear-gradient(180deg, var(--tp-emerald2), var(--tp-emerald)); box-shadow: 0 2px 10px rgba(16, 55, 47, 0.3); }
+.tool-page .bp-brand { color: #f3e3b8; }
+.tool-page .bp-brand small { color: var(--tp-gold); }
+.tool-page .bp-home { border-color: rgba(216, 192, 138, 0.55); color: #f3ead4; }
+.tool-page .bp-home:hover { background: rgba(216, 192, 138, 0.22); }
+
+.tool-page .bp-top-in { max-width: 920px; }
+.tool-page .bp-brand { flex: 1 1 0; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.tp-main { max-width: 920px; margin: 0 auto; padding: 26px 16px 50px; }
+
+/* ---------- 머리말 ---------- */
+.tp-head { margin-bottom: 18px; }
+.tp-kicker {
+    display: inline-block;
+    margin-bottom: 6px;
+    padding: 2px 10px;
+    border-radius: 999px;
+    background: #e6efe9;
+    color: var(--tp-emerald2);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+}
+.tp-head h1 { margin: 0 0 6px; font-size: 1.75rem; letter-spacing: 0.02em; color: var(--tp-emerald); }
+.tp-head p { margin: 0; color: var(--tp-mute); line-height: 1.7; word-break: keep-all; }
+
+/* ---------- 도구 + 표 (PC는 나란히, 폰은 위아래) ---------- */
+.tp-tool {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    gap: 16px;
+    align-items: start;
+    margin-bottom: 26px;
+}
+
+/* 큰 단위 환산 칸 (units.js가 같은 id로 움직여요) */
+.tp-conv {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 20px 20px 16px;
+    border-radius: 16px;
+    background:
+        radial-gradient(120% 70% at 100% 0%, rgba(216, 192, 138, 0.2), transparent 60%),
+        linear-gradient(160deg, var(--tp-emerald) 0%, var(--tp-emerald2) 58%, var(--tp-emerald3) 100%);
+    border: 1px solid #0d2f28;
+    box-shadow: inset 0 0 0 1px rgba(216, 192, 138, 0.25), 0 8px 24px rgba(16, 55, 47, 0.18);
+    color: #f3ead4;
+}
+.tp-conv .uc-title { margin: 0; font-size: 1.05rem; letter-spacing: 0.04em; color: #f3ead4; }
+
+/* 단위 알약 버튼 (units.js가 채워요) */
+.uc-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.uc-chips button {
+    padding: 5px 11px;
+    border-radius: 999px;
+    border: 1px solid rgba(216, 192, 138, 0.45);
+    background: rgba(0, 0, 0, 0.18);
+    color: #efe4c8;
+    font: inherit;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.uc-chips button:hover { background: rgba(216, 192, 138, 0.18); }
+.uc-chips button.on { background: var(--tp-gold); border-color: var(--tp-gold); color: var(--tp-emerald); font-weight: 700; }
+
+/* 알약 버튼이 있으니 목록 상자는 숨겨요 (units.js는 그대로 씀) */
+.tp-conv .uc-chips:not(:empty) + .uc-select { display: none; }
+.tp-conv .uc-select {
+    width: 100%;
+    height: 40px;
+    padding: 0 30px 0 12px;
+    border: 1px solid rgba(216, 192, 138, 0.5);
+    border-radius: 8px;
+    background:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23d8c08a' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 12px center / 11px 7px,
+        rgba(0, 0, 0, 0.22);
+    color: #f3ead4;
+    font: inherit;
+    font-size: 0.95rem;
+    -webkit-appearance: none;
+    appearance: none;
+    cursor: pointer;
+}
+.tp-conv .uc-select:focus { outline: none; border-color: var(--tp-gold); }
+.tp-conv .uc-select option { color: #1b2b26; background: #faf6ee; }
+
+.tp-conv .uc-in {
+    display: flex;
+    align-items: stretch;
+    height: 58px;
+    border-radius: 10px;
+    background: var(--tp-ivory);
+    overflow: hidden;
+}
+.tp-conv .uc-in:focus-within { box-shadow: 0 0 0 3px rgba(216, 192, 138, 0.85); }
+.tp-conv .uc-in input {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 0 14px;
+    border: 0;
+    background: transparent;
+    color: #17312a;
+    font: inherit;
+    font-size: 1.6rem;
+    font-weight: 700;
+    text-align: right;
+}
+.tp-conv .uc-in input:focus { outline: none; }
+.tp-conv .uc-unit {
+    flex: none;
+    display: grid;
+    place-items: center;
+    min-width: 128px;
+    padding: 0 14px;
+    background: #ece2c8;
+    color: #5f4e30;
+    font-size: 0.9rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.tp-conv .uc-link { height: 16px; display: flex; align-items: center; gap: 10px; color: var(--tp-gold); }
+.tp-conv .uc-link::before,
+.tp-conv .uc-link::after { content: ""; flex: 1 1 auto; height: 1px; background: rgba(216, 192, 138, 0.3); }
+.tp-conv .uc-link svg { width: 14px; height: 14px; flex: none; }
+
+.tp-conv .uc-hint { font-size: 0.82rem; text-align: center; color: rgba(243, 234, 212, 0.75); }
+.tp-note { margin: 2px 0 0; font-size: 0.74rem; text-align: center; color: rgba(243, 234, 212, 0.55); }
+
+/* 자주 쓰는 값 표 */
+.tp-table-box {
+    padding: 16px 16px 12px;
+    border-radius: 16px;
+    background: #fff;
+    border: 1px solid #ece3cf;
+    box-shadow: 0 6px 20px rgba(120, 100, 60, 0.08);
+}
+.tp-table-box h2 { margin: 0 0 10px; font-size: 1rem; color: var(--tp-emerald); }
+.tp-table-box h2 small { margin-left: 6px; font-size: 0.75rem; font-weight: 400; color: var(--tp-mute); }
+.uc-table { width: 100%; border-collapse: collapse; font-size: 0.92rem; font-variant-numeric: tabular-nums; }
+.uc-table th {
+    padding: 8px 10px;
+    background: #eef4f0;
+    color: var(--tp-emerald2);
+    font-size: 0.8rem;
+    text-align: right;
+    border-bottom: 2px solid var(--tp-gold);
+}
+.uc-table td { padding: 7px 10px; text-align: right; border-bottom: 1px solid #f1eadb; }
+.uc-table tbody tr:nth-child(even) td { background: #fcfaf4; }
+.uc-table tbody tr:hover td { background: #f6efdc; }
+
+/* ---------- 설명 글 ---------- */
+.tp-article {
+    padding: 28px 32px;
+    border-radius: 18px;
+    background: #fff;
+    border: 1px solid #ece3cf;
+    box-shadow: 0 6px 22px rgba(120, 100, 60, 0.07);
+}
+.tp-article > h2:first-child { margin-top: 0; }
+.tp-article h2 {
+    margin: 1.9em 0 0.6em;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #efe6d2;
+    font-size: 1.15rem;
+    color: var(--tp-emerald);
+}
+.tp-article h2::before {
+    content: "";
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    margin-right: 8px;
+    border-radius: 2px;
+    background: var(--tp-gold);
+    transform: rotate(45deg);
+    vertical-align: 2px;
+}
+.tp-article h3 { margin: 1.3em 0 0.4em; font-size: 1rem; color: #3a4a43; }
+.tp-article p,
+.tp-article li { line-height: 1.85; color: #3a3a32; word-break: keep-all; }
+.tp-article ul { padding-left: 1.3em; }
+.tp-article a { color: var(--tp-emerald2); font-weight: 600; }
+.tp-article table { width: 100%; border-collapse: collapse; margin: 0.6em 0 1em; font-size: 0.9rem; }
+.tp-article th,
+.tp-article td { padding: 8px 10px; border: 1px solid #ece3cf; text-align: left; }
+.tp-article th { background: #eef4f0; color: var(--tp-emerald2); }
+.tp-article td.num, .tp-article th.num { text-align: right; font-variant-numeric: tabular-nums; }
+.tp-tip {
+    margin: 1em 0;
+    padding: 12px 16px;
+    border-left: 4px solid var(--tp-gold);
+    border-radius: 0 10px 10px 0;
+    background: #fbf6e8;
+    font-size: 0.92rem;
+}
+
+/* 자주 묻는 질문 */
+.tp-faq details { border-bottom: 1px solid #efe6d2; }
+.tp-faq summary {
+    padding: 12px 4px;
+    font-weight: 700;
+    color: #33433c;
+    cursor: pointer;
+    list-style: none;
+}
+.tp-faq summary::-webkit-details-marker { display: none; }
+.tp-faq summary::before { content: "Q. "; color: var(--tp-gold-deep); }
+.tp-faq summary::after { content: "+"; float: right; color: var(--tp-gold-deep); font-weight: 400; }
+.tp-faq details[open] summary::after { content: "−"; }
+.tp-faq details p { margin: 0 4px 14px; }
+
+/* ---------- 다른 도구 보기 (홈으로 연결) ---------- */
+.tp-more {
+    margin-top: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    flex-wrap: wrap;
+    padding: 18px 22px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #fbf8f1, #f1e9d9);
+    border: 1px solid #d9c9a8;
+}
+.tp-more p { margin: 0; color: #5b4636; line-height: 1.6; word-break: keep-all; }
+.tp-more p b { display: block; color: #3b2a1a; font-size: 1.02rem; }
+.tp-more a {
+    flex: none;
+    padding: 10px 18px;
+    border-radius: 999px;
+    background: var(--tp-emerald2);
+    color: #f6ecd2;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 2px 8px rgba(16, 55, 47, 0.25);
+    transition: transform 0.15s, background 0.15s;
+}
+.tp-more a:hover { background: var(--tp-emerald); transform: translateY(-1px); }
+
+/* ---------- 폰 ---------- */
+@media (max-width: 760px) {
+    .tp-main { padding: 18px 12px 40px; }
+    .tp-head h1 { font-size: 1.45rem; }
+    .tp-tool { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+    .tp-conv { padding: 16px 14px 14px; }
+    .uc-chips { gap: 5px; }
+    .uc-chips button { font-size: 0.78rem; padding: 5px 10px; }
+    .tp-conv .uc-in { height: 54px; }
+    .tp-conv .uc-in input { font-size: 1.4rem; }      /* 16px 넘어서 아이폰 자동 확대 없음 */
+    .tp-conv .uc-unit { min-width: 104px; font-size: 0.85rem; padding: 0 10px; }
+    .tp-article { padding: 20px 16px; }
+    .tp-more { padding: 16px; }
+    .tp-more a { width: 100%; box-sizing: border-box; text-align: center; }
+}
+@media (max-width: 480px) {
+    .tool-page .bp-top-in { gap: 8px; }
+    .tool-page .bp-brand { font-size: 1.1rem; }
+    .tool-page .bp-home { padding: 4px 9px; }
+}
+@media print {
+    .bp-top, .tp-more, .uc-chips { display: none; }
+}

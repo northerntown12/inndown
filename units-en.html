@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="lang.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unit Converter – Pyeong to m², °F to °C, inches to cm, lb to kg · Records after work</title>
+    <meta name="description" content="Free unit converter: pyeong ↔ square meters, Fahrenheit ↔ Celsius, inches and feet ↔ centimeters, miles ↔ kilometers, pounds ↔ kilograms, ounces and geun ↔ grams, gallons ↔ liters, acres ↔ pyeong. With handy reference tables.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="blog.css">
+    <link rel="stylesheet" href="tools-page.css">
+</head>
+<body class="blog-page tool-page">
+    <header class="bp-top">
+        <div class="bp-top-in">
+            <a class="bp-brand" href="index-en.html">Records after work<small>Everyday Tools</small></a>
+            <a class="bp-home" href="index-en.html">← Home</a>
+        </div>
+    </header>
+
+    <main class="tp-main">
+        <div class="tp-head">
+            <span class="tp-kicker">EVERYDAY TOOLS</span>
+            <h1>Unit Converter</h1>
+            <p>Quickly convert confusing units such as Korean pyeong to square meters or Fahrenheit to Celsius. Type a number in either box and the other one updates instantly.</p>
+        </div>
+
+        <section class="tp-tool" aria-label="Unit converter">
+            <!-- units.js drives this box (same ids as the home widget) -->
+            <div class="unit-widget tp-conv" id="unit-widget">
+                <h2 class="uc-title">What would you like to convert?</h2>
+                <div class="uc-chips" id="uc-chips" role="group" aria-label="Choose units"></div>
+                <select id="uc-pair" class="uc-select" aria-label="Units to convert"></select>
+                <label class="uc-in">
+                    <input type="text" id="uc-a" value="1" inputmode="decimal" autocomplete="off" aria-label="First unit value">
+                    <span class="uc-unit" id="uc-a-unit">Pyeong (py)</span>
+                </label>
+                <div class="uc-link" aria-hidden="true"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M3 1v8M1 3l2-2 2 2M7 9V1M5 7l2 2 2-2"/></svg></div>
+                <label class="uc-in">
+                    <input type="text" id="uc-b" inputmode="decimal" autocomplete="off" aria-label="Second unit value">
+                    <span class="uc-unit" id="uc-b-unit">Square meter (㎡)</span>
+                </label>
+                <div class="uc-hint" id="uc-hint"></div>
+                <p class="tp-note">Results are rounded for easy reading. Your last choice is remembered on this device.</p>
+            </div>
+
+            <div class="tp-table-box">
+                <h2>Handy values<small>for the units chosen above</small></h2>
+                <table class="uc-table" id="uc-table"></table>
+            </div>
+        </section>
+
+        <article class="tp-article">
+            <h2>Pyeong ↔ square meters</h2>
+            <p>The pyeong is a traditional Korean unit of area: a square 6 ja (about 1.818 m) on each side. <b>1 pyeong = 400/121 m² ≈ 3.3058 m²</b>, and 1 m² ≈ 0.3025 pyeong, so multiplying square meters by 0.3 gives a rough pyeong figure.</p>
+            <p>Since 2007, Korean property ads and contracts must use square meters, but people still talk about homes in pyeong in everyday conversation, so converting in your head is a common need.</p>
+            <h3>Why a "34-pyeong" apartment is 84 m²</h3>
+            <p>The "pyeong type" people mention is usually based on the <b>supply area</b> (your private area plus shared areas like stairs and hallways). That's why a unit with 84 m² of private area (about 25.4 pyeong) is often called a 34-pyeong type.</p>
+            <table>
+                <thead><tr><th>Private area</th><th class="num">In pyeong</th><th>Commonly called</th></tr></thead>
+                <tbody>
+                    <tr><td>39 m²</td><td class="num">≈ 11.8 py</td><td>15–17 pyeong type</td></tr>
+                    <tr><td>49 m²</td><td class="num">≈ 14.8 py</td><td>around 20 pyeong type</td></tr>
+                    <tr><td>59 m²</td><td class="num">≈ 17.8 py</td><td>24–25 pyeong type</td></tr>
+                    <tr><td>84 m²</td><td class="num">≈ 25.4 py</td><td>33–34 pyeong type</td></tr>
+                    <tr><td>114 m²</td><td class="num">≈ 34.5 py</td><td>43–45 pyeong type</td></tr>
+                </tbody>
+            </table>
+            <p class="tp-tip">The share of common area differs between complexes, so the "type" number varies a little. Compare private areas for an exact comparison.</p>
+
+            <h2>Fahrenheit ↔ Celsius</h2>
+            <p>The formulas are <b>°C = (°F − 32) × 5 ÷ 9</b> and <b>°F = °C × 9 ÷ 5 + 32</b>. For a quick mental estimate, subtract 30 from °F and halve it — that is within 1–2 degrees for everyday temperatures.</p>
+            <ul>
+                <li>32°F = 0°C (water freezes), 212°F = 100°C (water boils)</li>
+                <li>98.6°F = 37°C (body temperature), 68–77°F = 20–25°C (comfortable room)</li>
+                <li>−40°F = −40°C — the only point where both scales meet</li>
+                <li>Oven 350°F ≈ 177°C, 400°F ≈ 204°C</li>
+            </ul>
+
+            <h2>Inches, feet, yards, miles ↔ cm, m, km</h2>
+            <p>1 inch is exactly <b>2.54 cm</b>, 1 foot (12 in) is <b>30.48 cm</b>, 1 yard (3 ft) is <b>0.9144 m</b>, and 1 mile is <b>1.609344 km</b>.</p>
+            <ul>
+                <li><b>TV and monitor sizes</b> measure the screen's <b>diagonal</b>. A 55-inch 16:9 screen is about 139.7 cm diagonally, roughly 122 cm wide and 68 cm tall.</li>
+                <li><b>Height</b>: 5′7″ is 152.4 cm + 17.78 cm ≈ 170 cm.</li>
+                <li><b>Golf</b>: 150 yards is about 137 m.</li>
+                <li><b>Running</b>: 5 km ≈ 3.1 mi, a half marathon ≈ 13.1 mi, a marathon (42.195 km) ≈ 26.2 mi. 60 mph ≈ 97 km/h.</li>
+            </ul>
+
+            <h2>Pounds, ounces, geun ↔ kilograms, grams</h2>
+            <p>1 pound is <b>0.45359237 kg</b> (about 454 g) and 1 ounce, 1/16 of a pound, is <b>about 28.35 g</b>.</p>
+            <p>The geun is a traditional Korean weight. At Korean butcher shops <b>1 geun of meat is 600 g</b>, while vegetables and fruit are sometimes counted at 375 g per geun. This converter uses the 600 g meat geun.</p>
+            <p class="tp-tip">"fl oz" on drinks is a volume unit, not weight. One US fluid ounce is about 29.57 mL, which is different from the weight ounce (28.35 g).</p>
+
+            <h2>Gallons ↔ liters, acres ↔ pyeong</h2>
+            <p>This converter uses the <b>US gallon (about 3.785 L)</b>, the unit for US gas prices and milk jugs. The imperial (UK) gallon is larger, about 4.546 L.</p>
+            <p>1 acre is about 4,047 m², or <b>about 1,224 pyeong</b>. A soccer pitch (about 7,140 m²) is roughly 1.8 acres.</p>
+
+            <h2>How to use</h2>
+            <ul>
+                <li>Pick the units with the buttons above.</li>
+                <li>Type in the top box to fill the bottom one, or type in the bottom box to fill the top one.</li>
+                <li>Negative numbers work for temperatures, and commas (1,000) are fine.</li>
+                <li>The "Handy values" table follows the units you choose.</li>
+            </ul>
+
+            <h2>FAQ</h2>
+            <div class="tp-faq">
+                <details>
+                    <summary>Exactly how many square meters is one pyeong?</summary>
+                    <p>400/121 m², or about 3.305785 m². People usually round it to 3.3 m²; conversely 1 m² ≈ 0.3025 pyeong.</p>
+                </details>
+                <details>
+                    <summary>Are the numbers I type sent to a server?</summary>
+                    <p>No. All calculations happen inside your browser. Only the name of the last unit pair you chose is saved on this device.</p>
+                </details>
+                <details>
+                    <summary>Why do other sites give slightly different results?</summary>
+                    <p>Rounding and the standard used (US vs UK gallon, meat vs vegetable geun) differ. This converter uses the exact defined values (1 in = 2.54 cm, 1 lb = 0.45359237 kg, etc.) and then rounds for display.</p>
+                </details>
+                <details>
+                    <summary>Is this the same as the small converter on the home page?</summary>
+                    <p>Yes, it's the same converter, and your choice carries over. This page just shows it larger, with reference tables and explanations.</p>
+                </details>
+            </div>
+        </article>
+
+        <nav class="tp-more" aria-label="Other tools">
+            <p><b>Try the other tools</b>The home page puts a calculator, exchange rates, weather, postcode search and a to-do memo on one screen.</p>
+            <a href="index-en.html">See other tools → Home</a>
+        </nav>
+    </main>
+
+    <footer class="bp-foot">
+        <a href="index-en.html">Home</a><a href="blog-en.html">Blog</a><a href="about-en.html">About</a><a href="privacy-en.html">Privacy Policy</a><a href="contact-en.html">Contact</a>
+        <div>Copyright © 2026 Choi Yunhyok. All rights reserved.</div>
+    </footer>
+
+    <script src="units.js"></script>
+</body>
+</html>

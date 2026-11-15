@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <script src="lang.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>단위 환산기 – 평·제곱미터, 화씨·섭씨, 인치·cm, 파운드·kg · Records after work</title>
+    <meta name="description" content="평↔제곱미터, 화씨↔섭씨, 인치·피트↔센티미터, 마일↔킬로미터, 파운드↔킬로그램, 온스·근↔그램, 갤런↔리터, 에이커↔평을 바로 바꿔 주는 무료 단위 환산기. 자주 쓰는 값 표와 단위 설명도 함께 있어요.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="blog.css">
+    <link rel="stylesheet" href="tools-page.css">
+</head>
+<body class="blog-page tool-page">
+    <header class="bp-top">
+        <div class="bp-top-in">
+            <a class="bp-brand" href="index.html">Records after work<small>생활 도구</small></a>
+            <a class="bp-home" href="index.html">← 홈으로</a>
+        </div>
+    </header>
+
+    <main class="tp-main">
+        <div class="tp-head">
+            <span class="tp-kicker">생활 도구</span>
+            <h1>단위 환산기</h1>
+            <p>평과 제곱미터, 화씨와 섭씨처럼 헷갈리는 단위를 바로 바꿔 드려요. 위아래 어느 칸에 숫자를 넣어도 반대쪽이 계산돼요.</p>
+        </div>
+
+        <section class="tp-tool" aria-label="단위 환산">
+            <!-- units.js가 이 칸을 움직여요 (홈 위젯과 같은 id) -->
+            <div class="unit-widget tp-conv" id="unit-widget">
+                <h2 class="uc-title">무엇을 바꿀까요?</h2>
+                <div class="uc-chips" id="uc-chips" role="group" aria-label="단위 고르기"></div>
+                <select id="uc-pair" class="uc-select" aria-label="환산할 단위"></select>
+                <label class="uc-in">
+                    <input type="text" id="uc-a" value="1" inputmode="decimal" autocomplete="off" aria-label="첫째 단위 값">
+                    <span class="uc-unit" id="uc-a-unit">평(py)</span>
+                </label>
+                <div class="uc-link" aria-hidden="true"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M3 1v8M1 3l2-2 2 2M7 9V1M5 7l2 2 2-2"/></svg></div>
+                <label class="uc-in">
+                    <input type="text" id="uc-b" inputmode="decimal" autocomplete="off" aria-label="둘째 단위 값">
+                    <span class="uc-unit" id="uc-b-unit">제곱미터(㎡)</span>
+                </label>
+                <div class="uc-hint" id="uc-hint"></div>
+                <p class="tp-note">결과는 보기 쉽게 반올림해서 보여 드려요. 마지막으로 고른 단위는 이 기기에 기억돼요.</p>
+            </div>
+
+            <div class="tp-table-box">
+                <h2>자주 쓰는 값<small>위에서 고른 단위 기준</small></h2>
+                <table class="uc-table" id="uc-table"></table>
+            </div>
+        </section>
+
+        <article class="tp-article">
+            <h2>평 ↔ 제곱미터</h2>
+            <p>1평은 사방 6자(약 1.818m)인 정사각형 넓이로, <b>1평 = 400/121㎡ ≈ 3.3058㎡</b>예요. 거꾸로 1㎡는 약 0.3025평이라서, 제곱미터 숫자에 0.3을 곱하면 대충의 평수가 나와요.</p>
+            <p>2007년부터 부동산 광고나 계약서에는 평 대신 제곱미터를 쓰도록 되어 있어서, 분양 공고나 등기부에는 모두 ㎡로 적혀 있어요. 그래도 집을 이야기할 때는 여전히 평이 편하다 보니 머릿속으로 바꿔 보는 일이 많지요.</p>
+            <h3>아파트 "34평형"이 84㎡인 이유</h3>
+            <p>흔히 말하는 "몇 평형"은 보통 <b>공급면적</b>(내가 쓰는 전용면적 + 계단·복도 같은 주거공용면적)을 기준으로 해요. 그래서 전용 84㎡(약 25.4평)인 아파트를 34평형쯤으로 부르는 거예요. 아래는 자주 보는 전용면적을 평으로 바꾼 값이에요.</p>
+            <table>
+                <thead><tr><th>전용면적</th><th class="num">평으로 바꾸면</th><th>흔히 부르는 이름</th></tr></thead>
+                <tbody>
+                    <tr><td>39㎡</td><td class="num">약 11.8평</td><td>15~17평형</td></tr>
+                    <tr><td>49㎡</td><td class="num">약 14.8평</td><td>20평형 안팎</td></tr>
+                    <tr><td>59㎡</td><td class="num">약 17.8평</td><td>24~25평형</td></tr>
+                    <tr><td>84㎡</td><td class="num">약 25.4평</td><td>33~34평형</td></tr>
+                    <tr><td>114㎡</td><td class="num">약 34.5평</td><td>43~45평형</td></tr>
+                </tbody>
+            </table>
+            <p class="tp-tip">공급면적은 단지마다 주거공용면적 비율이 달라서 "평형" 숫자도 조금씩 달라요. 정확한 비교는 전용면적끼리 하는 게 좋아요.</p>
+
+            <h2>화씨 ↔ 섭씨</h2>
+            <p>미국 날씨 예보나 오븐 온도는 화씨(°F)로 나와요. 공식은 <b>°C = (°F − 32) × 5 ÷ 9</b>, 거꾸로는 <b>°F = °C × 9 ÷ 5 + 32</b>예요. 암산할 때는 "화씨에서 30을 빼고 반으로 나누기"로 하면 일상 온도에서는 1~2도 차이로 맞아요.</p>
+            <ul>
+                <li>32°F = 0°C (물이 어는 온도), 212°F = 100°C (물이 끓는 온도)</li>
+                <li>98.6°F = 37°C (사람 체온), 68~77°F = 20~25°C (쾌적한 실내)</li>
+                <li>−40°F = −40°C — 두 눈금이 같아지는 유일한 온도예요</li>
+                <li>오븐 350°F ≈ 177°C, 400°F ≈ 204°C (외국 레시피에 자주 나와요)</li>
+            </ul>
+
+            <h2>인치·피트·야드·마일 ↔ 센티미터·미터·킬로미터</h2>
+            <p>1인치는 정확히 <b>2.54cm</b>, 1피트는 12인치라서 <b>30.48cm</b>, 1야드는 3피트로 <b>0.9144m</b>, 1마일은 <b>1.609344km</b>예요.</p>
+            <ul>
+                <li><b>TV·모니터 "인치"</b>는 화면의 <b>대각선</b> 길이예요. 55인치는 대각선이 약 139.7cm이고, 16:9 화면이면 가로 약 122cm, 세로 약 68cm쯤 돼요.</li>
+                <li><b>키</b>: 미국에서는 5피트 7인치(5′7″)처럼 말해요. 5피트(152.4cm)에 7인치(17.78cm)를 더하면 약 170cm예요.</li>
+                <li><b>골프</b> 거리는 야드로 말해요. 150야드는 약 137m예요.</li>
+                <li><b>달리기</b>: 5km는 약 3.1마일, 하프 마라톤 21.0975km는 약 13.1마일, 풀코스 42.195km는 약 26.2마일이에요. 미국 도로 속도 60mph는 약 97km/h예요.</li>
+            </ul>
+
+            <h2>파운드·온스·근 ↔ 킬로그램·그램</h2>
+            <p>1파운드는 <b>0.45359237kg</b>(약 454g), 1온스는 1/16파운드라서 <b>약 28.35g</b>이에요. 해외 직구에서 배송비가 파운드 단위로 붙거나, 스테이크·커피 원두가 온스로 팔릴 때 쓰기 좋아요.</p>
+            <p>근은 우리 전통 단위인데, 정육점에서 <b>고기 1근은 600g</b>으로 셈해요. 다만 채소·과일은 예로부터 1근을 375g으로 세는 곳도 있어서, 시장에서 살 때는 몇 그램인지 한 번 물어보는 게 확실해요. 이 환산기의 근은 고기 기준 600g이에요.</p>
+            <p class="tp-tip">음료에 적힌 "fl oz"(액량 온스)는 무게가 아니라 부피 단위예요. 미국 1 fl oz는 약 29.57mL라서 무게 온스(28.35g)와는 다른 단위예요.</p>
+
+            <h2>갤런 ↔ 리터, 에이커 ↔ 평</h2>
+            <p>이 환산기의 갤런은 <b>미국 갤런(약 3.785L)</b>이에요. 미국 주유소 기름값이나 우유 1갤런 통이 이 단위예요. 영국에서 쓰던 갤런은 약 4.546L로 더 크니 조심하세요.</p>
+            <p>에이커는 미국·영국에서 땅 넓이를 말할 때 써요. 1에이커는 약 4,047㎡로 <b>약 1,224평</b>이에요. 축구장(약 7,140㎡) 하나가 대략 1.8에이커쯤 돼요.</p>
+
+            <h2>사용 방법</h2>
+            <ul>
+                <li>위의 단위 버튼을 눌러 바꿀 단위를 골라요.</li>
+                <li>위 칸에 숫자를 넣으면 아래 칸이, 아래 칸에 넣으면 위 칸이 바로 계산돼요.</li>
+                <li>온도에는 마이너스(−)도 넣을 수 있어요. 쉼표(1,000)를 넣어도 괜찮아요.</li>
+                <li>"자주 쓰는 값" 표는 고른 단위에 맞춰 바뀌어요.</li>
+            </ul>
+
+            <h2>자주 묻는 질문</h2>
+            <div class="tp-faq">
+                <details>
+                    <summary>1평은 정확히 몇 제곱미터인가요?</summary>
+                    <p>400/121㎡, 소수로는 약 3.305785㎡예요. 보통은 3.3㎡로 셈하고, 반대로 1㎡ ≈ 0.3025평이에요.</p>
+                </details>
+                <details>
+                    <summary>입력한 숫자가 서버로 보내지나요?</summary>
+                    <p>아니요. 계산은 모두 지금 보고 계신 브라우저 안에서 해요. 마지막으로 고른 단위 이름만 이 기기(브라우저 저장소)에 남아요.</p>
+                </details>
+                <details>
+                    <summary>결과가 조금씩 다르게 나오는 사이트가 있어요.</summary>
+                    <p>반올림 자리 수나 쓰는 기준(미국 갤런·영국 갤런, 고기 근·채소 근 등)이 달라서 그래요. 이 환산기는 국제적으로 정해진 정확한 값(1인치 = 2.54cm, 1파운드 = 0.45359237kg 등)으로 계산한 뒤 보기 쉽게 반올림해요.</p>
+                </details>
+                <details>
+                    <summary>홈 화면의 작은 단위 환산 칸과 같은 건가요?</summary>
+                    <p>네, 같은 계산기예요. 홈 칸에서 고른 단위가 이 페이지에도 그대로 이어져요. 여기서는 크게 보고, 자주 쓰는 값 표와 설명을 함께 볼 수 있어요.</p>
+                </details>
+            </div>
+        </article>
+
+        <nav class="tp-more" aria-label="다른 도구">
+            <p><b>다른 도구도 써 보세요</b>홈에서 계산기, 환율, 날씨, 우편번호 검색, 할 일 메모를 한 화면에 모아 볼 수 있어요.</p>
+            <a href="index.html">다른 도구 보기 → 홈</a>
+        </nav>
+    </main>
+
+    <footer class="bp-foot">
+        <a href="index.html">홈</a><a href="blog.html">블로그</a><a href="about.html">소개</a><a href="privacy.html">개인정보처리방침</a><a href="contact.html">연락처</a>
+        <div>Copyright © 2026 Choi Yunhyok. All rights reserved.</div>
+    </footer>
+
+    <script src="units.js"></script>
+</body>
+</html>

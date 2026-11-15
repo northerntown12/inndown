@@ -117,6 +117,34 @@
     text-overflow: ellipsis;
 }
 
+/* "크게 보기 ›" 링크 (2026-11-15, units.js가 제목 줄 오른쪽에 붙여요 → 단위 환산 페이지 units.html) */
+.unit-widget.has-more .uc-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+    text-align: left;
+    padding-left: 2px;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+}
+.uc-more {
+    flex: none;
+    padding: 1px 6px;
+    border-radius: 999px;
+    border: 1px solid rgba(216, 192, 138, 0.45);
+    color: #d8c08a;
+    font-size: 0.6rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    line-height: 1.4;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background 0.15s, color 0.15s;
+}
+.uc-more:hover,
+.uc-more:focus-visible { background: #d8c08a; color: #10372f; outline: none; }
+
 /* ---------- 게임 입구 (2026-11-12, 폰에서만 보임 — 아래 폰 부분) ---------- */
 .ad-grid .game-widget { display: none; }
 
@@ -244,6 +272,7 @@
     .uc-link   { height: 14px; }
     .uc-link svg { width: 13px; height: 13px; }
     .uc-hint   { font-size: 0.75rem; margin-top: 2px; }
+    .uc-more   { font-size: 0.8rem; padding: 3px 11px; }
 
     .ad-grid .quick-links { gap: 9px; padding: 10px 14px 14px; }
     .ql-title  { font-size: 0.75rem; }
