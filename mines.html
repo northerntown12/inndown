@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <script src="lang.js?v=2"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>지뢰찾기 · Records after work</title>
+    <meta name="description" content="숫자 힌트로 숨은 지뢰를 피해 모든 칸을 여는 고전 퍼즐. 초급·중급·고급, 폰에서는 길게 눌러 깃발.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="mines.css?v=1">
+</head>
+<body>
+    <header class="g-top">
+        <div class="g-top-in">
+            <h1 class="g-title">지뢰찾기 <small>숫자 힌트로 지뢰 피하기</small></h1>
+            <span class="g-brand">Records after work</span>
+        </div>
+    </header>
+
+    <main class="g-main">
+        <section class="m-play">
+            <div class="m-levels" role="tablist" id="mLevels">
+                <button type="button" class="m-level" data-lv="easy">초급</button>
+                <button type="button" class="m-level" data-lv="mid">중급</button>
+                <button type="button" class="m-level" data-lv="hard">고급</button>
+            </div>
+            <div class="m-statusrow">
+                <div class="m-count" title="남은 지뢰"><span aria-hidden="true">💣</span><b id="mLeft">10</b></div>
+                <button type="button" class="m-face" id="mFace" aria-label="새 게임" title="새 게임">🙂</button>
+                <div class="m-count" title="걸린 시간"><span aria-hidden="true">⏱</span><b id="mTime">0</b></div>
+                <button type="button" class="g-mute" id="mSound" aria-label="소리 끄기" title="소리 끄기">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path class="g-spk" d="M4 9.2h3.6L12.4 5v14l-4.8-4.2H4z"/>
+                        <path class="g-wave" d="M15.3 9.2a4 4 0 0 1 0 5.6M17.8 6.8a7.4 7.4 0 0 1 0 10.4"/>
+                        <path class="g-slash" d="M20.5 3.5 4 20"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="m-board-wrap" id="mWrap">
+                <div class="m-board" id="mBoard" aria-label="지뢰찾기 판" role="grid"></div>
+                <div class="m-result" id="mResult" hidden>
+                    <div class="m-result-card">
+                        <p class="m-result-title" id="mResultTitle"></p>
+                        <p class="m-result-sub" id="mResultSub"></p>
+                        <div class="m-result-btns">
+                            <button type="button" class="g-btn" id="mLook">판 보기</button>
+                            <button type="button" class="g-btn g-primary" id="mAgain">새 게임</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="m-toolrow">
+                <button type="button" class="m-mode" id="mMode" aria-pressed="false"><span id="mModeIcon">⛏️</span> <b id="mModeText">여는 중</b></button>
+                <p class="m-hint" id="mHint">왼쪽 클릭: 열기 · 오른쪽 클릭: 깃발 · 숫자 두 번 클릭: 주변 한꺼번에 열기</p>
+            </div>
+        </section>
+
+        <aside class="g-panel">
+            <div class="g-actions">
+                <button type="button" class="g-btn g-primary" id="mNew">새 게임</button>
+                <button type="button" class="g-btn g-exit" id="mExit" title="창 닫기">종료</button>
+            </div>
+            <div class="g-record" id="mRecord"></div>
+            <details class="g-rules">
+                <summary>어떻게 해요?</summary>
+                <ul>
+                    <li>판 어딘가에 <b>지뢰</b>가 숨어 있어요. 지뢰가 아닌 칸을 <b>모두 열면</b> 이겨요.</li>
+                    <li>칸을 열면 나오는 <b>숫자</b>는 그 칸을 둘러싼 8칸에 있는 지뢰 개수예요.</li>
+                    <li>지뢰라고 생각되는 칸에는 <b>깃발 🚩</b>을 꽂아 두세요. PC는 오른쪽 클릭, 폰은 <b>길게 누르기</b> 또는 아래 [⛏️ 여는 중] 버튼을 눌러 깃발 모드로 바꿔요.</li>
+                    <li>숫자만큼 깃발을 꽂은 숫자 칸을 <b>한 번 더 누르면</b>(PC는 두 번 클릭) 주변 칸이 한꺼번에 열려요.</li>
+                    <li>처음 여는 칸과 그 주변에는 지뢰가 없어요. 마음 편히 시작하세요!</li>
+                    <li>초급 9×9 지뢰 10개 · 중급 16×16 지뢰 40개 · 고급 30×16 지뢰 99개 (폰에서는 세로로 길게).</li>
+                </ul>
+            </details>
+        </aside>
+    </main>
+
+    <footer class="g-foot">Copyright © 2026 Choi Yunhyok. All rights reserved.</footer>
+
+    <script src="mines.js?v=1"></script>
+</body>
+</html>

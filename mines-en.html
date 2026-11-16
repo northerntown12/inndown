@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="lang.js?v=2"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Minesweeper · Records after work</title>
+    <meta name="description" content="The classic puzzle: use the number clues to open every safe square without hitting a mine.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="mines.css?v=1">
+</head>
+<body>
+    <header class="g-top">
+        <div class="g-top-in">
+            <h1 class="g-title">Minesweeper <small>Clear the field, dodge the mines</small></h1>
+            <span class="g-brand">Records after work</span>
+        </div>
+    </header>
+
+    <main class="g-main">
+        <section class="m-play">
+            <div class="m-levels" role="tablist" id="mLevels">
+                <button type="button" class="m-level" data-lv="easy">Beginner</button>
+                <button type="button" class="m-level" data-lv="mid">Intermediate</button>
+                <button type="button" class="m-level" data-lv="hard">Expert</button>
+            </div>
+            <div class="m-statusrow">
+                <div class="m-count" title="Mines left"><span aria-hidden="true">💣</span><b id="mLeft">10</b></div>
+                <button type="button" class="m-face" id="mFace" aria-label="New game" title="New game">🙂</button>
+                <div class="m-count" title="Time"><span aria-hidden="true">⏱</span><b id="mTime">0</b></div>
+                <button type="button" class="g-mute" id="mSound" aria-label="Sound off" title="Sound off">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path class="g-spk" d="M4 9.2h3.6L12.4 5v14l-4.8-4.2H4z"/>
+                        <path class="g-wave" d="M15.3 9.2a4 4 0 0 1 0 5.6M17.8 6.8a7.4 7.4 0 0 1 0 10.4"/>
+                        <path class="g-slash" d="M20.5 3.5 4 20"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="m-board-wrap" id="mWrap">
+                <div class="m-board" id="mBoard" aria-label="Minesweeper board" role="grid"></div>
+                <div class="m-result" id="mResult" hidden>
+                    <div class="m-result-card">
+                        <p class="m-result-title" id="mResultTitle"></p>
+                        <p class="m-result-sub" id="mResultSub"></p>
+                        <div class="m-result-btns">
+                            <button type="button" class="g-btn" id="mLook">View board</button>
+                            <button type="button" class="g-btn g-primary" id="mAgain">New game</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="m-toolrow">
+                <button type="button" class="m-mode" id="mMode" aria-pressed="false"><span id="mModeIcon">⛏️</span> <b id="mModeText">Dig mode</b></button>
+                <p class="m-hint" id="mHint">Left-click: dig · Right-click: flag · Double-click a number: open around it</p>
+            </div>
+        </section>
+
+        <aside class="g-panel">
+            <div class="g-actions">
+                <button type="button" class="g-btn g-primary" id="mNew">New game</button>
+                <button type="button" class="g-btn g-exit" id="mExit" title="Close the window">Exit</button>
+            </div>
+            <div class="g-record" id="mRecord"></div>
+            <details class="g-rules">
+                <summary>How to play</summary>
+                <ul>
+                    <li><b>Mines</b> are hidden on the board. Open <b>every square</b> that isn't a mine to win.</li>
+                    <li>A <b>number</b> tells you how many mines touch that square (all 8 around it).</li>
+                    <li>Mark squares you think are mines with a <b>flag 🚩</b>. On PC, right-click. On a phone, <b>long-press</b> or tap the [⛏️ Dig mode] button to switch to flag mode.</li>
+                    <li>When a number already has that many flags around it, <b>tap it again</b> (double-click on PC) to open the rest around it.</li>
+                    <li>Your first square and its neighbors are always safe.</li>
+                    <li>Beginner 9×9 with 10 mines · Intermediate 16×16 with 40 · Expert 30×16 with 99 (tall on phones).</li>
+                </ul>
+            </details>
+        </aside>
+    </main>
+
+    <footer class="g-foot">Copyright © 2026 Choi Yunhyok. All rights reserved.</footer>
+
+    <script src="mines.js?v=1"></script>
+</body>
+</html>

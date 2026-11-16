@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <script src="lang.js?v=2"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>오늘의 영단어 · Records after work</title>
+    <meta name="description" content="하루 한 문제, 영어 5글자 단어를 6번 안에 맞히는 퍼즐. 맞히면 뜻과 예문도 알려 줘요.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="word.css?v=1">
+</head>
+<body>
+    <header class="g-top">
+        <div class="g-top-in">
+            <h1 class="g-title">오늘의 영단어 <small>5글자 영어 단어 맞히기</small></h1>
+            <span class="g-brand">Records after work</span>
+        </div>
+    </header>
+
+    <main class="g-main">
+        <section class="w-play">
+            <div class="w-statusrow">
+                <div class="w-tabs" role="tablist">
+                    <button type="button" class="w-tab on" id="wTabDaily" role="tab">오늘의 문제</button>
+                    <button type="button" class="w-tab" id="wTabPractice" role="tab">연습</button>
+                </div>
+                <button type="button" class="g-mute" id="wSound" aria-label="소리 끄기" title="소리 끄기">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path class="g-spk" d="M4 9.2h3.6L12.4 5v14l-4.8-4.2H4z"/>
+                        <path class="g-wave" d="M15.3 9.2a4 4 0 0 1 0 5.6M17.8 6.8a7.4 7.4 0 0 1 0 10.4"/>
+                        <path class="g-slash" d="M20.5 3.5 4 20"/>
+                    </svg>
+                </button>
+            </div>
+            <p class="w-sub" id="wSub"></p>
+            <div class="w-board-wrap">
+                <div class="w-board" id="wBoard" aria-label="단어 판"></div>
+                <div class="w-toast" id="wToast" role="status" aria-live="polite"></div>
+                <div class="w-result" id="wResult" hidden>
+                    <div class="w-result-card">
+                        <p class="w-result-title" id="wResultTitle"></p>
+                        <p class="w-word" id="wWord"></p>
+                        <p class="w-mean" id="wMean"></p>
+                        <p class="w-ex" id="wEx"></p>
+                        <p class="w-ex-ko" id="wExKo"></p>
+                        <p class="w-next" id="wNext"></p>
+                        <div class="w-result-btns">
+                            <button type="button" class="g-btn" id="wShare">결과 복사</button>
+                            <button type="button" class="g-btn g-primary" id="wPlayMore">연습하기</button>
+                        </div>
+                        <button type="button" class="w-close" id="wResultClose" aria-label="닫기">×</button>
+                    </div>
+                </div>
+            </div>
+            <div class="w-keys" id="wKeys" aria-label="자판"></div>
+        </section>
+
+        <aside class="g-panel">
+            <div class="g-actions">
+                <button type="button" class="g-btn g-primary" id="wNew">새 연습 문제</button>
+                <button type="button" class="g-btn g-exit" id="wExit" title="창 닫기">종료</button>
+            </div>
+            <div class="g-record" id="wRecord"></div>
+            <details class="g-rules">
+                <summary>어떻게 해요?</summary>
+                <ul>
+                    <li>숨겨진 <b>영어 5글자 단어</b>를 <b>6번</b> 안에 맞혀요.</li>
+                    <li>아무 영어 5글자 단어나 입력하고 <b>Enter</b>를 누르면 칸 색이 바뀌어요.</li>
+                    <li><span class="w-chip ok">A</span> 초록: 그 글자가 정답에 있고 자리도 맞아요.</li>
+                    <li><span class="w-chip in">A</span> 노랑: 정답에 있지만 자리가 달라요.</li>
+                    <li><span class="w-chip no">A</span> 회색: 정답에 없는 글자예요.</li>
+                    <li><b>오늘의 문제</b>는 하루에 한 번, 모든 사람이 같은 단어예요 (자정에 바뀜). <b>연습</b>은 몇 번이든 할 수 있어요.</li>
+                    <li>끝나면 단어 뜻과 예문을 알려 줘요. 기록은 이 기기에 저장돼요.</li>
+                </ul>
+            </details>
+        </aside>
+    </main>
+
+    <footer class="g-foot">Copyright © 2026 Choi Yunhyok. All rights reserved.</footer>
+
+    <script src="word-data.js?v=1"></script>
+    <script src="word.js?v=1"></script>
+</body>
+</html>

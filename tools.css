@@ -380,3 +380,9 @@
     html body .unit-widget.has-more .uc-title { position: relative; display: block; text-align: center; padding: 0 84px; }
     html body .unit-widget.has-more .uc-more { position: absolute; right: 0; top: 50%; transform: translateY(-50%); }
 }
+
+/* 2026-11-17: 홈 "게임" 막대의 3·4번째 칸(영단어·지뢰찾기)이 진짜 링크가 됨 →
+   위 칸과의 3px 틈에서도 마우스가 끊기지 않게 투명 칸 (예전엔 .ib-empty::after가 해 주던 일) */
+.info-bar .ib-pop3:not(.ib-empty)::after,
+.info-bar .ib-pop4:not(.ib-empty)::after,
+.info-bar .ib-pop5:not(.ib-empty)::after { content: ""; position: absolute; left: 0; top: -4px; width: 100%; height: 4px; }
