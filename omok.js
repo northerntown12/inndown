@@ -109,6 +109,28 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         o.connect(g); g.connect(a.destination); o.start(t); o.stop(t + 0.08);
     }
     function sndTick(last) { tones([[last ? 1320 : 990, 0, 0.07]], "sine", 0.12); }
+    /* 2026-11-16: 시작 카운트다운 소리 — 높은 "삑" 대신 마림바처럼 통통 튀는 소리.
+       5→1로 갈수록 음이 한 칸씩 올라가요 (솔·라·도·레·미). 음을 바꾸려면 COUNT_NOTES 숫자만 */
+    var COUNT_NOTES = { 5: 392, 4: 440, 3: 523, 2: 587, 1: 659 };
+    function marimba(freq, at, vol) {
+        var a = audio(); if (!a) return;
+        var t = a.currentTime + 0.03 + (at || 0), v = vol || 0.32;
+        [[1, v, 0.32], [4, v * 0.28, 0.07]].forEach(function (h) {      // 기본음 + 나무 울림(4배음, 짧게)
+            var o = a.createOscillator(); o.type = "sine"; o.frequency.value = freq * h[0];
+            var g = a.createGain();
+            g.gain.setValueAtTime(0.0001, t);
+            g.gain.exponentialRampToValueAtTime(h[1], t + 0.006);
+            g.gain.exponentialRampToValueAtTime(0.0001, t + h[2]);
+            o.connect(g); g.connect(a.destination); o.start(t); o.stop(t + h[2] + 0.03);
+        });
+    }
+    function sndCount(n) { marimba(COUNT_NOTES[n] || 659); }
+    /* "시작!" — 도·미·솔·도 빠르게 올라가는 반짝 소리 */
+    function sndGo() {
+        marimba(784, 0, 0.26); marimba(988, 0.07, 0.26); marimba(1175, 0.14, 0.26); marimba(1568, 0.21, 0.3);
+        tones([[1568, 0.21, 0.35], [2093, 0.28, 0.4]], "triangle", 0.07);
+    }
+    var fanfareAt = 0;
 
     /* ======================= 그리기 ======================= */
     var size = 0, dpr = 1, margin = 0, cell = 0, woodCanvas = null;
@@ -554,6 +576,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
 
     /* ===== 입장 팡파레 (2026-11-15) ===== */
     function sndFanfare() {
+        fanfareAt = Date.now();
         tones([[523, 0, 0.12], [659, 0.11, 0.12], [784, 0.22, 0.12], [1047, 0.33, 0.28],
                [784, 0.62, 0.11], [1047, 0.74, 0.5]], "triangle", 0.22);
         tones([[262, 0.33, 0.28], [392, 0.74, 0.5]], "sine", 0.12);
@@ -609,7 +632,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
             var left = me.cdUntil - Date.now();
             var n = Math.ceil(left / 1000);
             if (left <= 0) {
-                num.textContent = T("시작!", "Go!"); num.className = "go"; sndClick();
+                num.textContent = T("시작!", "Go!"); num.className = "go"; sndGo();
                 setTimeout(function () { el.classList.add("out"); }, 450);
                 setTimeout(function () { el.remove(); }, 800);
                 me.cdUntil = 0;
@@ -623,7 +646,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
             }
             if (n !== last) {
                 last = n; num.textContent = n; num.className = ""; void num.offsetWidth; num.className = "pop";
-                sndTick(n <= 1);
+                if (Date.now() - fanfareAt > 1300) sndCount(n);   // 입장 팡파레가 울리는 중이면 첫 숫자는 조용히
             }
             setTimeout(tick, 100);
         })();
@@ -659,7 +682,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
             if (i >= prevLen && c !== human) oppNew = true;
         });
         if (oppNew) sndStone(true);
-        if (newGameStarted && s.status === "playing") sndClick();
+        if (newGameStarted && s.status === "playing" && !(s.startIn > 400 && s.moves.length === 0)) sndClick();   // 카운트다운이 있으면 "톡" 생략
         started = true; thinking = false; preview = null;
 
         if (s.status === "over") { hideUndo(); onlineFinish(s); updateOnlinePanel(s); draw(); return; }
