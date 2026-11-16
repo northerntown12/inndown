@@ -131,6 +131,10 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         tones([[1568, 0.21, 0.35], [2093, 0.28, 0.4]], "triangle", 0.07);
     }
     var fanfareAt = 0;
+    /* 2026-11-17: 시작·종료 버튼 소리 — 높은 "삑" 대신 부드러운 마림바 두 음
+       시작 = 도→솔 올라감, 종료 = 솔→도 내려감 */
+    function sndStart() { marimba(523, 0, 0.28); marimba(784, 0.09, 0.3); }
+    function sndExit()  { marimba(784, 0, 0.26); marimba(523, 0.1, 0.28); }
 
     /* ======================= 그리기 ======================= */
     var size = 0, dpr = 1, margin = 0, cell = 0, woodCanvas = null;
@@ -1221,9 +1225,9 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         var b = ev.target.closest("button"); if (!b) return;
         sndClick(); settings.color = +b.dataset.v; changeSetting();
     });
-    btnStart.addEventListener("click", function () { sndClick(); startGame(); });
+    btnStart.addEventListener("click", function () { sndStart(); startGame(); });
     $("omAgain").addEventListener("click", function () {
-        sndClick();
+        sndStart();
         if (mode === "online") { elResult.hidden = true; onlineRematch(); return; }
         newGame(); startGame();
     });
@@ -1235,14 +1239,14 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         setTimeout(function () {
             window.close();
             setTimeout(function () { if (!window.closed) location.href = T("index.html", "index-en.html"); }, 250);
-        }, 120);
+        }, 380);                                         // 종료 소리가 끝까지 들리게 조금 기다렸다 닫기
     }
-    $("omExit").addEventListener("click", function () { sndClick(); exitOmok(); });
+    $("omExit").addEventListener("click", function () { sndExit(); exitOmok(); });
 
     /* 2026-11-16: 온라인 대결에도 종료 버튼 — 판이 끝났거나(이김·짐·그만할래요) 상대가 나갔으면 바로 나가고,
        두는 중이면 "기권으로 져요" 한 번 묻고 나가요. 대결 칸 아래 + 결과 창 두 곳 (html은 안 고치고 여기서 만듦) */
     function onlineExit() {
-        sndClick();
+        sndExit();
         if (ON && ON.status === "playing" && !confirm(T("두는 중에 나가면 기권으로 져요. 종료할까요?", "Leaving now counts as resigning. Exit?"))) return;
         exitOmok();
     }
