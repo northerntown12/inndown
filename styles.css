@@ -1967,3 +1967,18 @@ button:active {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     word-break: keep-all;                /* "파일 / 에"처럼 낱말 중간에서 줄이 안 바뀌게 */
 }
+
+/* 맨 위 배너: 왼쪽 위 작은 화살표 = 새 배너 ↔ 옛 배너 (2026-11-17, script.js 맨 끝) */
+.main-banner .banner-swap {
+    position: absolute;
+    z-index: 4;
+    top: clamp(6px, 1.1vw, 16px);
+    left: clamp(6px, 1.1vw, 16px);
+    width: clamp(24px, 2.2vw, 32px);
+    height: clamp(24px, 2.2vw, 32px);
+    background: linear-gradient(145deg, rgba(255, 255, 255, 0.40) 0%, rgba(20, 40, 70, 0.18) 60%, rgba(255, 255, 255, 0.22) 100%);
+}
+.main-banner .banner-swap svg { width: 60%; height: 60%; }
+.banner-happy, .main-banner .banner-title { transition: opacity 0.25s ease; }
+.banner-happy.banner-fading { opacity: 0.15; }
+.main-banner .banner-title.banner-fading { opacity: 0; }

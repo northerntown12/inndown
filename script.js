@@ -748,3 +748,76 @@ document.addEventListener("DOMContentLoaded", () => {
     video.addEventListener("pause", show);
     show();
 })();
+
+
+/* ===== 맨 위 배너: 왼쪽 위 작은 화살표 = 새 배너(가을 숲) ↔ 옛 배너(하늘) 바꾸기 (2026-11-17) =====
+   고른 것은 이 기기에 기억해요 (bannerOld.v1). 동영상 파일 이름을 바꾸려면 아래 두 줄만 */
+(function () {
+    const NEW_SRC = "fall-banner.mp4";
+    const OLD_SRC = "sunmovingpic.mp4";
+    const NEW_TITLE = "Fall takes us back.";       // 배너 위 문구 (모양은 그대로 .banner-title)
+    const OLD_TITLE = "Look up to the sky.";
+    const banner = document.querySelector(".main-banner");
+    const video = banner && banner.querySelector("video");
+    if (!video) return;
+    const T2 = window.T || function (ko) { return ko; };
+
+    function curSrc() {
+        const s = video.querySelector("source");
+        return (s && s.getAttribute("src")) || video.getAttribute("src") || "";
+    }
+    function isOld() { return curSrc().indexOf(OLD_SRC) !== -1; }
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "glass-btn banner-swap";
+    banner.appendChild(btn);
+
+    const titleEl = banner.querySelector(".banner-title");
+    function show() {
+        const old = isOld();
+        if (titleEl) titleEl.textContent = old ? OLD_TITLE : NEW_TITLE;
+        /* 화살표는 늘 오른쪽(›) — 누를 때마다 새 배너 ↔ 옛 배너 */
+        btn.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.5 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+        const label = old ? T2("새 배너 보기", "Show new banner") : T2("옛 배너 보기", "Show previous banner");
+        btn.title = label;
+        btn.setAttribute("aria-label", label);
+    }
+
+    let firstLoad = true;
+    function swapTo(src, animate) {
+        const wasPaused = video.paused;               // 정지해 둔 상태면 바꾼 뒤에도 정지 (처음 열 때는 autoplay가 알아서 재생)
+        const go = function () {
+            let s = video.querySelector("source");
+            if (!s) { s = document.createElement("source"); s.type = "video/mp4"; video.appendChild(s); }
+            s.setAttribute("src", src);
+            video.removeAttribute("src");
+            video.preload = "auto";
+            if (wasPaused && !firstLoad) { video.autoplay = false; video.removeAttribute("autoplay"); }
+            video.load();
+            if (!wasPaused) { const p = video.play(); if (p && p.catch) p.catch(function () {}); }
+            show();
+        };
+        if (!animate) { go(); return; }
+        video.classList.add("banner-fading");
+        if (titleEl) titleEl.classList.add("banner-fading");
+        setTimeout(function () {
+            go();
+            const done = function () { video.removeEventListener("loadeddata", done); video.classList.remove("banner-fading"); if (titleEl) titleEl.classList.remove("banner-fading"); };
+            video.addEventListener("loadeddata", done);
+            setTimeout(done, 1500);                    // 늦게 와도 화면이 흐린 채로 남지 않게
+        }, 250);
+    }
+
+    let wantOld = false;
+    try { wantOld = localStorage.getItem("bannerOld.v1") === "1"; } catch (e) {}
+    if (wantOld && !isOld()) swapTo(OLD_SRC, false);
+    else show();
+    firstLoad = false;
+
+    btn.addEventListener("click", function () {
+        const toOld = !isOld();
+        try { localStorage.setItem("bannerOld.v1", toOld ? "1" : "0"); } catch (e) {}
+        swapTo(toOld ? OLD_SRC : NEW_SRC, true);
+    });
+})();
