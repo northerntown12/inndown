@@ -354,3 +354,29 @@
     .gw-text small { font-size: 0.8rem; color: #5a57b5; }
     .gw-go { font-size: 1.6rem; line-height: 1; color: #5a57b5; }
 }
+
+/* ===== 폰 홈 간격 정리 1단계 (2026-11-17): 모든 칸 사이 14px로 통일, 배너와 제목 사이 8px =====
+   PC는 그대로. 숫자를 바꾸려면 --m-gap 하나만 */
+@media screen and (max-width: 768px), screen and (hover: none) and (pointer: coarse) and (max-width: 1000px) {
+    html body { --m-gap: 14px; }
+    html body .site-header { margin-top: 8px; margin-bottom: var(--m-gap); }
+    html body .dc-mobile { margin-bottom: var(--m-gap); }
+    html body .windows-logo-layout { gap: var(--m-gap); }
+    html body .news-bar { margin-top: var(--m-gap); }
+    html body .ad-sidebar { margin-top: var(--m-gap); }
+    html body .site-footer { margin-top: calc(var(--m-gap) + 6px); }
+}
+
+/* ===== 폰 홈 정리 2단계 (2026-11-17): 위쪽 칸들도 아래 칸들처럼 모서리 둥글게(8px), 단위 환산 제목 가운데 =====
+   PC는 그대로 */
+@media screen and (max-width: 768px), screen and (hover: none) and (pointer: coarse) and (max-width: 1000px) {
+    html body .center-panel .calculator,
+    html body .center-panel .square.top-right,
+    html body .center-panel .square.bottom-left,
+    html body .center-panel .square.bottom-right,
+    html body .news-bar { border-radius: 8px; overflow: hidden; }
+    html body .dc-mobile .dc-note { border-radius: 8px; }
+    /* 단위 환산 제목: 날씨·환율처럼 가운데, "크게 보기 ›"는 오른쪽 끝 그대로 */
+    html body .unit-widget.has-more .uc-title { position: relative; display: block; text-align: center; padding: 0 84px; }
+    html body .unit-widget.has-more .uc-more { position: absolute; right: 0; top: 50%; transform: translateY(-50%); }
+}
