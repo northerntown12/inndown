@@ -95,6 +95,23 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         });
         elKeys.appendChild(kr);
     });
+    /* 2026-11-17: 판과 자판 사이 큰 [확인] 버튼 (5글자를 다 쓰면 진하게 + 반짝). html을 안 고쳐도 되게 js가 만듦 */
+    var elEnter = $("wEnter");
+    if (!elEnter) {
+        elEnter = document.createElement("button");
+        elEnter.type = "button"; elEnter.id = "wEnter"; elEnter.className = "w-enter";
+        elEnter.innerHTML = '<span class="w-enter-ic" aria-hidden="true">✓</span>' + T("확인", "Check");
+        elKeys.parentNode.insertBefore(elEnter, elKeys);
+    }
+    elEnter.addEventListener("click", function () { elEnter.blur(); press("Enter"); });
+    var enterKey = elKeys.querySelector('[data-k="Enter"]');
+    function syncEnter() {
+        var ready = !!(G && !G.done && G.cur.length === LEN);
+        elEnter.classList.toggle("ready", ready);
+        if (enterKey) enterKey.classList.toggle("ready", ready);
+        elEnter.disabled = !!(G && G.done);
+    }
+
     elKeys.addEventListener("click", function (e) {
         var b = e.target.closest(".w-key"); if (!b) return;
         b.blur();
@@ -146,6 +163,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
             }
         }
         paintKeys();
+        syncEnter();
     }
 
     function paintCurrent() {
@@ -158,6 +176,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
                 cells[c].className = "w-tile" + (ch ? " filled" : "");
             }
         }
+        syncEnter();
     }
 
     /* ======================= 입력 ======================= */
@@ -167,24 +186,32 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         audio();
         if (k === "Enter") return submit();
         if (k === "Backspace") { if (G.cur) { G.cur = G.cur.slice(0, -1); sndDel(); paintCurrent(); persist(); } return; }
-        if (/^[a-z]$/.test(k) && G.cur.length < LEN) { G.cur += k; sndKey(); paintCurrent(); persist(); }
+        if (/^[a-z]$/.test(k)) {
+            if (G.cur.length < LEN) { G.cur += k; sndKey(); paintCurrent(); persist(); }
+            else {   /* 5글자를 다 썼는데 또 누르면: 확인을 누르라고 알려 줌 (다음 줄로 저절로 넘어가지 않음) */
+                toast(T("5글자를 다 썼어요 · [확인]을 눌러 주세요 ✓", "5 letters done · press Check ✓"), 1800);
+                elEnter.classList.remove("nudge"); void elEnter.offsetWidth; elEnter.classList.add("nudge");
+                setTimeout(function () { elEnter.classList.remove("nudge"); }, 500);
+            }
+        }
     }
 
     function shake(msg) {
         var row = rows[G.guesses.length].el;
         row.classList.remove("shake"); void row.offsetWidth; row.classList.add("shake");
-        sndBad(); toast(msg);
+        sndBad(); toast(msg, 2200);
     }
 
     function submit() {
         if (G.cur.length < LEN) return shake(T("글자가 모자라요 (5글자)", "Not enough letters"));
-        if (!VALID[G.cur]) return shake(T("단어 목록에 없어요", "Not in word list"));
+        if (!VALID[G.cur]) return shake(T("단어 목록에 없어요 · 지우고 다른 단어로", "Not in word list · try another"));
         var guess = G.cur, r = G.guesses.length, s = score(guess, G.entry[0]);
         G.guesses.push(guess); G.cur = "";
         var win = guess === G.entry[0];
         if (win || G.guesses.length >= TRIES) { G.done = true; G.win = win; }
         persist();
         busy = true;
+        syncEnter();
         var cells = rows[r].cells;
         cells.forEach(function (el, i) {
             setTimeout(function () {
