@@ -170,3 +170,11 @@ body.lv-hard .g-panel { max-width: 560px; width: 100%; margin: 0 auto; }
 @media (prefers-reduced-motion: reduce) {
     .m-cell.open.pop, .m-cell.flag.plant::after, .m-cell.boom { animation: none; }
 }
+
+/* ---------- 2026-11-17: 끝난 뒤 판 전체 보기 ---------- */
+.m-cell.seen { background: #f3efe4; opacity: 0.72; box-shadow: none; }          /* 안 열었던 칸: 숫자를 흐리게 */
+.m-cell.mine.found { background: #d6f0df; position: relative; }                  /* 깃발로 맞게 찾은 지뢰 */
+.m-cell.mine.found::before {
+    content: "🚩"; position: absolute; right: 1px; top: 0; line-height: 1;
+    font-size: calc(var(--m-cell) * 0.32);
+}

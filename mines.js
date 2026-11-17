@@ -202,13 +202,22 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
 
     function stopClock() { clearInterval(timer); return started ? Math.max(1, Math.round((Date.now() - t0) / 100) / 10) : 0; }
 
+    /* 2026-11-17: 판이 끝나면(지뢰를 밟든 이기든) 판 전체를 보여 줌
+       - 못 찾은 지뢰 💣 (밟은 것은 빨강) / 깃발로 맞게 찾은 지뢰는 초록 바탕 💣 + 작은 깃발
+       - 지뢰 아닌데 깃발 꽂은 칸 ❌ / 안 열었던 칸은 숫자를 흐리게 (내가 연 칸과 구분) */
+    function revealAll(boom) {
+        for (var j = 0; j < cells; j++) {
+            var el = els[j];
+            if (mine[j]) el.className = "m-cell open mine" + (flag[j] ? " found" : "") + (j === boom ? " boom" : "");
+            else if (flag[j]) el.className = "m-cell open wrong";
+            else if (!open[j]) { el.className = "m-cell open seen" + (cnt[j] ? " n" + cnt[j] : ""); el.textContent = cnt[j] || ""; }
+        }
+    }
+
     function lose(i) {
         over = true; var sec = stopClock();
         elFace.textContent = "😵";
-        for (var j = 0; j < cells; j++) {
-            if (mine[j] && !flag[j]) els[j].className = "m-cell open mine" + (j === i ? " boom" : "");
-            else if (!mine[j] && flag[j]) els[j].className = "m-cell open wrong";
-        }
+        revealAll(i);
         sndBoom();
         var r = rec(); r.played++; save("minesRecord.v1", record); paintRecord();
         setTimeout(function () {
@@ -225,8 +234,9 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         over = true;
         var sec = stopClock();
         elTime.textContent = Math.min(999, Math.floor(sec));
-        for (var j = 0; j < cells; j++) if (mine[j] && !flag[j]) { flag[j] = 1; els[j].className = "m-cell flag plant"; }
+        for (var j = 0; j < cells; j++) if (mine[j] && !flag[j]) flag[j] = 1;
         flags = N; paintLeft();
+        revealAll(-1);
         elFace.textContent = "😎";
         sndWin();
         var r = rec(); r.played++; r.wins++;
@@ -298,12 +308,12 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
     elBoard.addEventListener("pointerleave", function (e) { if (press && press.mouse) endPress(e, true); });
     elBoard.addEventListener("dblclick", function (e) { var i = cellOf(e); if (i >= 0 && open[i]) chord(i); });
 
-    /* 폰: 여는 중 ↔ 깃발 모드 */
+    /* 폰: 탐색 중 ↔ 깃발 모드 */
     var btnMode = $("mMode");
     function syncMode() {
         btnMode.setAttribute("aria-pressed", flagMode);
         $("mModeIcon").textContent = flagMode ? "🚩" : "⛏️";
-        $("mModeText").textContent = flagMode ? T("깃발 꽂는 중", "Flag mode") : T("여는 중", "Dig mode");
+        $("mModeText").textContent = flagMode ? T("깃발 꽂는 중", "Flag mode") : T("탐색 중", "Dig mode");
     }
     btnMode.addEventListener("click", function () { flagMode = !flagMode; syncMode(); sndFlag(flagMode); });
     syncMode();
