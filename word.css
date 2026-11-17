@@ -47,6 +47,7 @@ body {
     transition: background 0.15s, color 0.15s;
 }
 .w-tab.on { background: #fff; color: #36347a; box-shadow: 0 2px 6px rgba(54, 52, 122, 0.18); }
+.w-sub[hidden] { display: none; }
 .w-sub { margin: 4px auto 10px; max-width: 420px; text-align: center; font-size: 0.85rem; color: #5a57b5; min-height: 1.3em; }
 
 .g-mute {
@@ -221,6 +222,67 @@ body {
     .w-toast { max-width: 94%; white-space: normal; text-align: center; }   /* 폰: 안내 글이 길면 줄바꿈 */
 }
 
+/* ---------- 2026-11-17: [💡 힌트] [✓ 확인] [🏳 정답] 한 줄 + 힌트 줄 + 정답 보기 확인 창 ---------- */
+.w-actrow {
+    display: flex; gap: 6px; align-items: stretch;
+    width: calc(var(--w-tile) * 5 + 28px); max-width: 100%; margin: 6px auto 0;
+}
+.w-actrow .w-enter { flex: 1; width: auto; margin: 0; }
+.w-side {
+    position: relative; flex: none; width: 66px; height: 44px; padding: 0 4px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0;
+    font: inherit; font-size: 0.72rem; cursor: pointer; line-height: 1.15;
+    border-radius: 12px; touch-action: manipulation; transition: transform 0.08s, filter 0.15s, opacity 0.2s;
+}
+.w-side span { font-size: 1.05rem; line-height: 1; }
+.w-side b { font-weight: 800; }
+.w-side:active:not(:disabled) { transform: translateY(2px); }
+.w-side:hover:not(:disabled) { filter: brightness(1.04); }
+.w-side:disabled { opacity: 0.4; cursor: default; }
+.w-hintbtn { border: 2px solid #f0c75a; background: #fff6d6; color: #8a5a00; }
+.w-givebtn { border: 2px solid #e3c7cf; background: #fdf1f4; color: #9a4058; }
+.w-badge {
+    position: absolute; top: -6px; right: -6px; min-width: 18px; height: 18px; padding: 0 4px;
+    border-radius: 9px; background: #ff5e8a; color: #fff; font-style: normal; font-size: 0.68rem; font-weight: 800;
+    line-height: 18px; text-align: center; box-shadow: 0 0 0 2px #fff3c4;
+}
+.w-badge:empty { display: none; }
+
+.w-hintline {
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 4px 8px;
+    max-width: 420px; margin: 4px auto 6px; padding: 3px 10px; min-height: 30px;
+    background: #fff6d6; border: 1px dashed #f0c75a; border-radius: 10px;
+    font-size: 0.9rem; color: #5a4300;
+}
+.w-hintline[hidden] { display: none; }
+.w-hintline.pop { animation: wHintPop 0.35s ease-out; }
+@keyframes wHintPop { 0% { transform: scale(0.94); opacity: 0.4; } 100% { transform: scale(1); opacity: 1; } }
+.w-h-k { font-size: 0.78rem; font-weight: 700; color: #a07a1c; }
+.w-h-ex { font-style: italic; }
+.w-h-sep { width: 1px; height: 16px; background: #ead79a; }
+.w-h-pat { display: inline-flex; gap: 3px; }
+.w-h-pat i {
+    display: inline-grid; place-items: center; width: 21px; height: 21px; border-radius: 5px;
+    border: 1.5px solid #e6d39a; background: #fffdf6; font-style: normal; font-weight: 800; font-size: 0.85rem; color: #36347a;
+}
+.w-h-pat i.on { background: var(--w-ok); border-color: var(--w-ok); color: #fff; }
+
+.w-ask { position: absolute; inset: -6px 0 0; display: grid; place-items: center; z-index: 7; background: rgba(54, 52, 122, 0.28); border-radius: 14px; animation: wFade 0.2s ease; }
+.w-ask[hidden] { display: none; }
+.w-ask-card {
+    width: min(90%, 320px); background: var(--g-cream); border: 2px solid var(--g-gold); border-radius: 14px;
+    padding: 16px 18px 14px; text-align: center; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+    animation: wCard 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.w-ask-t { margin: 0; font-size: 1.1rem; font-weight: 800; color: #36347a; }
+.w-ask-s { margin: 6px 0 0; font-size: 0.86rem; color: #5a4c38; line-height: 1.5; }
+
+@media (max-width: 760px) {
+    .w-actrow { margin-top: 4px; }
+    .w-side { height: 46px; width: 62px; }
+    .w-hintline { margin: 4px 4px 6px; font-size: 0.86rem; }
+}
+
 @media (prefers-reduced-motion: reduce) {
-    .w-tile.flip, .w-tile.jump, .w-tile.filled, .w-row.shake, .w-enter.ready, .w-enter.nudge { animation: none; }
+    .w-tile.flip, .w-tile.jump, .w-tile.filled, .w-row.shake, .w-enter.ready, .w-enter.nudge, .w-hintline.pop { animation: none; }
 }

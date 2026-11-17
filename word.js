@@ -71,6 +71,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
     function sndFlip(kind, at) { marimba(FLIP_NOTE[kind] || 440, at, 0.2, 0.22); }
     function sndWin() { [523, 659, 784, 1047, 1319].forEach(function (f, i) { marimba(f, i * 0.09, 0.26, 0.4); }); }
     function sndLose() { [523, 440, 349].forEach(function (f, i) { marimba(f, i * 0.16, 0.22, 0.4); }); }
+    function sndHint() { marimba(988, 0, 0.18, 0.2); marimba(1319, 0.08, 0.16, 0.3); }
     function sndBtn() { marimba(523, 0, 0.18, 0.12); marimba(784, 0.07, 0.18, 0.16); }
 
     /* ======================= 화면 만들기 ======================= */
@@ -95,21 +96,50 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         });
         elKeys.appendChild(kr);
     });
-    /* 2026-11-17: 판과 자판 사이 큰 [확인] 버튼 (5글자를 다 쓰면 진하게 + 반짝). html을 안 고쳐도 되게 js가 만듦 */
-    var elEnter = $("wEnter");
-    if (!elEnter) {
-        elEnter = document.createElement("button");
-        elEnter.type = "button"; elEnter.id = "wEnter"; elEnter.className = "w-enter";
-        elEnter.innerHTML = '<span class="w-enter-ic" aria-hidden="true">✓</span>' + T("확인", "Check");
-        elKeys.parentNode.insertBefore(elEnter, elKeys);
-    }
+    /* 2026-11-17: 판과 자판 사이 한 줄 = [💡 힌트] [✓ 확인] [🏳 정답]. html을 안 고쳐도 되게 js가 만듦
+       - 확인: 5글자를 다 쓰면 진하게 + 반짝
+       - 힌트: 한 판에 HINT_MAX번. 1번째 = 뜻(영문판은 단어를 빈칸으로 뺀 예문), 2·3번째 = 아직 못 맞힌 자리의 글자 하나
+       - 정답: 한 번 더 물어본 뒤 정답 공개, 이번 판은 실패로 기록 */
+    var HINT_MAX = 3;
+    var elActRow = document.createElement("div"); elActRow.className = "w-actrow";
+    var elHint = document.createElement("button");
+    elHint.type = "button"; elHint.id = "wHint"; elHint.className = "w-side w-hintbtn";
+    elHint.innerHTML = '<span aria-hidden="true">💡</span><b>' + T("힌트", "Hint") + '</b><i class="w-badge"></i>';
+    var elEnter = document.createElement("button");
+    elEnter.type = "button"; elEnter.id = "wEnter"; elEnter.className = "w-enter";
+    elEnter.innerHTML = '<span class="w-enter-ic" aria-hidden="true">✓</span>' + T("확인", "Check");
+    var elGive = document.createElement("button");
+    elGive.type = "button"; elGive.id = "wGive"; elGive.className = "w-side w-givebtn";
+    elGive.innerHTML = '<span aria-hidden="true">🏳️</span><b>' + T("정답", "Reveal") + '</b>';
+    elActRow.appendChild(elHint); elActRow.appendChild(elEnter); elActRow.appendChild(elGive);
+    elKeys.parentNode.insertBefore(elActRow, elKeys);
+
+    /* 힌트 줄 (판 위, 안내 글 아래) */
+    var elHintLine = document.createElement("div"); elHintLine.className = "w-hintline"; elHintLine.hidden = true;
+    elSub.parentNode.insertBefore(elHintLine, elSub.nextSibling);
+
+    /* 정답 보기 확인 창 (판 위에 뜸) */
+    var elAsk = document.createElement("div"); elAsk.className = "w-ask"; elAsk.hidden = true;
+    elAsk.innerHTML = '<div class="w-ask-card"><p class="w-ask-t">' + T("정답을 볼까요?", "Reveal the answer?") + '</p>' +
+        '<p class="w-ask-s" id="wAskSub"></p>' +
+        '<div class="w-result-btns"><button type="button" class="g-btn" id="wAskNo">' + T("더 해 볼래요", "Keep trying") + '</button>' +
+        '<button type="button" class="g-btn g-primary" id="wAskYes">' + T("정답 보기", "Show me") + '</button></div></div>';
+    $("wBoard").parentNode.appendChild(elAsk);
+
     elEnter.addEventListener("click", function () { elEnter.blur(); press("Enter"); });
+    elHint.addEventListener("click", function () { elHint.blur(); useHint(); });
+    elGive.addEventListener("click", function () { elGive.blur(); askGiveUp(); });
     var enterKey = elKeys.querySelector('[data-k="Enter"]');
     function syncEnter() {
         var ready = !!(G && !G.done && G.cur.length === LEN);
         elEnter.classList.toggle("ready", ready);
         if (enterKey) enterKey.classList.toggle("ready", ready);
-        elEnter.disabled = !!(G && G.done);
+        var over = !!(G && G.done);
+        elEnter.disabled = over;
+        var left = G ? HINT_MAX - (G.hints || []).length : 0;
+        elHint.disabled = over || left <= 0 || !hintAvailable();
+        elHint.querySelector(".w-badge").textContent = left > 0 ? left : "";
+        elGive.disabled = over;
     }
 
     elKeys.addEventListener("click", function (e) {
@@ -179,9 +209,86 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         syncEnter();
     }
 
+    /* ======================= 힌트 · 정답 보기 ======================= */
+    function knownOk() {   /* 이미 초록으로 맞힌 자리 */
+        var k = {};
+        G.guesses.forEach(function (g) { var s = score(g, G.entry[0]); for (var i = 0; i < LEN; i++) if (s[i] === "ok") k[i] = 1; });
+        return k;
+    }
+    function openSpots() {
+        var k = knownOk(), shown = {}, out = [];
+        (G.hints || []).forEach(function (h) { if (typeof h === "number") shown[h] = 1; });
+        for (var i = 0; i < LEN; i++) if (!k[i] && !shown[i]) out.push(i);
+        return out;
+    }
+    function hintAvailable() {
+        if (!G || G.done) return false;
+        var used = G.hints || [];
+        if (used.indexOf("m") < 0) return true;      /* 뜻 힌트는 아직 */
+        return openSpots().length > 1;               /* 글자 힌트: 적어도 한 자리는 남겨 둠 */
+    }
+    function blankExample(e) {
+        var w = e[0], stem = /e$/.test(w) ? w.slice(0, -1) : w;
+        var re = new RegExp("\\b" + stem + "[a-z]*", "i");
+        return re.test(e[2] || "") ? (e[2] || "").replace(re, "_____") : "";
+    }
+    function paintHints() {
+        var used = (G && G.hints) || [];
+        if (!used.length || (G.done && !G.win && G.gaveUp)) { elHintLine.hidden = true; elHintLine.innerHTML = ""; elSub.hidden = false; return; }
+        var parts = [];
+        if (used.indexOf("m") >= 0) {
+            var ex = EN ? blankExample(G.entry) : "";
+            parts.push(EN && ex ? '<span class="w-h-ex">“' + esc(ex) + '”</span>' : '<span class="w-h-k">' + T("뜻", "Korean") + '</span> <b>' + esc(G.entry[1]) + '</b>');
+        }
+        var pos = used.filter(function (h) { return typeof h === "number"; });
+        if (pos.length) {
+            var pat = "";
+            for (var i = 0; i < LEN; i++) pat += '<i class="' + (pos.indexOf(i) >= 0 ? "on" : "") + '">' + (pos.indexOf(i) >= 0 ? G.entry[0][i].toUpperCase() : "") + "</i>";
+            parts.push('<span class="w-h-pat">' + pat + "</span>");
+        }
+        elHintLine.innerHTML = '<span class="w-h-ic" aria-hidden="true">💡</span>' + parts.join('<span class="w-h-sep"></span>');
+        elHintLine.hidden = false;
+        elSub.hidden = true;   /* 힌트 줄이 안내 글 자리를 대신 씀 (판이 아래로 밀리지 않게) */
+    }
+    function esc(t) { return String(t).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+
+    function useHint() {
+        if (!G || G.done || busy || !hintAvailable()) return;
+        audio();
+        G.hints = G.hints || [];
+        if (G.hints.indexOf("m") < 0) G.hints.push("m");
+        else {
+            var spots = openSpots();
+            G.hints.push(spots[Math.floor(Math.random() * spots.length)]);
+        }
+        sndHint(); persist(); paintHints(); syncEnter();
+        elHintLine.classList.remove("pop"); void elHintLine.offsetWidth; elHintLine.classList.add("pop");
+    }
+
+    function askGiveUp() {
+        if (!G || G.done || busy) return;
+        sndBtn();
+        $("wAskSub").textContent = mode === "daily"
+            ? T("이번 문제는 실패로 기록되고 연속 기록이 끊겨요.", "This puzzle will count as a loss and your streak resets.")
+            : T("이번 연습은 실패로 기록돼요.", "This practice round counts as a loss.");
+        elAsk.hidden = false;
+    }
+    function closeAsk() { elAsk.hidden = true; }
+    window.__wCloseAsk = closeAsk;
+    $("wAskNo").addEventListener("click", function () { sndBtn(); closeAsk(); });
+    elAsk.addEventListener("click", function (e) { if (e.target === elAsk) closeAsk(); });
+    $("wAskYes").addEventListener("click", function () {
+        closeAsk();
+        if (!G || G.done) return;
+        G.done = true; G.win = false; G.gaveUp = true; G.cur = "";
+        persist(); paintAll(); paintHints();
+        finish();
+    });
+
     /* ======================= 입력 ======================= */
     function press(k) {
         if (!G || busy) return;
+        if (!elAsk.hidden) { if (k === "Enter") $("wAskYes").click(); return; }
         if (G.done) { if (k === "Enter" && elResult.hidden) showResult(); return; }
         audio();
         if (k === "Enter") return submit();
@@ -204,11 +311,13 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
 
     function submit() {
         if (G.cur.length < LEN) return shake(T("글자가 모자라요 (5글자)", "Not enough letters"));
-        if (!VALID[G.cur]) return shake(T("단어 목록에 없어요 · 지우고 다른 단어로", "Not in word list · try another"));
+        /* 2026-11-17: 단어 목록에 없는 글자 조합도 그대로 받아서 채점하고 다음 줄로 (막히지 않게). 한 번으로 셈 */
+        var unknown = !VALID[G.cur];
         var guess = G.cur, r = G.guesses.length, s = score(guess, G.entry[0]);
         G.guesses.push(guess); G.cur = "";
         var win = guess === G.entry[0];
         if (win || G.guesses.length >= TRIES) { G.done = true; G.win = win; }
+        if (unknown && !G.done) setTimeout(function () { toast(T("사전에 없는 단어지만 한 번으로 셀게요", "Not a known word, but it counts as a try"), 1700); }, 200);
         persist();
         busy = true;
         syncEnter();
@@ -224,6 +333,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
             cells.forEach(function (el) { el.classList.remove("flip"); });
             paintKeys();
             busy = false;
+            syncEnter();
             if (G.done) finish();
         }, (LEN - 1) * FLIP_GAP + 520);
     }
@@ -236,7 +346,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
             rows[n - 1].cells.forEach(function (el, i) { setTimeout(function () { el.classList.add("jump"); }, i * 90); });
             sndWin(); toast(EN ? PRAISE_EN[n - 1] : PRAISE_KO[n - 1], 1500);
         } else {
-            sndLose(); toast(T("아쉬워요! 정답은 ", "The word was ") + G.entry[0].toUpperCase(), 2000);
+            sndLose(); toast((G.gaveUp ? T("정답은 ", "The word is ") : T("아쉬워요! 정답은 ", "The word was ")) + G.entry[0].toUpperCase(), 2000);
         }
         if (!G.counted) {
             G.counted = true;
@@ -264,8 +374,10 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
     var nextTimer = 0;
     function showResult() {
         var e = G.entry;
+        var nh = (G.hints || []).length;
         $("wResultTitle").textContent = G.win
-            ? T(G.guesses.length + "번 만에 맞혔어요! 🎉", "Solved in " + G.guesses.length + "! 🎉")
+            ? T(G.guesses.length + "번 만에 맞혔어요! 🎉", "Solved in " + G.guesses.length + "! 🎉") + (nh ? T(" (힌트 " + nh + "번)", " (" + nh + " hint" + (nh > 1 ? "s" : "") + ")") : "")
+            : G.gaveUp ? T("정답은 이 단어였어요 📖", "Here's the word 📖")
             : T("다음엔 맞힐 수 있어요 💪", "Better luck next time 💪");
         $("wWord").textContent = e[0].toUpperCase();
         $("wMean").textContent = EN ? "Korean: " + e[1] : e[1];
@@ -284,7 +396,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         $("wNext").textContent = T("다음 문제까지 ", "Next word in ") + hms;
         if (mode === "daily" && G && G.no !== puzzleNo()) { clearInterval(nextTimer); startDaily(); }
     }
-    function hideResult() { elResult.hidden = true; clearInterval(nextTimer); }
+    function hideResult() { elResult.hidden = true; clearInterval(nextTimer); if (window.__wCloseAsk) window.__wCloseAsk(); }
 
     $("wResultClose").addEventListener("click", hideResult);
     elResult.addEventListener("click", function (e) { if (e.target === elResult) hideResult(); });
@@ -295,7 +407,8 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         var lines = G.guesses.map(function (g) {
             return score(g, G.entry[0]).map(function (k) { return k === "ok" ? "🟩" : k === "in" ? "🟨" : "⬜"; }).join("");
         });
-        var text = title + " " + (G.win ? G.guesses.length : "X") + "/" + TRIES + "\n" + lines.join("\n") + "\n" + location.href.split("?")[0].split("#")[0];
+        var nh = (G.hints || []).length;
+        var text = title + " " + (G.win ? G.guesses.length : "X") + "/" + TRIES + (nh ? " 💡" + nh : "") + "\n" + lines.join("\n") + "\n" + location.href.split("?")[0].split("#")[0];
         copyText(text, function (ok) { toast(ok ? T("결과를 복사했어요 📋", "Copied to clipboard 📋") : T("복사하지 못했어요", "Couldn't copy")); });
     });
     function copyText(text, done) {
@@ -329,8 +442,8 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
     /* ======================= 모드 ======================= */
     function persist() {
         if (!G) return;
-        if (mode === "daily") save("wordDaily.v1", { no: G.no, guesses: G.guesses, cur: G.cur, done: G.done, win: G.win, counted: !!G.counted });
-        else save("wordPracticeState.v1", { w: G.entry[0], guesses: G.guesses, cur: G.cur, done: G.done, win: G.win, counted: !!G.counted });
+        if (mode === "daily") save("wordDaily.v1", { no: G.no, guesses: G.guesses, cur: G.cur, done: G.done, win: G.win, counted: !!G.counted, hints: G.hints || [], gaveUp: !!G.gaveUp });
+        else save("wordPracticeState.v1", { w: G.entry[0], guesses: G.guesses, cur: G.cur, done: G.done, win: G.win, counted: !!G.counted, hints: G.hints || [], gaveUp: !!G.gaveUp });
     }
     function setTab() {
         $("wTabDaily").classList.toggle("on", mode === "daily");
@@ -346,10 +459,10 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         mode = "daily"; hideResult();
         var no = puzzleNo(), st = load("wordDaily.v1", null);
         G = { no: no, entry: dailyEntry(no), guesses: [], cur: "", done: false, win: false };
-        if (st && st.no === no) { G.guesses = (st.guesses || []).slice(0, TRIES); G.cur = st.cur || ""; G.done = !!st.done; G.win = !!st.win; G.counted = !!st.counted; }
+        if (st && st.no === no) { G.guesses = (st.guesses || []).slice(0, TRIES); G.cur = st.cur || ""; G.done = !!st.done; G.win = !!st.win; G.counted = !!st.counted; G.hints = st.hints || []; G.gaveUp = !!st.gaveUp; }
         /* 하루를 건너뛰었으면 연속 기록 끊기 */
         if (stats.lastDay && stats.lastDay < no - 1 && stats.streak) { stats.streak = 0; save("wordStats.v1", stats); }
-        setTab(); paintAll(); paintRecord();
+        setTab(); paintAll(); paintHints(); paintRecord();
         if (G.done) setTimeout(showResult, 300);
     }
     function findEntry(w) { for (var i = 0; i < ANSWERS.length; i++) if (ANSWERS[i][0] === w) return ANSWERS[i]; return null; }
@@ -357,13 +470,13 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         mode = "practice"; hideResult();
         var st = fresh ? null : load("wordPracticeState.v1", null), entry = st && findEntry(st.w);
         if (entry && !st.done) {
-            G = { entry: entry, guesses: (st.guesses || []).slice(0, TRIES), cur: st.cur || "", done: false, win: false };
+            G = { entry: entry, guesses: (st.guesses || []).slice(0, TRIES), cur: st.cur || "", done: false, win: false, hints: st.hints || [] };
         } else {
             var today = mode === "daily" ? null : dailyEntry(puzzleNo())[0], pick;
             do { pick = ANSWERS[Math.floor(Math.random() * ANSWERS.length)]; } while (ANSWERS.length > 1 && pick[0] === today);
             G = { entry: pick, guesses: [], cur: "", done: false, win: false };
         }
-        persist(); setTab(); paintAll(); paintRecord();
+        persist(); setTab(); paintAll(); paintHints(); paintRecord();
     }
 
     $("wTabDaily").addEventListener("click", function () { if (mode !== "daily" && !busy) { sndBtn(); startDaily(); } });
@@ -385,7 +498,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
             if (e.target && e.target.tagName === "BUTTON" && k === "Enter" && !e.target.classList.contains("w-key")) return;
             e.preventDefault(); press(k); return;
         }
-        if (k === "Escape") { hideResult(); return; }
+        if (k === "Escape") { closeAsk(); hideResult(); return; }
         var ch = /^[a-zA-Z]$/.test(k) ? k.toLowerCase() : (/^Key[A-Z]$/.test(e.code || "") ? e.code.slice(3).toLowerCase() : "");
         if (ch) { e.preventDefault(); press(ch); }
     });
