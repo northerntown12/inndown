@@ -10,13 +10,14 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
        비워 두면 날씨 서버에서 직접만 받아와요. */
     var WEATHER_PROXY = "https://gentle-glitter-54be.sumerboy.workers.dev/";   // 날씨 중계 Worker (2026-11-18)
 
-    var FETCH_TIMEOUT = 6000;   // 한 번 기다리는 최대 시간(ms) - 늦으면 끊고 다른 길로
+    var FETCH_TIMEOUT = 6000;   // 한 번 기다리는 최대 시간(ms) - 늦으면 끊음
+    var HEDGE_AFTER = 2500;     // Worker가 이 시간(ms) 안에 답이 없으면 날씨 서버에도 같이 물어보고, 먼저 온 답을 써요
 
     function fetchJson(url) {
         function get(u) {
             var ctrl = window.AbortController ? new AbortController() : null;
             var timer = ctrl ? setTimeout(function () { ctrl.abort(); }, FETCH_TIMEOUT) : null;
-            return fetch(u, ctrl ? { signal: ctrl.signal } : undefined).then(function (res) {
+            var p = fetch(u, ctrl ? { signal: ctrl.signal } : undefined).then(function (res) {
                 if (!res.ok) throw new Error("HTTP " + res.status);
                 return res.json();
             }).then(function (data) {
@@ -26,16 +27,36 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
                 clearTimeout(timer);
                 throw err;
             });
+            p.stop = function () { if (ctrl) ctrl.abort(); };   // 진 쪽은 끊어요
+            return p;
         }
-        if (WEATHER_PROXY) {
-            // 1) Worker → 2) 안 되면 날씨 서버 직접
-            return get(WEATHER_PROXY + "?url=" + encodeURIComponent(url)).catch(function () {
-                return get(url);
-            });
+        if (!WEATHER_PROXY) {
+            // Worker 주소가 없으면: 날씨 서버 직접 → 안 되면 한 번 더
+            return get(url).catch(function () { return get(url); });
         }
-        // Worker 주소가 없으면: 날씨 서버 직접 → 안 되면 한 번 더
-        return get(url).catch(function () {
-            return get(url);
+        // Worker 먼저. 2.5초 안에 답이 없거나 실패하면 날씨 서버에도 물어봐서 먼저 온 답을 써요.
+        return new Promise(function (resolve, reject) {
+            var done = false, fails = 0, direct = null, hedgeTimer = null;
+            var viaWorker = get(WEATHER_PROXY + "?url=" + encodeURIComponent(url));
+            function win(data, loser) {
+                if (done) return;
+                done = true;
+                clearTimeout(hedgeTimer);
+                if (loser) loser.stop();
+                resolve(data);
+            }
+            function lose(err) {
+                fails++;
+                if (!direct) startDirect();            // Worker가 실패하면 바로 직접
+                else if (fails >= 2 && !done) { done = true; reject(err); }
+            }
+            function startDirect() {
+                if (direct || done) return;
+                direct = get(url);
+                direct.then(function (d) { win(d, viaWorker); }, lose);
+            }
+            viaWorker.then(function (d) { win(d, direct); }, lose);
+            hedgeTimer = setTimeout(startDirect, HEDGE_AFTER);
         });
     }
 
