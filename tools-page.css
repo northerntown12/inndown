@@ -602,3 +602,13 @@ body.tool-page.theme-loan { --tp-emerald: #3a1430; --tp-emerald2: #5c2248; --tp-
 .tp-tabs a[href^="severance"]:not(.on) { border-left: 4px solid #a8874b; }
 .tp-tabs a[href^="charcount"]:not(.on) { border-left: 4px solid #4a6aa8; }
 .tp-tabs a[href^="loan"]:not(.on)      { border-left: 4px solid #b4536e; }
+
+/* 2026-11-18: 위 막대 "← 홈으로" 왼쪽 "이전 페이지" 화살표 (lang.js가 붙여요) */
+.bp-back {
+    flex: none; display: inline-grid; place-items: center; width: 30px; height: 30px; padding: 0; margin-right: -6px;
+    border-radius: 50%; border: 1px solid rgba(216, 192, 138, 0.55); background: transparent; color: #f3ead4; cursor: pointer;
+}
+.bp-back svg { width: 16px; height: 16px; }
+.bp-back:hover:not(:disabled) { background: rgba(216, 192, 138, 0.22); }
+.bp-back:disabled { opacity: 0.35; cursor: default; }
+@media (max-width: 480px) { .bp-back { width: 28px; height: 28px; margin-right: -4px; } }

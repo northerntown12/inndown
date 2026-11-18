@@ -152,3 +152,26 @@
         setTimeout(function () { location.href = a.href; }, 250);   // 안 닫혔으면 홈으로
     });
 })();
+
+/* 도구 페이지(body.tool-page) 위 막대: "← 홈으로" 바로 왼쪽에 "이전 페이지" 화살표 (2026-11-18)
+   도구 창 안에서 다른 도구로 옮겨 다닌 뒤 앞 페이지로 돌아갈 때 써요. 돌아갈 곳이 없으면 흐리게. */
+(function () {
+    function add() {
+        if (!document.body || !document.body.classList.contains("tool-page")) return;
+        var home = document.querySelector(".bp-top-in .bp-home");
+        if (!home || document.querySelector(".bp-back")) return;
+        var EN = window.SITE_EN;
+        var b = document.createElement("button");
+        b.type = "button";
+        b.className = "bp-back";
+        b.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+        var can = history.length > 1;
+        var label = can ? (EN ? "Back to previous page" : "이전 페이지로") : (EN ? "No previous page" : "이전 페이지가 없어요");
+        b.title = label;
+        b.setAttribute("aria-label", label);
+        if (!can) b.disabled = true;
+        b.addEventListener("click", function () { history.back(); });
+        home.parentNode.insertBefore(b, home);
+    }
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", add); else add();
+})();
