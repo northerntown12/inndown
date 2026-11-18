@@ -196,3 +196,8 @@ body {
     .j-toolrow .g-btn { min-width: 0; flex: 1; }
 }
 @media (prefers-reduced-motion: reduce) { .j-pc { transition: none; } .j-status.danger, .j-pc.checked::before { animation: none; } }
+
+/* 시작 버튼 (2026-11-18) — 판이 보이도록 배경을 옅게 */
+.j-start { background: rgba(54, 52, 122, 0.14); }
+.j-start .j-result-card { padding: 16px 20px 18px; }
+.j-start-btn { font-size: 1.15rem; padding: 10px 34px; font-weight: 700; }

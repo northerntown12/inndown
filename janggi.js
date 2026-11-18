@@ -4,6 +4,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
    - 규칙·컴퓨터는 janggi-engine.js (웹 워커로 따로 계산해서 화면이 안 멈춰요)
    - 내 편: 초(먼저 둠) / 한(나중에 둠). 내 말은 늘 아래쪽에 보여요
    - 난이도 쉬움/보통/어려움, 상차림 4가지, 글자 한자/한글
+   - 판 위의 [▶ 시작]을 눌러야 대국이 시작돼요. 컴퓨터는 한 수에 1초쯤 뜸을 들이고 둬요
    - 무르기, 한 수 쉬기(장군이 아닐 때), 기권. 200수(양쪽 합)가 넘으면 점수로 승부 (한 +1.5 덤)
    - 기기에 기억: 하던 판 janggiState.v1, 설정 janggiSettings.v1, 기록 janggiRecord.v1, 소리 janggiMuted.v1
    ========================================================= */
@@ -84,7 +85,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
     function sndBtn() { marimba(523, 0, 0.18, 0.12); marimba(784, 0.07, 0.18, 0.16); }
 
     /* ---------- 판 상태 ---------- */
-    var board, turn, hist, over, selected, legalCache, thinking, lastMove, hanSetup, gameSide, gameLevel, undoCount;
+    var board, turn, hist, over, selected, legalCache, thinking, lastMove, hanSetup, gameSide, gameLevel, undoCount, started = false;
     var elBoard = $("jBoard"), elPieces = $("jPieces"), elMarks = $("jMarks");
     var cell = 48, margin = 30;
 
@@ -104,7 +105,23 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         turn = 1; hist = []; over = null; selected = -1; lastMove = null; undoCount = 0;
         $("jResult").hidden = true;
         refreshLegal(); draw(); persist();
-        if (turn !== gameSide) computerTurn();
+        showStart(false);
+    }
+    /* [▶ 시작] 판: 새 판이면 "준비됐어요", 하던 판이면 "이어서 두기" */
+    function showStart(resume) {
+        started = false;
+        $("jStartTitle").textContent = resume ? T("하던 판이 있어요", "Game in progress") : T("준비됐어요", "Ready");
+        $("jStartSub").textContent = T("내 편 ", "You: ") + sideName(gameSide) + (gameSide > 0 ? T(" (먼저)", " (first)") : T(" (나중)", " (second)")) +
+            " · " + T("난이도 ", "Level: ") + LEVELS[gameLevel] + (resume ? "\n" + hist.length + T("수까지 뒀어요", " moves played") : "");
+        $("jStartBtn").textContent = resume ? T("▶ 이어서 두기", "▶ Continue") : T("▶ 시작", "▶ Start");
+        $("jStart").hidden = false;
+        paintStatus();
+    }
+    function startGame() {
+        if (started) return;
+        started = true; $("jStart").hidden = true;
+        sndBtn(); paintStatus();
+        if (!over && turn !== gameSide) computerTurn();
     }
     function persist() {
         save("janggiState.v1", {
@@ -180,14 +197,15 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
             '<small>' + T("수", "Moves") + ' ' + hist.length + '/' + MAX_PLY + '</small>';
         var txt;
         if (over) txt = over.text;
+        else if (!started) txt = T("[▶ 시작]을 누르면 시작해요", "Press [▶ Start] to begin");
         else if (thinking) txt = T("컴퓨터가 생각하는 중…", "Computer is thinking…");
         else if (turn === gameSide) txt = (J.inCheck(board, turn) ? T("장군! 궁을 지키세요 · ", "Check! Protect your General · ") : "") + T("내 차례예요", "Your move") + " (" + sideName(gameSide) + ")";
         else txt = T("컴퓨터 차례", "Computer's move");
         st.textContent = txt;
         st.className = "j-status" + (thinking ? " think" : "") + (!over && turn === gameSide && J.inCheck(board, turn) ? " danger" : "");
-        $("jUndo").disabled = !!thinking || !hist.length;
-        $("jPass").disabled = !!thinking || !!over || turn !== gameSide || J.inCheck(board, turn);
-        $("jResign").disabled = !!thinking || !!over || !hist.length;
+        $("jUndo").disabled = !started || !!thinking || !hist.length;
+        $("jPass").disabled = !started || !!thinking || !!over || turn !== gameSide || J.inCheck(board, turn);
+        $("jResign").disabled = !started || !!thinking || !!over || !hist.length;
     }
 
     /* ---------- 두기 ---------- */
@@ -242,10 +260,11 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
     function computerTurn() {
         if (over) return;
         thinking = true; paintStatus();
-        var id = ++reqId, started = Date.now();
+        var id = ++reqId, t0 = Date.now();
         function apply(m) {
             if (id !== reqId || over) return;
-            var wait = Math.max(0, 450 - (Date.now() - started));   // 너무 빨리 두면 눈으로 따라가기 어려워서 조금 기다림
+            /* 너무 빨리 두면 눈으로 따라가기 어려워서, 생각한 시간까지 합쳐 1.1~1.6초쯤 뒤에 둬요 */
+            var wait = Math.max(0, 1100 + Math.random() * 500 - (Date.now() - t0));
             setTimeout(function () {
                 if (id !== reqId || over) return;
                 thinking = false;
@@ -264,7 +283,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
 
     /* ---------- 누르기 ---------- */
     elBoard.addEventListener("click", function (e) {
-        if (over || thinking || turn !== gameSide) return;
+        if (!started || over || thinking || turn !== gameSide) return;
         var dot = e.target.closest(".j-dot"), pc = e.target.closest(".j-pc");
         var target = dot ? +dot.dataset.i : pc ? +pc.dataset.i : pointAt(e);
         if (target < 0) return;
@@ -295,7 +314,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
 
     /* ---------- 버튼 ---------- */
     $("jUndo").addEventListener("click", function () {
-        if (thinking || !hist.length) return;
+        if (!started || thinking || !hist.length) return;
         stopThinking();
         if (over) { over = null; $("jResult").hidden = true; }
         /* 내 차례가 될 때까지 (보통 컴퓨터 수 + 내 수) 되돌리기 */
@@ -311,17 +330,18 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         if (turn !== gameSide) computerTurn();
     });
     $("jPass").addEventListener("click", function () {
-        if (thinking || over || turn !== gameSide || J.inCheck(board, turn)) return;
+        if (!started || thinking || over || turn !== gameSide || J.inCheck(board, turn)) return;
         sndBtn(); doPass();
     });
     var resignArm = 0;
     $("jResign").addEventListener("click", function () {
-        if (thinking || over || !hist.length) return;
+        if (!started || thinking || over || !hist.length) return;
         if (Date.now() - resignArm > 2500) { resignArm = Date.now(); toast(T("한 번 더 누르면 기권해요", "Tap again to resign")); return; }
         stopThinking(); finish("lose", T("기권했어요", "You resigned")); draw();
     });
     $("jNew").addEventListener("click", function () { sndBtn(); readSettings(); newGame(); });
     $("jAgain").addEventListener("click", function () { sndBtn(); readSettings(); newGame(); });
+    $("jStartBtn").addEventListener("click", startGame);
     $("jLook").addEventListener("click", function () { $("jResult").hidden = true; });
     $("jExit").addEventListener("click", function () {
         sndBtn();
@@ -344,7 +364,12 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         $("jHangul").checked = settings.hangul;
     }
     ["jSideCho", "jSideHan", "jLevel", "jSetup"].forEach(function (id) {
-        $(id).addEventListener("change", function () { readSettings(); toast(T("[새 게임]을 누르면 적용돼요", "Applies when you start a new game")); });
+        $(id).addEventListener("change", function () {
+            readSettings();
+            /* 아직 한 수도 안 둔 새 판이면 바로 바꿔서 보여주고, 두는 중이면 [새 게임]부터 */
+            if (!started && !hist.length) newGame();
+            else toast(T("[새 게임]을 누르면 적용돼요", "Applies when you start a new game"));
+        });
     });
     $("jHangul").addEventListener("change", function () { settings.hangul = $("jHangul").checked; save("janggiSettings.v1", settings); draw(); });
 
@@ -374,7 +399,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
     paintSettings(); paintRecord();
     if (restore()) {
         refreshLegal(); draw();
-        if (turn !== gameSide) computerTurn();
+        if (hist.length) showStart(true); else { save("janggiState.v1", null); newGame(); }
     } else newGame();
     if (!legalCache) refreshLegal();
 })();

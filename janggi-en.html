@@ -38,6 +38,15 @@
                     <div class="j-marks" id="jMarks"></div>
                     <div class="j-pieces" id="jPieces"></div>
                     <div class="j-toast" id="jToast" aria-live="assertive"></div>
+                    <div class="j-result j-start" id="jStart" hidden>
+                        <div class="j-result-card">
+                            <p class="j-result-title" id="jStartTitle">Ready</p>
+                            <p class="j-result-sub" id="jStartSub"></p>
+                            <div class="j-result-btns">
+                                <button type="button" class="g-btn g-primary j-start-btn" id="jStartBtn">▶ Start</button>
+                            </div>
+                        </div>
+                    </div>
                     <div class="j-result" id="jResult" hidden>
                         <div class="j-result-card">
                             <p class="j-result-title" id="jResultTitle"></p>
@@ -77,7 +86,7 @@
                     <select id="jSetup"><option value="HEHE">Horse·Elephant·Horse·Elephant</option><option value="EHEH">Elephant·Horse·Elephant·Horse</option><option value="HEEH">Horse·Elephant·Elephant·Horse</option><option value="EHHE">Elephant·Horse·Horse·Elephant</option></select>
                 </label>
                 <label class="j-check"><input type="checkbox" id="jHangul"> Show letters instead of Chinese characters</label>
-                <p class="j-note">Side, level and setup apply when you press [New game]. The computer's setup is random.</p>
+                <p class="j-note">Choose side, level and setup, then press [▶ Start] on the board. Changes made during a game apply from [New game]. The computer's setup is random.</p>
             </div>
             <div class="g-record" id="jRecord"></div>
             <details class="g-rules">
