@@ -8,17 +8,56 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
        Worker를 만든 뒤 나온 주소를 아래에 넣어 주세요 (끝에 / 포함). 비워 두면 예전처럼 직접만 받아와요. */
     var WEATHER_PROXY = "";
 
+    /* 2026-11-18: 응답이 늦으면 하염없이 기다리지 않도록 시간 제한을 두고,
+       늦거나 끊기면 한 번 더 새로 받아와요 (그래도 안 되면 Worker가 있으면 Worker로). */
+    var FETCH_TIMEOUT = 6000;   // 한 번 기다리는 최대 시간(ms)
+
     function fetchJson(url) {
         function get(u) {
-            return fetch(u).then(function (res) {
+            var ctrl = window.AbortController ? new AbortController() : null;
+            var timer = ctrl ? setTimeout(function () { ctrl.abort(); }, FETCH_TIMEOUT) : null;
+            return fetch(u, ctrl ? { signal: ctrl.signal } : undefined).then(function (res) {
                 if (!res.ok) throw new Error("HTTP " + res.status);
                 return res.json();
+            }).then(function (data) {
+                clearTimeout(timer);
+                return data;
+            }, function (err) {
+                clearTimeout(timer);
+                throw err;
             });
         }
-        return get(url).catch(function (err) {
+        return get(url).catch(function () {
+            return get(url);                       // 한 번 더 (새 연결)
+        }).catch(function (err) {
             if (!WEATHER_PROXY) throw err;
             return get(WEATHER_PROXY + "?url=" + encodeURIComponent(url));
         });
+    }
+
+    /* 마지막으로 받은 날씨를 기기에 저장해 두었다가, 다음에 열 때 바로 보여줘요.
+       (그다음 새 날씨를 받아와서 바꿔요. 10분 안에 받은 것이면 다시 받지 않아요.) */
+    var CACHE_KEY = "weatherCache.v1";
+    var CACHE_SHOW = 3 * 60 * 60 * 1000;   // 이 시간 안에 받은 것이면 먼저 보여줘요 (3시간)
+    var CACHE_FRESH = 9 * 60 * 1000;       // 이 시간 안에 받은 것이면 새로 받지 않아요 (9분, 10분마다 새로고침과 안 겹치게)
+
+    function samePlace(a, b) {
+        return a && b && Math.abs(a.lat - b.lat) < 0.03 && Math.abs(a.lon - b.lon) < 0.03;
+    }
+    function readCache(kind, place) {
+        try {
+            var all = JSON.parse(localStorage.getItem(CACHE_KEY)) || {};
+            var c = all[kind];
+            if (c && samePlace(c, place) && Date.now() - c.t < CACHE_SHOW) return c;
+        } catch (e) { /* 무시 */ }
+        return null;
+    }
+    function writeCache(kind, place, data) {
+        try {
+            var all = JSON.parse(localStorage.getItem(CACHE_KEY)) || {};
+            all[kind] = { lat: place.lat, lon: place.lon, t: Date.now(), data: data };
+            localStorage.setItem(CACHE_KEY, JSON.stringify(all));
+        } catch (e) { /* 저장 실패는 무시 */ }
     }
 
     var widget = document.getElementById("weather-widget");
@@ -458,14 +497,22 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         entry.box.title = entry.box._tip;
     }
 
-    function loadAir(place) {
+    function loadAir(place, quiet) {
         var myId = ++airRequestId;
 
-        airBoxes.forEach(function (entry) {
-            entry.gradeEl.className = "ab-grade g0";
-            entry.gradeEl.textContent = "…";
-            entry.box._tip = entry.item.name + T(" 불러오는 중...", " loading...");
-        });
+        var cached = readCache("air", place);
+        if (cached && cached.data) {
+            airBoxes.forEach(function (entry) { setAirBox(entry, cached.data[entry.item.key]); });
+            if (Date.now() - cached.t < CACHE_FRESH) return;   // 방금 받은 것이면 그대로
+            quiet = true;
+        }
+        if (!quiet) {
+            airBoxes.forEach(function (entry) {
+                entry.gradeEl.className = "ab-grade g0";
+                entry.gradeEl.textContent = "…";
+                entry.box._tip = entry.item.name + T(" 불러오는 중...", " loading...");
+            });
+        }
 
         var url = "https://air-quality-api.open-meteo.com/v1/air-quality" +
             "?latitude=" + place.lat +
@@ -479,9 +526,11 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
                 airBoxes.forEach(function (entry) {
                     setAirBox(entry, data.current[entry.item.key]);
                 });
+                writeCache("air", place, data.current);
             })
             .catch(function () {
                 if (myId !== airRequestId) return;
+                if (quiet) return;                     // 먼저 보여 준 값이 있으면 그대로 둬요
                 airBoxes.forEach(function (entry) { setAirBox(entry, null); });
             });
     }
@@ -505,12 +554,20 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         setMessage("");
     }
 
-    function loadWeather(place) {
+    // quiet: 화면에 이미 날씨가 있을 때(10분마다 새로고침 등) "불러오는 중"을 띄우지 않아요
+    function loadWeather(place, quiet) {
         var myId = ++requestId;
         currentPlace = place;
         placeEl.textContent = nameOf(place);
-        setMessage(T("불러오는 중...", "Loading..."));
-        loadAir(place);
+        loadAir(place, quiet);
+
+        var cached = readCache("weather", place);
+        if (cached && cached.data) {
+            render(place, cached.data.current, cached.data.hourly);   // 저장해 둔 날씨를 바로 보여줘요
+            if (Date.now() - cached.t < CACHE_FRESH) return;          // 방금 받은 것이면 그대로
+            quiet = true;
+        }
+        if (!quiet) setMessage(T("불러오는 중...", "Loading..."));
 
         var url = "https://api.open-meteo.com/v1/forecast" +
             "?latitude=" + place.lat +
@@ -524,9 +581,11 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
                 if (myId !== requestId) return;      // 오래된 요청은 무시
                 if (!data || !data.current) throw new Error("no data");
                 render(place, data.current, data.hourly);
+                writeCache("weather", place, { current: data.current, hourly: data.hourly });
             })
             .catch(function () {
                 if (myId !== requestId) return;
+                if (quiet) return;                     // 보이는 날씨가 있으면 그대로 두고 다음에 다시
                 setMessage(T("날씨를 불러오지 못했어요.", "Couldn't load the weather."));
             });
     }
@@ -649,6 +708,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
             var lat = Math.round(pos.coords.latitude * 10000) / 10000;
             var lon = Math.round(pos.coords.longitude * 10000) / 10000;
             var place = { label: "📍 " + LOC_LABEL, lat: lat, lon: lon, auto: true };
+            if (currentPlace && currentPlace.auto && samePlace(currentPlace, place)) place.label = currentPlace.label;   // 같은 동네면 이름 그대로
             inputEl.value = "";
             savePlace(place);
             loadWeather(place);
@@ -806,6 +866,6 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
 
     /* 10분마다 자동 새로고침 */
     setInterval(function () {
-        loadWeather(currentPlace);
+        loadWeather(currentPlace, true);
     }, 10 * 60 * 1000);
 })();
