@@ -337,10 +337,13 @@
         var fromTool = false;
         try { var r = document.referrer ? new URL(document.referrer) : null; fromTool = !!(r && r.origin === location.origin && TOOL_RE.test(r.pathname)); } catch (e) {}
         if (!fromTool && window.name !== "toolsWin") return;
+        /* 폰에서는 띄우지 않아요 (2026-11-18 사용자 요청: 폰 맨 아래 방문자 수 밑에 큰 화살표로 보였음) */
+        if (window.matchMedia && window.matchMedia("screen and (max-width: 768px), screen and (hover: none) and (pointer: coarse) and (max-width: 1000px)").matches) return;
         var a = document.createElement("a");
         a.className = "back-to-tools";
+        a.style.cssText = "position:fixed;left:14px;top:14px;z-index:2147482000";
         a.href = EN ? "tools-en.html" : "tools.html";
-        a.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>' + (EN ? "Back to tools" : "생활 도구로 돌아가기");
+        a.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M14.5 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>' + (EN ? "Back to tools" : "생활 도구로 돌아가기");
         a.addEventListener("click", function (e) {
             if (fromTool && history.length > 1) { e.preventDefault(); history.back(); }   // 보던 도구 페이지로
         });
