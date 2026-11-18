@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="lang.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Character Counter – With and Without Spaces, Words, Bytes · Records after work</title>
+    <meta name="description" content="Free online character counter: paste text to count characters with and without spaces, words, lines, paragraphs and bytes (UTF-8 and 2-byte Korean). Set a target such as 500 characters for an essay or cover letter and see how many are left.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="blog.css">
+    <link rel="stylesheet" href="tools-page.css">
+</head>
+<body class="blog-page tool-page">
+    <header class="bp-top">
+        <div class="bp-top-in">
+            <a class="bp-brand" href="index-en.html">Records after work<small>Everyday tools</small></a>
+            <a class="bp-home" href="index-en.html">← Home</a>
+        </div>
+    </header>
+
+    <main class="tp-main">
+        <nav class="tp-crumb" aria-label="Breadcrumb"><ol><li><a href="index-en.html">Home</a></li><li><a href="tools-en.html">Everyday tools</a></li><li><span aria-current="page">Character Counter</span></li></ol></nav>
+        <nav class="tp-tabs" aria-label="Everyday tools"><a href="tools-en.html">🧰 All tools</a><a href="units-en.html">📏 Unit Converter</a><a href="age-en.html">📅 Age &amp; D-day</a><a href="severance-en.html">💼 Severance</a><a href="charcount-en.html" class="on" aria-current="page">✍️ Characters</a><a href="loan-en.html">🏦 Loan</a></nav>
+        <div class="tp-head">
+            <span class="tp-kicker">EVERYDAY TOOLS</span>
+            <h1>Character Counter</h1>
+            <p>Paste an essay, cover letter or text message to count characters with and without spaces, words and bytes. Set a target to see how many characters are left.</p>
+        </div>
+
+        <div class="tp-grid cc-grid">
+            <section class="tp-card cc-edit" aria-labelledby="cc-h">
+                <h2 id="cc-h"><span class="tp-num-badge">1</span>Paste your text</h2>
+                <textarea id="cc-text" class="cc-text" rows="14" placeholder="Type or paste your text here." spellcheck="false"></textarea>
+                <div class="cc-tools">
+                    <button type="button" class="tp-btn solid" id="cc-copy">Copy</button>
+                    <button type="button" class="tp-btn" id="cc-trim">Tidy spaces</button>
+                    <button type="button" class="tp-btn" id="cc-clear">Clear</button>
+                    <span class="cc-msg" id="cc-msg" aria-live="polite"></span>
+                </div>
+                <p class="tp-small">Your text is kept on this device only. Nothing is sent to a server.</p>
+            </section>
+
+            <section class="tp-panel cc-stats" aria-labelledby="cc-s-h">
+                <h2 id="cc-s-h"><span class="tp-num-badge">2</span>Counts</h2>
+                <div class="cc-main">
+                    <div><small>With spaces</small><b id="cc-with">0</b></div>
+                    <div><small>Without spaces</small><b id="cc-no">0</b></div>
+                </div>
+                <dl class="tp-stats">
+                    <div><dt>Words</dt><dd id="cc-words">0</dd></div>
+                    <div><dt>Lines · paragraphs</dt><dd><span id="cc-lines">0</span> · <span id="cc-paras">0</span></dd></div>
+                    <div><dt>Bytes (UTF-8)</dt><dd id="cc-utf8">0</dd></div>
+                    <div><dt>Bytes (Korean 2-byte)</dt><dd id="cc-legacy">0</dd></div>
+                    <div class="cc-wide"><dt>200-character manuscript pages</dt><dd id="cc-paper">0</dd></div>
+                </dl>
+                <h3 class="cc-goal-h">Target length</h3>
+                <div class="tp-fields">
+                    <label class="tp-field"><span>Target</span><input type="text" id="cc-goal" inputmode="numeric" placeholder="e.g. 500" autocomplete="off"></label>
+                    <label class="tp-field"><span>Count</span><select id="cc-goal-mode"><option value="with">With spaces</option><option value="no">Without spaces</option></select></label>
+                </div>
+                <div class="tp-presets cc-presets" aria-label="Common targets">
+                    <button type="button" data-cc-goal="280">280</button>
+                    <button type="button" data-cc-goal="500">500</button>
+                    <button type="button" data-cc-goal="1000">1000</button>
+                    <button type="button" data-cc-goal="1500">1500</button>
+                </div>
+                <div class="cc-bar"><span id="cc-bar"></span></div>
+                <p class="cc-bar-txt" id="cc-bar-txt" aria-live="polite"></p>
+            </section>
+        </div>
+
+        <article class="tp-article">
+            <h2>With spaces or without?</h2>
+            <p><b>With spaces</b> counts every space and line break as a character; <b>without spaces</b> counts only visible characters. Most application forms and online text boxes limit the count <b>with spaces</b>, so use that number unless the instructions say otherwise.</p>
+            <p>Emoji and characters built from several code points (such as flags or accented letters) are counted as one character, the way you see them.</p>
+
+            <h2>When do bytes matter?</h2>
+            <p>Older systems and text messages measure length in bytes, not characters. There are two common rules:</p>
+            <table>
+                <thead><tr><th>Rule</th><th>Korean character</th><th>Latin letters, digits, space</th><th>Used by</th></tr></thead>
+                <tbody>
+                    <tr><td>Korean 2-byte (EUC-KR)</td><td>2 bytes</td><td>1 byte</td><td>Korean text messages, older forms</td></tr>
+                    <tr><td>UTF-8</td><td>3 bytes</td><td>1 byte</td><td>Modern websites and databases</td></tr>
+                </tbody>
+            </table>
+            <p class="tp-tip">In Korea a short text message (SMS) is usually up to 80–90 bytes (40–45 Korean characters); longer messages become LMS. Limits vary by carrier and service.</p>
+
+            <h2>FAQ</h2>
+            <div class="tp-faq">
+                <details>
+                    <summary>Why does another site show a slightly different count?</summary>
+                    <p>Sites differ in whether a line break counts as one or two characters and whether trailing spaces count. For a strict limit, paste into the actual form for a final check.</p>
+                </details>
+                <details>
+                    <summary>Is my text saved?</summary>
+                    <p>Only in this browser, so you can pick up where you left off. It is never sent to a server. On a shared computer, press "Clear" when you are done.</p>
+                </details>
+                <details>
+                    <summary>What does "Tidy spaces" do?</summary>
+                    <p>It turns runs of spaces into one, collapses three or more blank lines into one, and trims spaces at the start and end.</p>
+                </details>
+            </div>
+        </article>
+
+        <nav class="tp-related" aria-label="Other tools">
+            <div class="tp-related-head"><h2>Other tools</h2><a href="tools-en.html">See all tools →</a></div>
+            <div class="th-grid">
+                <a class="th-card" href="age-en.html"><span class="th-ic c2" aria-hidden="true">📅</span><span class="th-text"><b>Age &amp; D-day</b><small>Count down to a deadline</small></span></a>
+                <a class="th-card" href="severance-en.html"><span class="th-ic c4" aria-hidden="true">💼</span><span class="th-text"><b>Severance Pay</b><small>Korea severance estimate</small></span></a>
+                <a class="th-card" href="units-en.html"><span class="th-ic" aria-hidden="true">📏</span><span class="th-text"><b>Unit Converter</b><small>pyeong↔m², °F↔°C, in↔cm</small></span></a>
+                <a class="th-card" href="word-en.html"><span class="th-ic c5" aria-hidden="true">🔤</span><span class="th-text"><b>Daily Word</b><small>A 5-letter word puzzle</small></span></a>
+            </div>
+        </nav>
+    </main>
+
+    <footer class="bp-foot">
+        <a href="index-en.html">Home</a><a href="tools-en.html">Tools</a><a href="blog-en.html">Blog</a><a href="about-en.html">About</a><a href="privacy-en.html">Privacy Policy</a><a href="contact-en.html">Contact</a>
+        <div>Copyright © 2026 Choi Yunhyok. All rights reserved.</div>
+    </footer>
+
+    <script src="charcount.js"></script>
+</body>
+</html>

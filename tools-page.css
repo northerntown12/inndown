@@ -422,3 +422,151 @@ body.tool-page {
 @media print {
     .bp-top, .tp-more, .uc-chips, .tp-tabs { display: none; }
 }
+
+/* ==========================================================
+   2026-11-18: 도구 모음(tools.html) · 길 안내 줄 · 다른 도구 카드
+   - .tp-crumb  : 맨 위 "홈 › 생활 도구 › 지금 페이지"
+   - .th-card   : 도구 카드 (도구 모음 페이지 + 각 도구 페이지 아래 "다른 도구")
+   ========================================================== */
+.tp-crumb { margin: 0 0 12px; font-size: 0.82rem; color: var(--tp-mute); }
+.tp-crumb ol { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 4px; }
+.tp-crumb li { display: flex; align-items: center; gap: 4px; }
+.tp-crumb li + li::before { content: "›"; color: var(--tp-gold-deep); }
+.tp-crumb a { color: var(--tp-emerald2); text-decoration: none; font-weight: 600; }
+.tp-crumb a:hover { text-decoration: underline; }
+.tp-crumb [aria-current] { color: var(--tp-ink); }
+
+.th-section { margin: 0 0 22px; }
+.th-section > h2 { display: flex; align-items: center; gap: 8px; margin: 0 0 10px; font-size: 1.12rem; color: var(--tp-emerald); }
+.th-section > h2::before { content: ""; width: 6px; height: 1.05em; border-radius: 3px; background: var(--tp-gold); }
+.th-section > p { margin: -4px 0 12px; color: var(--tp-mute); font-size: 0.9rem; line-height: 1.6; word-break: keep-all; }
+.th-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; }
+.th-card {
+    position: relative; display: flex; align-items: center; gap: 12px; min-height: 74px; box-sizing: border-box;
+    padding: 12px 14px; border-radius: 14px; background: #fff; border: 1px solid #ece3cf;
+    box-shadow: 0 4px 14px rgba(120, 100, 60, 0.07); color: inherit; text-decoration: none;
+    transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+}
+a.th-card:hover { transform: translateY(-2px); border-color: var(--tp-gold); box-shadow: 0 8px 20px rgba(120, 100, 60, 0.14); }
+.th-ic {
+    flex: none; display: grid; place-items: center; width: 46px; height: 46px; border-radius: 12px;
+    font-size: 1.5rem; line-height: 1; background: linear-gradient(160deg, var(--tp-emerald2), var(--tp-emerald3));
+    box-shadow: inset 0 0 0 1px rgba(216, 192, 138, 0.35);
+}
+.th-ic.c2 { background: linear-gradient(160deg, #2c7a7a, #3f9c9c); }
+.th-ic.c3 { background: linear-gradient(160deg, #4a6aa8, #7f9bd0); }
+.th-ic.c4 { background: linear-gradient(160deg, #a8874b, #d8c08a); }
+.th-ic.c5 { background: linear-gradient(160deg, #36347a, #6b68c4); }
+.th-ic.c6 { background: linear-gradient(160deg, #b4536e, #e08aa2); }
+.th-text { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.th-text b { color: var(--tp-emerald); font-size: 1rem; }
+.th-text small { color: var(--tp-mute); font-size: 0.8rem; line-height: 1.45; word-break: keep-all; }
+.th-go { margin-left: auto; color: var(--tp-gold-deep); font-size: 1.3rem; font-weight: 700; }
+.th-card.is-soon { background: #fbf8f1; box-shadow: none; border-style: dashed; }
+.th-card.is-soon .th-ic { filter: grayscale(0.6); opacity: 0.7; }
+.th-card.is-soon .th-text b { color: #6f6a5c; }
+.th-badge {
+    position: absolute; top: 8px; right: 10px; padding: 1px 8px; border-radius: 999px;
+    background: #efe6d2; color: #8a6d3b; font-size: 0.7rem; font-weight: 700;
+}
+
+/* 각 도구 페이지 맨 아래 "다른 도구" (예전 .tp-more 자리) */
+.tp-related { margin-top: 22px; padding: 18px 20px 20px; border-radius: 16px; background: linear-gradient(135deg, #fbf8f1, #f1e9d9); border: 1px solid #d9c9a8; }
+.tp-related-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+.tp-related-head h2 { margin: 0; font-size: 1.05rem; color: #3b2a1a; }
+.tp-related-head a {
+    padding: 8px 16px; border-radius: 999px; background: var(--tp-emerald2); color: #f6ecd2;
+    font-weight: 700; font-size: 0.88rem; text-decoration: none; box-shadow: 0 2px 8px rgba(16, 55, 47, 0.25);
+}
+.tp-related-head a:hover { background: var(--tp-emerald); }
+.tp-related .th-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+.tp-related .th-card { min-height: 64px; padding: 10px 12px; }
+.tp-related .th-ic { width: 40px; height: 40px; font-size: 1.3rem; }
+
+@media (max-width: 760px) {
+    .th-grid, .tp-related .th-grid { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+    .th-card { min-height: 64px; }
+    .tp-related { padding: 16px 14px; }
+    .tp-related-head a { width: 100%; box-sizing: border-box; text-align: center; }
+}
+@media print { .tp-related, .tp-crumb { display: none; } }
+
+/* ---------- 2026-11-18: 퇴직금 계산기 (severance.html) ---------- */
+.tool-page [hidden] { display: none !important; }
+.sv-grid { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); }
+.sv-check { display: flex; align-items: center; gap: 8px; margin: 0 0 12px; font-size: 0.86rem; color: #f3ead4; cursor: pointer; user-select: none; }
+.sv-check input { width: 18px; height: 18px; margin: 0; accent-color: var(--tp-gold); flex: none; }
+.sv-btns { margin-bottom: 4px; }
+.sv-big { padding: 14px 16px; border-radius: 14px; background: linear-gradient(160deg, #fff8e6, #f6ecd2); border: 1px solid #e6d3a6; margin-bottom: 12px; }
+.sv-big small { display: block; font-size: 0.8rem; font-weight: 700; color: var(--tp-gold-deep); }
+.sv-big b { display: block; margin-top: 2px; font-size: 2.2rem; line-height: 1.15; color: var(--tp-emerald); font-variant-numeric: tabular-nums; word-break: keep-all; }
+.sv-big.is-no { background: #f6f3ec; border-color: #e3dccb; }
+.sv-big.is-no b { font-size: 1.6rem; color: #8a6d3b; }
+.sv-why { margin: 0 0 10px; font-size: 0.9rem; line-height: 1.65; color: #4a4336; word-break: keep-all; }
+.sv-why b { color: #c2410c; }
+.sv-rows { margin: 0; display: flex; flex-direction: column; gap: 0; }
+.sv-rows > div { display: grid; grid-template-columns: 112px 1fr; gap: 10px; padding: 9px 2px; border-bottom: 1px solid #f1eadb; }
+.sv-rows dt { font-size: 0.8rem; font-weight: 700; color: var(--tp-mute); padding-top: 2px; }
+.sv-rows dd { margin: 0; font-weight: 700; color: var(--tp-ink); font-variant-numeric: tabular-nums; }
+.sv-rows dd small { display: block; margin-top: 2px; font-size: 0.76rem; font-weight: 400; color: var(--tp-mute); }
+.sv-steps th { width: 30%; background: none; border-bottom: 1px solid #f1eadb; color: var(--tp-mute); font-weight: 700; }
+.sv-steps td:nth-child(2) { color: #5b5446; font-size: 0.82rem; }
+@media (max-width: 760px) {
+    .sv-grid { grid-template-columns: minmax(0, 1fr); }
+    .sv-big b { font-size: 1.9rem; }
+    .sv-rows > div { grid-template-columns: 96px 1fr; }
+    .sv-steps td:nth-child(2) { font-size: 0.76rem; }
+}
+.sv-steps td:last-child { white-space: nowrap; }   /* 금액이 두 줄로 안 갈라지게 */
+
+/* ---------- 2026-11-18: 글자 수 세기 (charcount.html) ---------- */
+.cc-grid { grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); }
+.cc-text {
+    box-sizing: border-box; width: 100%; min-height: 320px; padding: 14px 15px; resize: vertical;
+    border-radius: 12px; border: 1px solid #ddd2b8; background: #fffdf8; color: #1f2a26;
+    font: 400 16px/1.75 "Noto Sans KR", system-ui, sans-serif;
+}
+.cc-text:focus { outline: none; border-color: var(--tp-gold); box-shadow: 0 0 0 3px rgba(216, 192, 138, 0.45); }
+.cc-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 10px; }
+.cc-msg { font-size: 0.84rem; font-weight: 700; color: var(--tp-emerald2); }
+.cc-main { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.cc-main > div { padding: 10px 12px; border-radius: 12px; background: rgba(0, 0, 0, 0.22); border: 1px solid rgba(216, 192, 138, 0.3); }
+.cc-main small { display: block; font-size: 0.76rem; font-weight: 700; color: var(--tp-gold); }
+.cc-main b { display: block; font-size: 2.3rem; line-height: 1.1; color: #fff3cf; font-variant-numeric: tabular-nums; }
+.cc-stats .tp-stats .cc-wide { grid-column: 1 / -1; }
+.cc-goal-h { margin: 16px 0 8px; font-size: 0.92rem; color: #f6ecd2; }
+.cc-stats .tp-field select { color: #17312a; }
+.cc-presets button { background: rgba(255, 255, 255, 0.1); border-color: rgba(216, 192, 138, 0.45); color: #f3ead4; }
+.cc-presets button:hover { background: rgba(216, 192, 138, 0.22); }
+.cc-bar { height: 12px; border-radius: 999px; background: rgba(0, 0, 0, 0.28); overflow: hidden; }
+.cc-bar span { display: block; height: 100%; width: 0; border-radius: inherit; background: linear-gradient(90deg, #d8c08a, #ffe08a); transition: width 0.2s; }
+.cc-bar.is-over span { background: linear-gradient(90deg, #f07a52, #ff9b7a); }
+.cc-bar-txt { margin: 8px 0 0; font-size: 0.85rem; color: #f3ead4; }
+@media (max-width: 760px) {
+    .cc-grid { grid-template-columns: minmax(0, 1fr); }
+    .cc-text { min-height: 220px; }
+    .cc-main b { font-size: 2rem; }
+}
+
+/* ---------- 2026-11-18: 대출 이자 계산기 (loan.html) ---------- */
+.ln-unit { flex: 0 0 82px; width: 82px !important; }
+.sv-big .ln-arrow { display: block; margin-top: 4px; font-size: 0.9rem; font-weight: 700; color: #6f5a32; }
+.ln-hint { margin-left: 6px; font-size: 0.74rem; font-weight: 400; color: var(--tp-mute); }
+.ln-cmp td:first-child { text-align: left; }
+.ln-cmp td, .ln-cmp th { text-align: right; }
+.ln-cmp th:first-child { text-align: left; }
+.ln-cmp td:last-child, .ln-cmp th:last-child { color: var(--tp-ink); font-weight: 700; }
+.ln-cmp button { padding: 3px 10px; border-radius: 999px; border: 1px solid #ddd2b8; background: #fbf7ec; color: var(--tp-emerald2); font: inherit; font-size: 0.82rem; font-weight: 700; cursor: pointer; }
+.ln-cmp tr.is-on td { background: #fff4d6; }
+.ln-cmp tr.is-on button { background: var(--tp-emerald2); border-color: var(--tp-emerald2); color: #f6ecd2; }
+.ln-sched-box { margin-bottom: 16px; }
+.ln-scroll { overflow-x: auto; }
+.ln-sched { min-width: 520px; }
+.ln-sched th, .ln-sched td { text-align: right; }
+.ln-sched th:first-child, .ln-sched td:first-child { text-align: center; width: 54px; }
+.ln-sched td:last-child, .ln-sched th:last-child { color: var(--tp-ink); font-weight: 400; }
+.ln-sched tr.is-grace td { color: #8a6d3b; background: #fbf7ec; }
+.ln-sched tr.ln-gap td { text-align: center; color: var(--tp-mute); background: #fcfaf4; font-size: 0.8rem; }
+.ln-more { margin-top: 10px; }
+.tp-card .tp-presets.cc-presets button { background: #fbf7ec; border-color: #e3d8bf; color: #5b4a38; }
+.tp-article td, .tp-article th { word-break: keep-all; }   /* 표 안 한국어 낱말이 중간에서 안 끊기게 (2026-11-18) */

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <script src="lang.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>글자 수 세기 – 공백 포함·제외, 바이트, 원고지 매수 · 자기소개서 글자 수 · Records after work</title>
+    <meta name="description" content="글을 붙여 넣으면 공백 포함·공백 제외 글자 수, 단어·줄 수, 바이트(UTF-8·한글 2바이트), 원고지 매수를 바로 세어 주는 무료 글자 수 세기예요. 자기소개서 500자·1000자 같은 목표 글자 수를 정해 두고 남은 글자 수를 확인할 수 있어요.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="blog.css">
+    <link rel="stylesheet" href="tools-page.css">
+</head>
+<body class="blog-page tool-page">
+    <header class="bp-top">
+        <div class="bp-top-in">
+            <a class="bp-brand" href="index.html">Records after work<small>생활 도구</small></a>
+            <a class="bp-home" href="index.html">← 홈으로</a>
+        </div>
+    </header>
+
+    <main class="tp-main">
+        <nav class="tp-crumb" aria-label="현재 위치"><ol><li><a href="index.html">홈</a></li><li><a href="tools.html">생활 도구</a></li><li><span aria-current="page">글자 수 세기</span></li></ol></nav>
+        <!-- 도구 탭: 새 도구 페이지를 만들면 모든 도구 페이지에 한 칸씩 추가 -->
+        <nav class="tp-tabs" aria-label="생활 도구"><a href="tools.html">🧰 전체 도구</a><a href="units.html">📏 단위 환산</a><a href="age.html">📅 만 나이 · D-day</a><a href="severance.html">💼 퇴직금</a><a href="charcount.html" class="on" aria-current="page">✍️ 글자 수</a><a href="loan.html">🏦 대출 이자</a></nav>
+        <div class="tp-head">
+            <span class="tp-kicker">생활 도구</span>
+            <h1>글자 수 세기</h1>
+            <p>자기소개서, 블로그 글, 문자메시지를 붙여 넣으면 공백 포함·제외 글자 수와 바이트가 바로 나와요. 목표 글자 수를 정해 두면 몇 자 남았는지도 알려 드려요.</p>
+        </div>
+
+        <div class="tp-grid cc-grid">
+            <section class="tp-card cc-edit" aria-labelledby="cc-h">
+                <h2 id="cc-h"><span class="tp-num-badge">1</span>글 붙여 넣기</h2>
+                <textarea id="cc-text" class="cc-text" rows="14" placeholder="여기에 글을 쓰거나 붙여 넣으세요." spellcheck="false"></textarea>
+                <div class="cc-tools">
+                    <button type="button" class="tp-btn solid" id="cc-copy">복사</button>
+                    <button type="button" class="tp-btn" id="cc-trim">공백 정리</button>
+                    <button type="button" class="tp-btn" id="cc-clear">지우기</button>
+                    <span class="cc-msg" id="cc-msg" aria-live="polite"></span>
+                </div>
+                <p class="tp-small">쓴 글은 이 기기에만 잠시 기억돼요. 서버로 보내지 않아요.</p>
+            </section>
+
+            <section class="tp-panel cc-stats" aria-labelledby="cc-s-h">
+                <h2 id="cc-s-h"><span class="tp-num-badge">2</span>글자 수</h2>
+                <div class="cc-main">
+                    <div><small>공백 포함</small><b id="cc-with">0</b></div>
+                    <div><small>공백 제외</small><b id="cc-no">0</b></div>
+                </div>
+                <dl class="tp-stats">
+                    <div><dt>단어</dt><dd id="cc-words">0</dd></div>
+                    <div><dt>줄 · 문단</dt><dd><span id="cc-lines">0</span> · <span id="cc-paras">0</span></dd></div>
+                    <div><dt>바이트 (UTF-8)</dt><dd id="cc-utf8">0</dd></div>
+                    <div><dt>바이트 (한글 2바이트)</dt><dd id="cc-legacy">0</dd></div>
+                    <div class="cc-wide"><dt>200자 원고지</dt><dd id="cc-paper">0매</dd></div>
+                </dl>
+                <h3 class="cc-goal-h">목표 글자 수</h3>
+                <div class="tp-fields">
+                    <label class="tp-field"><span>목표</span><input type="text" id="cc-goal" inputmode="numeric" placeholder="예: 500" autocomplete="off"></label>
+                    <label class="tp-field"><span>기준</span><select id="cc-goal-mode"><option value="with">공백 포함</option><option value="no">공백 제외</option></select></label>
+                </div>
+                <div class="tp-presets cc-presets" aria-label="자주 쓰는 목표">
+                    <button type="button" data-cc-goal="500">500자</button>
+                    <button type="button" data-cc-goal="700">700자</button>
+                    <button type="button" data-cc-goal="1000">1000자</button>
+                    <button type="button" data-cc-goal="1500">1500자</button>
+                </div>
+                <div class="cc-bar"><span id="cc-bar"></span></div>
+                <p class="cc-bar-txt" id="cc-bar-txt" aria-live="polite"></p>
+            </section>
+        </div>
+
+        <article class="tp-article">
+            <h2>공백 포함과 공백 제외, 무엇을 봐야 할까요?</h2>
+            <p><b>공백 포함</b>은 띄어쓰기와 줄바꿈까지 한 자로 센 숫자이고, <b>공백 제외</b>는 글자만 센 숫자예요. 같은 글이라도 한국어는 띄어쓰기가 많아서 공백 포함이 15~20% 정도 더 많게 나와요.</p>
+            <ul>
+                <li><b>자기소개서</b>: 대부분의 채용 사이트와 기업 지원서는 <b>공백 포함</b>으로 세요. "500자 이내"라면 공백 포함 500자로 맞추는 게 안전해요. 공고에 "공백 제외"라고 적혀 있을 때만 제외 숫자를 보세요.</li>
+                <li><b>블로그·과제</b>: 분량 기준이 따로 없다면 보통 공백 제외로 이야기해요.</li>
+                <li>이 도구는 이모지나 한자도 눈에 보이는 대로 한 글자로 세요.</li>
+            </ul>
+
+            <h2>바이트는 언제 필요한가요?</h2>
+            <p>예전 시스템이나 문자메시지는 글자 수가 아니라 <b>바이트</b>로 길이를 재요. 그래서 바이트 기준이 두 가지예요.</p>
+            <table>
+                <thead><tr><th>기준</th><th>한글 한 자</th><th>영문·숫자·공백</th><th>쓰는 곳</th></tr></thead>
+                <tbody>
+                    <tr><td>한글 2바이트 (완성형·EUC-KR)</td><td>2바이트</td><td>1바이트</td><td>문자메시지, 오래된 입력 칸</td></tr>
+                    <tr><td>UTF-8</td><td>3바이트</td><td>1바이트</td><td>요즘 웹사이트·데이터베이스</td></tr>
+                </tbody>
+            </table>
+            <p class="tp-tip">문자메시지는 보통 80~90바이트(한글 40~45자)까지 단문(SMS)이고, 넘으면 장문(LMS)으로 바뀌어 요금이 달라질 수 있어요. 통신사·문자 서비스마다 기준이 조금씩 다르니 정확한 한도는 쓰는 서비스에서 확인해 주세요.</p>
+
+            <h2>원고지 매수는 어떻게 세나요?</h2>
+            <p>원고지는 한 장에 200자(20자 × 10줄)나 400자(20자 × 20줄)가 들어가요. 이 도구는 공백 포함 글자 수를 200으로 나눠 올림한 <b>대략적인 매수</b>를 보여 드려요. 실제 원고지는 문단을 시작할 때 한 칸 비우고, 줄 끝에서 남는 칸도 생겨서 조금 더 많이 나와요. 400자 원고지 매수는 이 숫자의 절반쯤이에요.</p>
+
+            <h2>자주 묻는 질문</h2>
+            <div class="tp-faq">
+                <details>
+                    <summary>사람인·잡코리아 글자 수와 다르게 나와요.</summary>
+                    <p>줄바꿈을 1자로 셀지 2자로 셀지, 맨 끝 공백을 셀지 같은 기준이 사이트마다 달라서 몇 자 차이가 날 수 있어요. 마감이 빡빡하다면 지원하는 사이트의 입력 칸에 붙여 넣어 최종 확인해 주세요.</p>
+                </details>
+                <details>
+                    <summary>쓴 글이 저장되나요?</summary>
+                    <p>실수로 창을 닫아도 다시 열면 이어 쓸 수 있도록 이 기기(브라우저)에만 기억해요. 서버로는 보내지 않아요. 공용 컴퓨터라면 다 쓴 뒤 "지우기"를 눌러 주세요.</p>
+                </details>
+                <details>
+                    <summary>"공백 정리"는 무엇을 하나요?</summary>
+                    <p>두 칸 이상 겹친 띄어쓰기를 한 칸으로, 세 줄 이상 비운 곳을 한 줄로 줄이고, 글 앞뒤의 빈칸을 없애요. 붙여 넣은 글이 지저분할 때 쓰면 좋아요.</p>
+                </details>
+            </div>
+        </article>
+
+        <nav class="tp-related" aria-label="다른 도구">
+            <div class="tp-related-head"><h2>다른 도구도 써 보세요</h2><a href="tools.html">전체 도구 보기 →</a></div>
+            <div class="th-grid">
+                <a class="th-card" href="age.html"><span class="th-ic c2" aria-hidden="true">📅</span><span class="th-text"><b>만 나이 · D-day</b><small>서류 마감까지 D-day</small></span></a>
+                <a class="th-card" href="severance.html"><span class="th-ic c4" aria-hidden="true">💼</span><span class="th-text"><b>퇴직금 계산기</b><small>입사일·근무일·월급으로 예상 퇴직금</small></span></a>
+                <a class="th-card" href="units.html"><span class="th-ic" aria-hidden="true">📏</span><span class="th-text"><b>단위 환산기</b><small>평↔㎡, 화씨↔섭씨, 인치↔cm</small></span></a>
+                <a class="th-card" href="word.html"><span class="th-ic c5" aria-hidden="true">🔤</span><span class="th-text"><b>오늘의 영단어</b><small>쉬어 가는 5글자 단어 퍼즐</small></span></a>
+            </div>
+        </nav>
+    </main>
+
+    <footer class="bp-foot">
+        <a href="index.html">홈</a><a href="tools.html">생활 도구</a><a href="blog.html">블로그</a><a href="about.html">소개</a><a href="privacy.html">개인정보처리방침</a><a href="contact.html">연락처</a>
+        <div>Copyright © 2026 Choi Yunhyok. All rights reserved.</div>
+    </footer>
+
+    <script src="charcount.js"></script>
+</body>
+</html>

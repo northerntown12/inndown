@@ -11,7 +11,7 @@
     window.T = function (ko, en) { return EN ? en : ko; };
 
     /* 영문 페이지가 있는 한국어 페이지 이름 (여기 없는 페이지에는 전환 버튼을 안 붙여요) */
-    var PAGES = ["index", "blog", "about", "privacy", "contact", "omok", "game2048", "units", "age", "word", "mines"];
+    var PAGES = ["index", "blog", "about", "privacy", "contact", "omok", "game2048", "units", "age", "word", "mines", "tools", "severance", "charcount", "loan"];
 
     var path = location.pathname;
     var file = path.substring(path.lastIndexOf("/") + 1) || "index.html";
@@ -144,7 +144,7 @@
     }
     document.addEventListener("click", function (e) {
         if (!document.body || !document.body.classList.contains("tool-page")) return;
-        var a = e.target.closest && e.target.closest('a[href^="index"]');
+        var a = e.target.closest && e.target.closest('a[href^="index"]:not([href*="#"])');   // 홈의 어느 칸(#…)으로 가는 링크는 그냥 이동
         if (!a || e.ctrlKey || e.metaKey || e.shiftKey || e.button !== 0) return;
         if (!fromOurHome() || history.length > 1) return;   // 탭 안에서 다른 도구로 옮겨 다녔으면 그냥 이동
         e.preventDefault();

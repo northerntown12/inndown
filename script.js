@@ -761,6 +761,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const video = banner && banner.querySelector("video");
     if (!video) return;
     const T2 = window.T || function (ko) { return ko; };
+    const NEW_POSTER = video.getAttribute("poster") || "";   // 2026-11-18: 영상이 뜨기 전 보이는 첫 장면 사진 (가을 배너용)
 
     function curSrc() {
         const s = video.querySelector("source");
@@ -792,6 +793,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!s) { s = document.createElement("source"); s.type = "video/mp4"; video.appendChild(s); }
             s.setAttribute("src", src);
             video.removeAttribute("src");
+            if (NEW_POSTER) { if (src === NEW_SRC) video.setAttribute("poster", NEW_POSTER); else video.removeAttribute("poster"); }
             video.preload = "auto";
             if (wasPaused && !firstLoad) { video.autoplay = false; video.removeAttribute("autoplay"); }
             video.load();

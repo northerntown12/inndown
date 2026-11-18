@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="lang.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Interest Calculator – Equal Payments vs Equal Principal vs Interest-only · Records after work</title>
+    <meta name="description" content="Free loan interest calculator: enter the amount, interest rate and term to get your monthly payment and total interest. Compare equal monthly payments, equal principal and interest-only (bullet) repayment, add a grace period and see the full payment schedule.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="blog.css">
+    <link rel="stylesheet" href="tools-page.css">
+</head>
+<body class="blog-page tool-page">
+    <header class="bp-top">
+        <div class="bp-top-in">
+            <a class="bp-brand" href="index-en.html">Records after work<small>Everyday tools</small></a>
+            <a class="bp-home" href="index-en.html">← Home</a>
+        </div>
+    </header>
+
+    <main class="tp-main">
+        <nav class="tp-crumb" aria-label="Breadcrumb"><ol><li><a href="index-en.html">Home</a></li><li><a href="tools-en.html">Everyday tools</a></li><li><span aria-current="page">Loan Interest</span></li></ol></nav>
+        <nav class="tp-tabs" aria-label="Everyday tools"><a href="tools-en.html">🧰 All tools</a><a href="units-en.html">📏 Unit Converter</a><a href="age-en.html">📅 Age &amp; D-day</a><a href="severance-en.html">💼 Severance</a><a href="charcount-en.html">✍️ Characters</a><a href="loan-en.html" class="on" aria-current="page">🏦 Loan</a></nav>
+        <div class="tp-head">
+            <span class="tp-kicker">EVERYDAY TOOLS</span>
+            <h1>Loan Interest Calculator</h1>
+            <p>Enter the loan amount, interest rate and term to see your monthly payment and total interest. Compare the three common repayment methods side by side.</p>
+        </div>
+
+        <div class="tp-grid sv-grid">
+            <section class="tp-panel" aria-labelledby="ln-in-h">
+                <h2 id="ln-in-h"><span class="tp-num-badge">1</span>Loan details</h2>
+                <div class="tp-fields">
+                    <label class="tp-field tp-wide"><span>Loan amount</span><input type="text" id="ln-amount" inputmode="numeric" autocomplete="off" placeholder="e.g. 100,000,000"></label>
+                </div>
+                <div class="tp-presets cc-presets" aria-label="Common amounts">
+                    <button type="button" data-ln-amount="10000000">10M</button>
+                    <button type="button" data-ln-amount="50000000">50M</button>
+                    <button type="button" data-ln-amount="100000000">100M</button>
+                    <button type="button" data-ln-amount="300000000">300M</button>
+                </div>
+                <div class="tp-fields">
+                    <label class="tp-field"><span>Annual interest rate (%)</span><input type="text" id="ln-rate" inputmode="decimal" autocomplete="off" value="4.5"></label>
+                    <div class="tp-field"><span>Term</span>
+                        <div class="tp-field-row"><input type="text" id="ln-term" inputmode="numeric" autocomplete="off" value="30" aria-label="Term"><select id="ln-unit" aria-label="Term unit" class="ln-unit"><option value="y">years</option><option value="m">months</option></select></div>
+                    </div>
+                </div>
+                <div class="tp-fields">
+                    <label class="tp-field"><span>Repayment method</span><select id="ln-method"><option value="level">Equal payments</option><option value="principal">Equal principal</option><option value="bullet">Interest-only (bullet)</option></select></label>
+                    <label class="tp-field"><span>Grace period (months, optional)</span><input type="text" id="ln-grace" inputmode="numeric" autocomplete="off" placeholder="0"></label>
+                </div>
+                <p class="tp-small">Values are remembered on this device only and never sent anywhere.</p>
+            </section>
+
+            <section class="tp-card" aria-labelledby="ln-out-h">
+                <h2 id="ln-out-h"><span class="tp-num-badge">2</span>Result</h2>
+                <div id="ln-out" aria-live="polite"></div>
+                <h3 class="tp-sub">Compare methods <small class="ln-hint">tap one to switch</small></h3>
+                <table class="tp-table ln-cmp" id="ln-cmp"></table>
+            </section>
+        </div>
+
+        <section class="tp-card ln-sched-box" aria-labelledby="ln-s-h">
+            <h2 id="ln-s-h"><span class="tp-num-badge">3</span>Payment schedule</h2>
+            <div class="ln-scroll"><table class="tp-table ln-sched" id="ln-sched"></table></div>
+            <button type="button" class="tp-btn ln-more" id="ln-more" hidden>Show all</button>
+        </section>
+
+        <article class="tp-article">
+            <h2>Three repayment methods</h2>
+            <table>
+                <thead><tr><th>Method</th><th>Monthly payment</th><th>Total interest</th><th>Good when</th></tr></thead>
+                <tbody>
+                    <tr><td><b>Equal payments</b> (amortizing)</td><td>The same every month</td><td>Middle</td><td>You want a predictable payment — the usual choice for mortgages</td></tr>
+                    <tr><td><b>Equal principal</b></td><td>Highest at first, then falls</td><td>Lowest</td><td>You can handle bigger early payments and want to save interest</td></tr>
+                    <tr><td><b>Interest-only (bullet)</b></td><td>Interest only, principal at the end</td><td>Highest</td><td>Short terms, or you expect a lump sum at maturity</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Example: 100,000,000 at 4.5% a year for 30 years</h3>
+            <table>
+                <thead><tr><th>Method</th><th class="num">First month</th><th class="num">Last month</th><th class="num">Total interest</th></tr></thead>
+                <tbody>
+                    <tr><td>Equal payments</td><td class="num">≈ 506,685</td><td class="num">same</td><td class="num">≈ 82.4 million</td></tr>
+                    <tr><td>Equal principal</td><td class="num">≈ 652,778</td><td class="num">≈ 278,819</td><td class="num">≈ 67.7 million</td></tr>
+                    <tr><td>Interest-only</td><td class="num">375,000</td><td class="num">100,375,000</td><td class="num">135 million</td></tr>
+                </tbody>
+            </table>
+            <p>Borrowing the same amount, total interest can almost double depending on how you repay — paying principal back sooner leaves less balance for interest to grow on.</p>
+
+            <h2>How it is calculated</h2>
+            <ul>
+                <li><b>Monthly rate</b> = annual rate ÷ 12 (4.5% a year → 0.375% a month)</li>
+                <li><b>Equal payments</b>: payment = loan × r × (1 + r)<sup>n</sup> ÷ ((1 + r)<sup>n</sup> − 1)</li>
+                <li><b>Equal principal</b>: principal = loan ÷ n each month; interest = remaining balance × r</li>
+                <li><b>Interest-only</b>: loan × r each month, the whole principal in the last month</li>
+                <li><b>Grace period</b>: interest only during the grace months, then the chosen method over the remaining term</li>
+            </ul>
+            <p class="tp-tip">Banks may charge interest by the day or round differently, so real amounts can differ slightly. With a variable rate, payments are recalculated when the rate changes.</p>
+
+            <h2>FAQ</h2>
+            <div class="tp-faq">
+                <details>
+                    <summary>How much do I save by paying early?</summary>
+                    <p>Interest falls with the principal you pay back. Enter your current balance and the remaining term to compare. Ask your lender about early-repayment fees.</p>
+                </details>
+                <details>
+                    <summary>Equal payments or equal principal?</summary>
+                    <p>Equal principal always costs less interest in total, but the early payments are higher, so check what your monthly budget can handle.</p>
+                </details>
+                <details>
+                    <summary>Is my loan information saved?</summary>
+                    <p>Only in this browser, so the form is filled in next time. Nothing is sent to a server.</p>
+                </details>
+            </div>
+            <p class="tp-small">This is an estimate to help you compare. Actual payments depend on your loan agreement.</p>
+        </article>
+
+        <nav class="tp-related" aria-label="Other tools">
+            <div class="tp-related-head"><h2>Other tools</h2><a href="tools-en.html">See all tools →</a></div>
+            <div class="th-grid">
+                <a class="th-card" href="units-en.html?u=pyeong"><span class="th-ic" aria-hidden="true">📏</span><span class="th-text"><b>Pyeong ↔ m²</b><small>Unit converter</small></span></a>
+                <a class="th-card" href="severance-en.html"><span class="th-ic c4" aria-hidden="true">💼</span><span class="th-text"><b>Severance Pay</b><small>Korea severance estimate</small></span></a>
+                <a class="th-card" href="index-en.html#fx-widget"><span class="th-ic c4" aria-hidden="true">💱</span><span class="th-text"><b>Exchange rates</b><small>USD, JPY, EUR to KRW (home)</small></span></a>
+                <a class="th-card" href="index-en.html#calculator"><span class="th-ic c5" aria-hidden="true">🧮</span><span class="th-text"><b>Calculator</b><small>See the whole expression (home)</small></span></a>
+            </div>
+        </nav>
+    </main>
+
+    <footer class="bp-foot">
+        <a href="index-en.html">Home</a><a href="tools-en.html">Tools</a><a href="blog-en.html">Blog</a><a href="about-en.html">About</a><a href="privacy-en.html">Privacy Policy</a><a href="contact-en.html">Contact</a>
+        <div>Copyright © 2026 Choi Yunhyok. All rights reserved.</div>
+    </footer>
+
+    <script src="loan.js"></script>
+</body>
+</html>

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <script src="lang.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>대출 이자 계산기 – 원리금균등·원금균등·만기일시 상환 비교 · Records after work</title>
+    <meta name="description" content="대출 금액, 금리, 기간만 넣으면 월 상환액과 총 이자를 바로 계산해 주는 무료 대출 이자 계산기예요. 원리금균등·원금균등·만기일시 상환을 한눈에 비교하고, 거치기간과 회차별 상환 스케줄도 볼 수 있어요.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="blog.css">
+    <link rel="stylesheet" href="tools-page.css">
+</head>
+<body class="blog-page tool-page">
+    <header class="bp-top">
+        <div class="bp-top-in">
+            <a class="bp-brand" href="index.html">Records after work<small>생활 도구</small></a>
+            <a class="bp-home" href="index.html">← 홈으로</a>
+        </div>
+    </header>
+
+    <main class="tp-main">
+        <nav class="tp-crumb" aria-label="현재 위치"><ol><li><a href="index.html">홈</a></li><li><a href="tools.html">생활 도구</a></li><li><span aria-current="page">대출 이자 계산기</span></li></ol></nav>
+        <!-- 도구 탭: 새 도구 페이지를 만들면 모든 도구 페이지에 한 칸씩 추가 -->
+        <nav class="tp-tabs" aria-label="생활 도구"><a href="tools.html">🧰 전체 도구</a><a href="units.html">📏 단위 환산</a><a href="age.html">📅 만 나이 · D-day</a><a href="severance.html">💼 퇴직금</a><a href="charcount.html">✍️ 글자 수</a><a href="loan.html" class="on" aria-current="page">🏦 대출 이자</a></nav>
+        <div class="tp-head">
+            <span class="tp-kicker">생활 도구</span>
+            <h1>대출 이자 계산기</h1>
+            <p>대출 금액, 금리, 기간을 넣으면 매달 갚을 돈과 총 이자가 바로 나와요. 원리금균등·원금균등·만기일시 세 가지 방식을 나란히 비교해 보세요.</p>
+        </div>
+
+        <div class="tp-grid sv-grid">
+            <section class="tp-panel" aria-labelledby="ln-in-h">
+                <h2 id="ln-in-h"><span class="tp-num-badge">1</span>대출 조건 넣기</h2>
+                <div class="tp-fields">
+                    <label class="tp-field tp-wide"><span>대출 금액 (원)</span><input type="text" id="ln-amount" inputmode="numeric" autocomplete="off" placeholder="예: 100,000,000"></label>
+                </div>
+                <div class="tp-presets cc-presets" aria-label="자주 쓰는 금액">
+                    <button type="button" data-ln-amount="10000000">1천만</button>
+                    <button type="button" data-ln-amount="50000000">5천만</button>
+                    <button type="button" data-ln-amount="100000000">1억</button>
+                    <button type="button" data-ln-amount="300000000">3억</button>
+                </div>
+                <div class="tp-fields">
+                    <label class="tp-field"><span>연 이자율 (%)</span><input type="text" id="ln-rate" inputmode="decimal" autocomplete="off" value="4.5"></label>
+                    <div class="tp-field"><span>대출 기간</span>
+                        <div class="tp-field-row"><input type="text" id="ln-term" inputmode="numeric" autocomplete="off" value="30" aria-label="대출 기간"><select id="ln-unit" aria-label="기간 단위" class="ln-unit"><option value="y">년</option><option value="m">개월</option></select></div>
+                    </div>
+                </div>
+                <div class="tp-fields">
+                    <label class="tp-field"><span>상환 방식</span><select id="ln-method"><option value="level">원리금균등</option><option value="principal">원금균등</option><option value="bullet">만기일시</option></select></label>
+                    <label class="tp-field"><span>거치기간 (개월, 선택)</span><input type="text" id="ln-grace" inputmode="numeric" autocomplete="off" placeholder="0"></label>
+                </div>
+                <p class="tp-small">넣은 값은 이 기기에만 기억되고, 어디로도 보내지 않아요.</p>
+            </section>
+
+            <section class="tp-card" aria-labelledby="ln-out-h">
+                <h2 id="ln-out-h"><span class="tp-num-badge">2</span>계산 결과</h2>
+                <div id="ln-out" aria-live="polite"></div>
+                <h3 class="tp-sub">상환 방식 비교 <small class="ln-hint">누르면 그 방식으로 바꿔요</small></h3>
+                <table class="tp-table ln-cmp" id="ln-cmp"></table>
+            </section>
+        </div>
+
+        <section class="tp-card ln-sched-box" aria-labelledby="ln-s-h">
+            <h2 id="ln-s-h"><span class="tp-num-badge">3</span>회차별 상환 스케줄 <small class="ln-hint">(원)</small></h2>
+            <div class="ln-scroll"><table class="tp-table ln-sched" id="ln-sched"></table></div>
+            <button type="button" class="tp-btn ln-more" id="ln-more" hidden>전체 보기</button>
+        </section>
+
+        <article class="tp-article">
+            <h2>상환 방식 세 가지, 무엇이 다를까요?</h2>
+            <table>
+                <thead><tr><th>방식</th><th>매달 내는 돈</th><th>총 이자</th><th>이럴 때 좋아요</th></tr></thead>
+                <tbody>
+                    <tr><td><b>원리금균등</b></td><td>처음부터 끝까지 같아요</td><td>중간</td><td>매달 나가는 돈이 일정해야 할 때 (주택담보대출에 가장 흔해요)</td></tr>
+                    <tr><td><b>원금균등</b></td><td>처음이 가장 많고 점점 줄어요</td><td>가장 적어요</td><td>처음 몇 년 부담을 견딜 수 있고 이자를 아끼고 싶을 때</td></tr>
+                    <tr><td><b>만기일시</b></td><td>매달 이자만, 마지막에 원금 전부</td><td>가장 많아요</td><td>기간이 짧거나, 만기에 목돈이 들어올 예정일 때 (신용대출·전세대출에 흔해요)</td></tr>
+                </tbody>
+            </table>
+
+            <h3>예시: 1억 원을 연 4.5%로 30년 빌리면</h3>
+            <table>
+                <thead><tr><th>방식</th><th class="num">첫 달</th><th class="num">마지막 달</th><th class="num">총 이자</th></tr></thead>
+                <tbody>
+                    <tr><td>원리금균등</td><td class="num">약 50만 6,685원</td><td class="num">같음</td><td class="num">약 8,241만 원</td></tr>
+                    <tr><td>원금균등</td><td class="num">약 65만 2,778원</td><td class="num">약 27만 8,819원</td><td class="num">약 6,769만 원</td></tr>
+                    <tr><td>만기일시</td><td class="num">37만 5,000원</td><td class="num">1억 37만 5,000원</td><td class="num">1억 3,500만 원</td></tr>
+                </tbody>
+            </table>
+            <p>같은 돈을 빌려도 갚는 방식에 따라 총 이자가 두 배 가까이 차이 나요. 원금을 빨리 갚을수록 남은 원금에 붙는 이자가 줄어들기 때문이에요.</p>
+
+            <h2>계산 방법</h2>
+            <ul>
+                <li><b>월 이자율</b> = 연 이자율 ÷ 12 (예: 연 4.5% → 월 0.375%)</li>
+                <li><b>원리금균등</b>: 매달 내는 돈 = 대출금 × 월 이자율 × (1 + 월 이자율)<sup>개월 수</sup> ÷ ((1 + 월 이자율)<sup>개월 수</sup> − 1)</li>
+                <li><b>원금균등</b>: 원금은 매달 대출금 ÷ 개월 수, 이자는 그달 남은 원금 × 월 이자율</li>
+                <li><b>만기일시</b>: 매달 대출금 × 월 이자율, 마지막 달에 원금 전부</li>
+                <li><b>거치기간</b>: 그동안은 이자만 내고, 거치가 끝난 뒤 남은 기간 동안 고른 방식으로 갚아요. 거치기간이 길수록 총 이자는 늘어나요.</li>
+            </ul>
+            <p class="tp-tip">은행은 이자를 날짜 수(일할)로 계산하거나 원 단위를 자르는 방식이 조금씩 달라서, 실제 금액과 몇십~몇백 원 차이가 날 수 있어요. 변동금리 대출은 금리가 바뀌면 그때부터 다시 계산돼요.</p>
+
+            <h2>자주 묻는 질문</h2>
+            <div class="tp-faq">
+                <details>
+                    <summary>중도상환하면 이자가 얼마나 줄어요?</summary>
+                    <p>갚은 원금만큼 그 뒤로 붙는 이자가 줄어요. 대출 금액을 "지금 남은 원금"으로, 기간을 "남은 기간"으로 바꿔 넣으면 앞으로 낼 이자를 비교해 볼 수 있어요. 중도상환 수수료가 있는지는 은행에 확인해 주세요.</p>
+                </details>
+                <details>
+                    <summary>원리금균등과 원금균등 중 뭐가 유리해요?</summary>
+                    <p>총 이자만 보면 원금균등이 항상 적어요. 다만 처음 몇 년 동안 매달 내는 돈이 더 많으니, 지금 월 소득으로 감당할 수 있는지 함께 보세요.</p>
+                </details>
+                <details>
+                    <summary>입력한 대출 정보가 저장되나요?</summary>
+                    <p>다음에 다시 열 때 편하도록 이 기기(브라우저)에만 기억해요. 서버로는 보내지 않아요.</p>
+                </details>
+            </div>
+            <p class="tp-small">이 계산기는 이해를 돕기 위한 예상 금액이에요. 실제 상환액은 금융회사의 약정 조건에 따라 달라질 수 있어요.</p>
+        </article>
+
+        <nav class="tp-related" aria-label="다른 도구">
+            <div class="tp-related-head"><h2>다른 도구도 써 보세요</h2><a href="tools.html">전체 도구 보기 →</a></div>
+            <div class="th-grid">
+                <a class="th-card" href="units.html?u=pyeong"><span class="th-ic" aria-hidden="true">📏</span><span class="th-text"><b>평수 계산 (단위 환산)</b><small>전용면적 ㎡ ↔ 평</small></span></a>
+                <a class="th-card" href="severance.html"><span class="th-ic c4" aria-hidden="true">💼</span><span class="th-text"><b>퇴직금 계산기</b><small>입사일·근무일·월급으로 예상 퇴직금</small></span></a>
+                <a class="th-card" href="index.html#fx-widget"><span class="th-ic c4" aria-hidden="true">💱</span><span class="th-text"><b>실시간 환율</b><small>달러·엔·유로 원화 환율 (홈)</small></span></a>
+                <a class="th-card" href="index.html#calculator"><span class="th-ic c5" aria-hidden="true">🧮</span><span class="th-text"><b>계산기</b><small>식을 보며 계산 (홈)</small></span></a>
+            </div>
+        </nav>
+    </main>
+
+    <footer class="bp-foot">
+        <a href="index.html">홈</a><a href="tools.html">생활 도구</a><a href="blog.html">블로그</a><a href="about.html">소개</a><a href="privacy.html">개인정보처리방침</a><a href="contact.html">연락처</a>
+        <div>Copyright © 2026 Choi Yunhyok. All rights reserved.</div>
+    </footer>
+
+    <script src="loan.js"></script>
+</body>
+</html>

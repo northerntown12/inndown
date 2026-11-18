@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="lang.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Korea Severance Pay Calculator – Estimate Your Retirement Pay · Records after work</title>
+    <meta name="description" content="Free calculator for statutory severance pay in South Korea. Enter your start date, last working day and monthly pay to estimate your severance, with bonus and annual-leave pay (3/12), the ordinary-wage floor, the one-year rule and every step of the calculation.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="blog.css">
+    <link rel="stylesheet" href="tools-page.css">
+</head>
+<body class="blog-page tool-page">
+    <header class="bp-top">
+        <div class="bp-top-in">
+            <a class="bp-brand" href="index-en.html">Records after work<small>Everyday tools</small></a>
+            <a class="bp-home" href="index-en.html">← Home</a>
+        </div>
+    </header>
+
+    <main class="tp-main">
+        <nav class="tp-crumb" aria-label="Breadcrumb"><ol><li><a href="index-en.html">Home</a></li><li><a href="tools-en.html">Everyday tools</a></li><li><span aria-current="page">Severance Pay</span></li></ol></nav>
+        <nav class="tp-tabs" aria-label="Everyday tools"><a href="tools-en.html">🧰 All tools</a><a href="units-en.html">📏 Unit Converter</a><a href="age-en.html">📅 Age &amp; D-day</a><a href="severance-en.html" class="on" aria-current="page">💼 Severance</a><a href="charcount-en.html">✍️ Characters</a><a href="loan-en.html">🏦 Loan</a></nav>
+        <div class="tp-head">
+            <span class="tp-kicker">EVERYDAY TOOLS</span>
+            <h1>Korea Severance Pay Calculator</h1>
+            <p>Working in Korea? Enter your start date, last working day and monthly pay to estimate the severance pay (퇴직금) your employer owes you. Add bonuses and unused-leave pay if you have them — every step is shown.</p>
+        </div>
+
+        <div class="tp-grid sv-grid">
+            <section class="tp-panel" aria-labelledby="sv-in-h">
+                <h2 id="sv-in-h"><span class="tp-num-badge">1</span>Your job details</h2>
+                <div class="tp-fields">
+                    <label class="tp-field"><span>Start date</span><input type="date" id="sv-start" min="1970-01-01" max="2100-12-31"></label>
+                    <div class="tp-field tp-wide"><span>Last working day</span>
+                        <div class="tp-field-row"><input type="date" id="sv-last" aria-label="Last working day" min="1970-01-01" max="2100-12-31"><button type="button" class="tp-btn" id="sv-today">Today</button></div>
+                    </div>
+                </div>
+                <div class="tp-fields">
+                    <label class="tp-field tp-wide"><span>Monthly pay in KRW (before tax, base + fixed allowances)</span><input type="text" id="sv-monthly" inputmode="numeric" autocomplete="off" placeholder="e.g. 3,000,000"></label>
+                </div>
+                <label class="sv-check"><input type="checkbox" id="sv-split"> My pay differed in the last 3 months (enter each)</label>
+                <div class="tp-fields" id="sv-split-box" hidden>
+                    <label class="tp-field"><span id="sv-m1-l">Month 1 pay</span><input type="text" id="sv-m1" inputmode="numeric" autocomplete="off"></label>
+                    <label class="tp-field"><span id="sv-m2-l">Month 2 pay</span><input type="text" id="sv-m2" inputmode="numeric" autocomplete="off"></label>
+                    <label class="tp-field"><span id="sv-m3-l">Month 3 pay</span><input type="text" id="sv-m3" inputmode="numeric" autocomplete="off"></label>
+                </div>
+                <div class="tp-fields">
+                    <label class="tp-field"><span>Bonuses in the last year (optional)</span><input type="text" id="sv-bonus" inputmode="numeric" autocomplete="off" placeholder="0"></label>
+                    <label class="tp-field"><span>Unused-leave pay (optional)</span><input type="text" id="sv-leave" inputmode="numeric" autocomplete="off" placeholder="0"></label>
+                </div>
+                <div class="tp-fields">
+                    <label class="tp-field tp-wide"><span>Monthly ordinary wage (optional, leave blank if unsure)</span><input type="text" id="sv-ordinary" inputmode="numeric" autocomplete="off" placeholder="0"></label>
+                </div>
+                <label class="sv-check"><input type="checkbox" id="sv-hours" checked> I worked 15+ hours a week on average</label>
+                <div class="tp-fields sv-btns"><button type="button" class="tp-btn" id="sv-reset">Clear all</button></div>
+                <p class="tp-small">Values are remembered on this device only and never sent anywhere.</p>
+            </section>
+
+            <section class="tp-card" aria-labelledby="sv-out-h">
+                <h2 id="sv-out-h"><span class="tp-num-badge">2</span>Result</h2>
+                <div id="sv-out" aria-live="polite"></div>
+            </section>
+        </div>
+
+        <article class="tp-article">
+            <h2>Who gets severance pay in Korea</h2>
+            <p>Under the Employee Retirement Benefit Security Act, employers must pay severance to anyone who meets both conditions — full-time, contract and part-time workers alike, Korean or foreign:</p>
+            <ul>
+                <li><b>At least one year of continuous service</b>, counted from your start date to your last working day. Even one day short means no statutory severance.</li>
+                <li><b>15 or more contracted hours a week</b> on average over four weeks.</li>
+            </ul>
+            <p>It applies to workplaces of every size, including those with fewer than five employees, even if your contract does not mention it.</p>
+
+            <h2>How it is calculated</h2>
+            <p>Severance is <b>30 days of average wages for every year worked</b>:</p>
+            <p class="tp-tip"><b>Severance = average daily wage × 30 × (days of service ÷ 365)</b><br>Average daily wage = (pay for the 3 months before leaving + yearly bonus × 3/12 + unused-leave pay × 3/12) ÷ number of days in those 3 months</p>
+            <ul>
+                <li>Your <b>leaving date</b> is the day <b>after</b> your last working day. If you worked until December 31, you left on January 1.</li>
+                <li>The 3-month period is counted in calendar days, so it is 89 to 92 days depending on when you leave.</li>
+                <li>Bonuses count as <b>3/12 of everything paid in the last 12 months</b>, not the full amount of a bonus paid in those 3 months. Unused-leave pay works the same way.</li>
+                <li>If the average wage is <b>lower than your ordinary wage</b>, the ordinary wage is used. On a 40-hour week, daily ordinary wage = monthly ordinary wage ÷ 209 × 8.</li>
+            </ul>
+
+            <h3>Example: KRW 3,000,000 a month, three years, last day July 31</h3>
+            <table>
+                <thead><tr><th>Item</th><th>Calculation</th><th class="num">Amount</th></tr></thead>
+                <tbody>
+                    <tr><td>Days of service</td><td>Aug 1, 2023 – Jul 31, 2026</td><td class="num">1,096 days</td></tr>
+                    <tr><td>3 months of pay</td><td>3,000,000 × 3 (May 1 – Jul 31, 92 days)</td><td class="num">9,000,000</td></tr>
+                    <tr><td>Average daily wage</td><td>9,000,000 ÷ 92</td><td class="num">97,826</td></tr>
+                    <tr><td>Severance</td><td>97,826 × 30 × 1,096 ÷ 365</td><td class="num">≈ 8.81 million</td></tr>
+                </tbody>
+            </table>
+            <p>With a KRW 3,000,000 yearly bonus, 750,000 (3/12) is added, the average daily wage becomes 105,978 and severance rises to about KRW 9.55 million.</p>
+
+            <h2>When and how you are paid</h2>
+            <ul>
+                <li>Your employer must pay within <b>14 days</b> of your leaving date, unless you both agree to a later date.</li>
+                <li>It is usually paid into an <b>IRP</b> (individual retirement pension) account in your name. You can close the IRP and withdraw the money; tax is withheld when you do.</li>
+                <li>If your company uses a <b>DC-type pension</b>, you receive what has built up in that account, which can differ from this estimate. A <b>DB-type pension</b> works much like this calculation.</li>
+                <li>Retirement income tax applies, but deductions for years of service make it much lower than tax on salary.</li>
+                <li>For disputes, the Ministry of Employment and Labor helpline is <b>1350</b> (interpretation is available).</li>
+            </ul>
+
+            <h2>FAQ</h2>
+            <div class="tp-faq">
+                <details>
+                    <summary>I worked 11 months. Do I get anything?</summary>
+                    <p>Not by law — statutory severance needs one full year. The calculator tells you how many more days you would need. Some companies pay under their own rules, so check your employment rules.</p>
+                </details>
+                <details>
+                    <summary>Why is the leaving date different from my last day?</summary>
+                    <p>Legally, employment ends the day after your last working day. The calculator moves it forward one day for you.</p>
+                </details>
+                <details>
+                    <summary>My pay rose just before I quit. Does that help?</summary>
+                    <p>Yes. Severance is based on the last 3 months of pay, so a raise in that period raises your severance. Unpaid leave or a pay cut in that period can lower it.</p>
+                </details>
+                <details>
+                    <summary>Is my salary saved?</summary>
+                    <p>Only on this device, so the form is filled in next time. Nothing is sent to a server. "Clear all" deletes it.</p>
+                </details>
+            </div>
+            <p class="tp-small">This is an estimate to help you understand your severance. The actual amount depends on your employer's payroll records and pension plan.</p>
+        </article>
+
+        <nav class="tp-related" aria-label="Other tools">
+            <div class="tp-related-head"><h2>Other tools</h2><a href="tools-en.html">See all tools →</a></div>
+            <div class="th-grid">
+                <a class="th-card" href="age-en.html"><span class="th-ic c2" aria-hidden="true">📅</span><span class="th-text"><b>Age &amp; D-day</b><small>Count down to your last day</small></span></a>
+                <a class="th-card" href="units-en.html"><span class="th-ic" aria-hidden="true">📏</span><span class="th-text"><b>Unit Converter</b><small>pyeong↔m², °F↔°C, in↔cm</small></span></a>
+                <a class="th-card" href="index-en.html#calculator"><span class="th-ic c5" aria-hidden="true">🧮</span><span class="th-text"><b>Calculator</b><small>See the whole expression (home)</small></span></a>
+                <a class="th-card" href="index-en.html#fx-widget"><span class="th-ic c4" aria-hidden="true">💱</span><span class="th-text"><b>Exchange rates</b><small>USD, JPY, EUR to KRW (home)</small></span></a>
+            </div>
+        </nav>
+    </main>
+
+    <footer class="bp-foot">
+        <a href="index-en.html">Home</a><a href="tools-en.html">Tools</a><a href="blog-en.html">Blog</a><a href="about-en.html">About</a><a href="privacy-en.html">Privacy Policy</a><a href="contact-en.html">Contact</a>
+        <div>Copyright © 2026 Choi Yunhyok. All rights reserved.</div>
+    </footer>
+
+    <script src="severance.js"></script>
+</body>
+</html>
