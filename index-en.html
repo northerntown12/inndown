@@ -276,7 +276,7 @@
             <p class="copyright">Copyright © 2026 Choi Yunhyok. All rights reserved.</p>
             <span class="copyright-side-line" aria-hidden="true"></span>
         </div>
-        <p class="footer-privacy"><a href="tools-en.html">Everyday tools</a> · <a href="blog-en.html">Blog</a> · <a href="privacy-en.html" target="_blank" rel="noopener">Privacy Policy</a></p>
+        <p class="footer-privacy"><a href="privacy-en.html" target="_blank" rel="noopener">Privacy Policy</a></p>
         <p class="footer-mail"><a href="mailto:test@webtestmania.com">test@webtestmania.com</a></p>
         <div class="visitor-counter" aria-label="Visitor stats">
             <script src="https://www.stats4u.net/s4u.js" data-id="2739492242" data-style="3304" async></script>
@@ -312,12 +312,20 @@
         if (win) win.focus(); else window.open(page, "_blank");
     });
     </script>
-    <!-- 2026-11-15: "생활 도구" 막대 자체를 누르면 첫 도구(단위 환산) 페이지를 새 탭으로 (펼쳐진 칸을 누르면 그 페이지가 새 탭으로) -->
+    <!-- 2026-11-18: 생활 도구는 모두 따로 새 창으로 ("생활 도구" 막대·펼친 칸·전체 도구, 폰 생활 도구 카드, 단위 환산 "크게 보기")
+         창 하나("toolsWin")를 같이 써서, 다른 도구를 누르면 그 창이 그 도구로 바뀌어요. 창이 막히면 새 탭으로 -->
     <script>
     document.addEventListener("click", function (e) {
-        var bar = e.target.closest && e.target.closest(".ib-tools[data-href]");
-        if (!bar || e.target.closest(".ib-pop")) return;
-        window.open(bar.getAttribute("data-href"), "_blank", "noopener");
+        if (!e.target.closest) return;
+        var bar = e.target.closest(".ib-tools[data-href]");
+        var link = e.target.closest(".ib-tools a.ib-pop, .tools-widget a.tw-item, a.uc-more");
+        var url = link ? link.getAttribute("href") : (bar ? bar.getAttribute("data-href") : null);
+        if (!url || e.ctrlKey || e.metaKey || e.shiftKey) return;
+        e.preventDefault();
+        var w = Math.min(1000, screen.availWidth - 40), h = Math.min(900, screen.availHeight - 60);
+        var x = Math.max(0, (screen.availWidth - w) / 2), y = Math.max(0, (screen.availHeight - h) / 2);
+        var win = window.open(url, "toolsWin", "width=" + w + ",height=" + h + ",left=" + x + ",top=" + y + ",resizable=yes,scrollbars=yes");
+        if (win) win.focus(); else window.open(url, "_blank");
     });
     </script>
 </body>
