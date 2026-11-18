@@ -570,3 +570,35 @@ a.th-card:hover { transform: translateY(-2px); border-color: var(--tp-gold); box
 .ln-more { margin-top: 10px; }
 .tp-card .tp-presets.cc-presets button { background: #fbf7ec; border-color: #e3d8bf; color: #5b4a38; }
 .tp-article td, .tp-article th { word-break: keep-all; }   /* 표 안 한국어 낱말이 중간에서 안 끊기게 (2026-11-18) */
+
+/* ==========================================================
+   2026-11-18: 도구마다 다른 색 (초록 일변도 → 페이지마다 테마)
+   body에 class를 붙여 색 변수만 바꿔요. 단위 환산은 원래 에메랄드 그대로.
+   theme-hub(도구 모음, 남보라) · theme-age(청록+복숭아) · theme-sev(호두나무 갈색+금) ·
+   theme-cc(남색+하늘) · theme-loan(자두색+분홍)
+   ========================================================== */
+body.tool-page { --tp-tint: #eef4f0; --tp-tint2: #e6efe9; }
+.tp-kicker { background: var(--tp-tint2); }
+.tp-article th, .tp-table th, .uc-table th { background: var(--tp-tint); }
+.tp-panel { border-color: var(--tp-emerald); }
+.tp-crumb li + li::before, .tp-faq summary::before, .tp-faq summary::after { color: var(--tp-gold-deep); }
+
+body.tool-page.theme-hub  { --tp-emerald: #1f1d52; --tp-emerald2: #36347a; --tp-emerald3: #4d4aa6; --tp-gold: #c9c7f6; --tp-gold-deep: #5a57b5; --tp-tint: #ecebfb; --tp-tint2: #e6e5fb; }
+body.tool-page.theme-age  { --tp-emerald: #0e3a44; --tp-emerald2: #1d5f6b; --tp-emerald3: #2c7a7a; --tp-gold: #ffc9a8; --tp-gold-deep: #b4573a; --tp-tint: #e6f2f2; --tp-tint2: #dff0ef; }
+body.tool-page.theme-sev  { --tp-emerald: #3a2412; --tp-emerald2: #5b3a1f; --tp-emerald3: #7a5232; --tp-gold: #f0c674; --tp-gold-deep: #8a5a1c; --tp-tint: #f5ece0; --tp-tint2: #f1e6d6; }
+body.tool-page.theme-cc   { --tp-emerald: #13254a; --tp-emerald2: #213f78; --tp-emerald3: #335a9c; --tp-gold: #a9d1f5; --tp-gold-deep: #2f5f9a; --tp-tint: #e8f0fa; --tp-tint2: #e2ecf9; }
+body.tool-page.theme-loan { --tp-emerald: #3a1430; --tp-emerald2: #5c2248; --tp-emerald3: #7a3462; --tp-gold: #f5b8d0; --tp-gold-deep: #a33b6b; --tp-tint: #f8e9f0; --tp-tint2: #f6e3ec; }
+
+/* 도구 탭: 각 탭도 그 도구의 색 (지금 페이지는 진하게) */
+.tp-tabs a[href^="tools"].on     { background: #36347a; border-color: #36347a; }
+.tp-tabs a[href^="units"].on     { background: #1b5245; border-color: #1b5245; }
+.tp-tabs a[href^="age"].on       { background: #1d5f6b; border-color: #1d5f6b; }
+.tp-tabs a[href^="severance"].on { background: #5b3a1f; border-color: #5b3a1f; }
+.tp-tabs a[href^="charcount"].on { background: #213f78; border-color: #213f78; }
+.tp-tabs a[href^="loan"].on      { background: #5c2248; border-color: #5c2248; }
+.tp-tabs a[href^="tools"]:not(.on)     { border-left: 4px solid #6b68c4; }
+.tp-tabs a[href^="units"]:not(.on)     { border-left: 4px solid #286654; }
+.tp-tabs a[href^="age"]:not(.on)       { border-left: 4px solid #2c7a7a; }
+.tp-tabs a[href^="severance"]:not(.on) { border-left: 4px solid #a8874b; }
+.tp-tabs a[href^="charcount"]:not(.on) { border-left: 4px solid #4a6aa8; }
+.tp-tabs a[href^="loan"]:not(.on)      { border-left: 4px solid #b4536e; }

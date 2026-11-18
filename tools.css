@@ -251,8 +251,8 @@
         grid-template-rows: none;
         gap: 14px;
     }
-    /* 우편번호·졸라맨·주식은 모바일에서 숨김 (2026-11-15: 주식 대신 환율이 보임) */
-    .ad-sidebar .ad-grid > :not(.unit-widget):not(.quick-links):not(.game-widget):not(.tools-widget):not(.fx-widget) { display: none; }
+    /* 졸라맨·주식은 모바일에서 숨김 (2026-11-15: 주식 대신 환율이 보임, 2026-11-18: 우편번호도 보임) */
+    .ad-sidebar .ad-grid > :not(.unit-widget):not(.quick-links):not(.game-widget):not(.tools-widget):not(.fx-widget):not(.pst-col) { display: none; }
 
     .ad-grid .unit-widget,
     .ad-grid .quick-links {
@@ -386,3 +386,34 @@
 .info-bar .ib-pop3:not(.ib-empty)::after,
 .info-bar .ib-pop4:not(.ib-empty)::after,
 .info-bar .ib-pop5:not(.ib-empty)::after { content: ""; position: absolute; left: 0; top: -4px; width: 100%; height: 4px; }
+
+/* ===== 2026-11-18: 폰에서도 우편번호 검색 보이기 (환율 아래) + 생활 도구 카드 색을 도구마다 다르게 =====
+   폰 맨 끝 순서: 바로가기 → 단위 환산 → 환율 → 우편번호 → 생활 도구 → 게임 */
+@media screen and (max-width: 768px), screen and (hover: none) and (pointer: coarse) and (max-width: 1000px) {
+    html body .ad-sidebar .ad-grid > .pst-col { display: block; order: 4; grid-column: 1; grid-row: auto; }
+    html body .ad-grid .pst-col .spare-widget { display: none; }
+    html body .ad-grid .tools-widget { order: 5; }
+    html body .ad-grid .game-widget { order: 6; }
+    html body .ad-grid .postal-widget { padding: 12px 14px 10px; border-radius: 8px; font-size: 0.95rem; }
+    html body .postal-widget .pst-title { font-size: 1.05rem; margin-bottom: 10px; }
+    html body .postal-widget .pst-btn { padding: 11px 0; font-size: 1rem; border-radius: 8px; }
+    html body .postal-widget .pst-zip { max-width: 260px; margin: 0 auto; gap: 6px; }
+    html body .postal-widget .pst-d { font-size: 1.5rem; }
+    html body .postal-widget .pst-addr { font-size: 0.85rem; margin-top: 6px; }
+    html body .postal-widget .pst-copy,
+    html body .postal-widget .pst-reset { font-size: 0.82rem; padding: 6px 14px; }
+    html body .postal-widget .pst-msg { font-size: 0.75rem; }
+
+    /* 생활 도구 카드: 도구 페이지 색과 같게 */
+    html body .tools-widget .tw-item[href^="units"]     { background: #e3efe8; border-color: #b9d3c4; color: #10372f; }
+    html body .tools-widget .tw-item[href^="age"]       { background: #e1f1f1; border-color: #a9d2d2; color: #0e3a44; }
+    html body .tools-widget .tw-item[href^="severance"] { background: #f6ecdc; border-color: #dcc39b; color: #3a2412; }
+    html body .tools-widget .tw-item[href^="charcount"] { background: #e6eefa; border-color: #b3c8ea; color: #13254a; }
+    html body .tools-widget .tw-item[href^="loan"]      { background: #f8e8f0; border-color: #e3b7cb; color: #3a1430; }
+    html body .tools-widget .tw-item[href^="tools"]     { background: #ecebfb; border-color: #c4c2ef; color: #22205a; }
+    html body .tools-widget .tw-item[href^="age"] small,       html body .tools-widget .tw-item[href^="age"] .gw-go       { color: #1d5f6b; }
+    html body .tools-widget .tw-item[href^="severance"] small, html body .tools-widget .tw-item[href^="severance"] .gw-go { color: #8a5a1c; }
+    html body .tools-widget .tw-item[href^="charcount"] small, html body .tools-widget .tw-item[href^="charcount"] .gw-go { color: #2f5f9a; }
+    html body .tools-widget .tw-item[href^="loan"] small,      html body .tools-widget .tw-item[href^="loan"] .gw-go      { color: #a33b6b; }
+    html body .tools-widget .tw-item[href^="tools"] small,     html body .tools-widget .tw-item[href^="tools"] .gw-go     { color: #5a57b5; }
+}
