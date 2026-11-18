@@ -3,14 +3,14 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
 (function () {
     "use strict";
 
-    /* 2026-11-13: 회사망 등에서 날씨 서버(api.open-meteo.com)가 막힐 때를 대비해,
-       직접 받아오기가 실패하면 Cloudflare Worker를 거쳐 다시 받아와요 (코드: worker-weather.js).
-       Worker를 만든 뒤 나온 주소를 아래에 넣어 주세요 (끝에 / 포함). 비워 두면 예전처럼 직접만 받아와요. */
-    var WEATHER_PROXY = "";
+    /* 날씨는 Cloudflare Worker(코드: worker-weather.js)를 거쳐 먼저 받아와요 (2026-11-18부터).
+       Worker가 같은 지역 날씨를 10분 동안 보관해 두어서 빠르고, 집 와이파이 등에서 날씨 서버가 끊겨도 받아와요.
+       Worker가 안 되면 날씨 서버(Open-Meteo)에서 직접 받아와요.
+       Worker를 만든 뒤 나온 주소를 아래에 넣어 주세요 (예: "https://weather.sumerboy.workers.dev/").
+       비워 두면 날씨 서버에서 직접만 받아와요. */
+    var WEATHER_PROXY = "https://gentle-glitter-54be.sumerboy.workers.dev/";   // 날씨 중계 Worker (2026-11-18)
 
-    /* 2026-11-18: 응답이 늦으면 하염없이 기다리지 않도록 시간 제한을 두고,
-       늦거나 끊기면 한 번 더 새로 받아와요 (그래도 안 되면 Worker가 있으면 Worker로). */
-    var FETCH_TIMEOUT = 6000;   // 한 번 기다리는 최대 시간(ms)
+    var FETCH_TIMEOUT = 6000;   // 한 번 기다리는 최대 시간(ms) - 늦으면 끊고 다른 길로
 
     function fetchJson(url) {
         function get(u) {
@@ -27,11 +27,15 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
                 throw err;
             });
         }
+        if (WEATHER_PROXY) {
+            // 1) Worker → 2) 안 되면 날씨 서버 직접
+            return get(WEATHER_PROXY + "?url=" + encodeURIComponent(url)).catch(function () {
+                return get(url);
+            });
+        }
+        // Worker 주소가 없으면: 날씨 서버 직접 → 안 되면 한 번 더
         return get(url).catch(function () {
-            return get(url);                       // 한 번 더 (새 연결)
-        }).catch(function (err) {
-            if (!WEATHER_PROXY) throw err;
-            return get(WEATHER_PROXY + "?url=" + encodeURIComponent(url));
+            return get(url);
         });
     }
 
