@@ -158,6 +158,7 @@
 (function () {
     function add() {
         if (!document.body || !document.body.classList.contains("tool-page")) return;
+        if (document.body.classList.contains("theme-hub")) return;   // 도구 모음(메인) 페이지에는 안 붙여요
         var home = document.querySelector(".bp-top-in .bp-home");
         if (!home || document.querySelector(".bp-back")) return;
         var EN = window.SITE_EN;
