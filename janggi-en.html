@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="lang.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Janggi (Korean Chess) vs Computer – Free Online Game · Records after work</title>
+    <meta name="description" content="Play Janggi, Korean chess, against the computer for free. Choose Cho or Han, your opening setup and three difficulty levels. Real rules: palace diagonals, cannon jumps, check and checkmate.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Noto+Sans+KR:wght@400;600;700;900&family=Noto+Serif+KR:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="janggi.css">
+</head>
+<body>
+    <header class="g-top">
+        <div class="g-top-in">
+            <h1 class="g-title">Janggi <small>Korean chess vs computer</small></h1>
+            <span class="g-brand">Records after work</span>
+        </div>
+    </header>
+
+    <main class="g-main">
+        <section class="j-play">
+            <div class="j-statusrow">
+                <p class="j-status" id="jStatus" aria-live="polite"></p>
+                <button type="button" class="g-mute" id="jSound" aria-label="Sound off" title="Sound off">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path class="g-spk" d="M4 9.2h3.6L12.4 5v14l-4.8-4.2H4z"/>
+                        <path class="g-wave" d="M15.3 9.2a4 4 0 0 1 0 5.6M17.8 6.8a7.4 7.4 0 0 1 0 10.4"/>
+                        <path class="g-slash" d="M20.5 3.5 4 20"/>
+                    </svg>
+                </button>
+            </div>
+            <p class="j-score" id="jScore"></p>
+            <div class="j-wrap" id="jWrap">
+                <div class="j-board" id="jBoard" aria-label="Janggi board">
+                    <svg class="j-lines" id="jLines" aria-hidden="true"></svg>
+                    <div class="j-marks" id="jMarks"></div>
+                    <div class="j-pieces" id="jPieces"></div>
+                    <div class="j-toast" id="jToast" aria-live="assertive"></div>
+                    <div class="j-result" id="jResult" hidden>
+                        <div class="j-result-card">
+                            <p class="j-result-title" id="jResultTitle"></p>
+                            <p class="j-result-sub" id="jResultSub"></p>
+                            <div class="j-result-btns">
+                                <button type="button" class="g-btn" id="jLook">View board</button>
+                                <button type="button" class="g-btn g-primary" id="jAgain">New game</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="j-toolrow">
+                <button type="button" class="g-btn" id="jUndo">↩ Undo</button>
+                <button type="button" class="g-btn" id="jPass">Pass</button>
+                <button type="button" class="g-btn j-resign" id="jResign">🏳️ Resign</button>
+            </div>
+        </section>
+
+        <aside class="g-panel">
+            <div class="g-actions">
+                <button type="button" class="g-btn g-primary" id="jNew">New game</button>
+                <button type="button" class="g-btn g-exit" id="jExit" title="Close window">Exit</button>
+            </div>
+            <div class="j-settings">
+                <div class="j-set">
+                    <span>My side</span>
+                    <div class="j-seg">
+                        <label><input type="radio" name="jSide" id="jSideCho"> <b class="cho">Cho</b> (first)</label>
+                        <label><input type="radio" name="jSide" id="jSideHan"> <b class="han">Han</b> (second)</label>
+                    </div>
+                </div>
+                <label class="j-set"><span>Level</span>
+                    <select id="jLevel"><option value="easy">Easy</option><option value="normal">Normal</option><option value="hard">Hard</option></select>
+                </label>
+                <label class="j-set"><span>My setup (from the left)</span>
+                    <select id="jSetup"><option value="HEHE">Horse·Elephant·Horse·Elephant</option><option value="EHEH">Elephant·Horse·Elephant·Horse</option><option value="HEEH">Horse·Elephant·Elephant·Horse</option><option value="EHHE">Elephant·Horse·Horse·Elephant</option></select>
+                </label>
+                <label class="j-check"><input type="checkbox" id="jHangul"> Show letters instead of Chinese characters</label>
+                <p class="j-note">Side, level and setup apply when you press [New game]. The computer's setup is random.</p>
+            </div>
+            <div class="g-record" id="jRecord"></div>
+            <details class="g-rules">
+                <summary>How to play</summary>
+                <ul>
+                    <li>Tap one of your pieces to see where it can go, then tap a dot. Win by <b>checkmating</b> the opposing General.</li>
+                    <li><b>Chariot (車)</b> any distance straight · <b>Cannon (包)</b> must jump exactly one piece (cannons can't jump or capture cannons) · <b>Horse (馬)</b> one straight + one diagonal · <b>Elephant (象)</b> one straight + two diagonal · <b>Guard (士)·General</b> one step inside the palace · <b>Soldier (卒/兵)</b> one step forward or sideways.</li>
+                    <li>Horses and elephants are blocked if a point on their path is occupied. Chariots, cannons and soldiers can also move along the palace diagonals.</li>
+                    <li>You must answer a check. When you are not in check you may <b>pass</b>.</li>
+                    <li>After 200 moves in total the game is decided on points (Chariot 13, Cannon 7, Horse 5, Elephant 3, Guard 3, Soldier 2; Han gets 1.5 extra).</li>
+                    <li>Facing Generals (bikjang) is not scored as a draw in this game.</li>
+                    <li>Your game is saved on this device, so you can close the window and continue later.</li>
+                </ul>
+            </details>
+        </aside>
+    </main>
+
+    <footer class="g-foot">Copyright © 2026 Choi Yunhyok. All rights reserved.</footer>
+
+    <script src="janggi-engine.js"></script>
+    <script src="janggi.js"></script>
+</body>
+</html>
