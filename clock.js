@@ -45,6 +45,11 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         "    transform-origin: 0 100%; filter: drop-shadow(1px 2px 1.5px rgba(0,0,0,.35)); transition: opacity .4s; }",
         ".dc-note-text.dc-fade { transition: opacity .3s; opacity: 0; }",
         ".dc-dot { opacity: 0; transition: opacity .1s; }",
+        /* 펜을 잉크병에서 들어 올릴 때 떨어지는 잉크 한 방울 */
+        ".dc-ink-drop { position: absolute; left: 0; top: 0; width: 3px; height: 4px; margin: -1px 0 0 -1.5px; border-radius: 50% 50% 50% 50% / 40% 40% 60% 60%;",
+        "    background: #1a120a; pointer-events: none; opacity: 0; }",
+        ".dc-ink-drop.fall { animation: dcDrop .42s ease-in forwards; }",
+        "@keyframes dcDrop { 0% { opacity: 1; transform: translateY(0) scaleY(1); } 80% { opacity: 1; transform: translateY(var(--fall, 12px)) scaleY(1.5); } 100% { opacity: 0; transform: translateY(var(--fall, 12px)) scaleY(1.5); } }",
         ".dc-dot.on { opacity: 1; }",
         /* 폰: 제목(밑줄) 아래에 시계와 파란 칸을 작게 나란히 (다른 위젯에는 영향 없음) */
         ".dc-mobile { --dc-w: " + MOBILE_CLOCK_WIDTH + "px; --dc-h: calc(var(--dc-w) * " + (VB_H / VB_W) + "); margin: 0 0 20px; position: relative; z-index: 1; }",
@@ -243,6 +248,9 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         var SPEED = 55;                 // 글씨 쓰는 속도 (px/초)
         var DOT_WAIT = 1000;            // 마지막 글자(fine의 e)를 쓰고 첫 점까지 (ms)
         var DOT_GAP = 500;              // 점과 점 사이 (ms)
+        var INK_DIP = true;             // 쓰기 전에 잉크병에 펜 적시기 (false면 바로 쓰기)
+        var PAPER_W = 600, PAPER_H = 550;          // note-paper.webp 크기
+        var INK_PX = 495, INK_PY = 410, INK_R = 22; // 그림 속 잉크병 입구 가운데·반지름 (그림 px)
         var pen = { x: 0, y: 0 };
         function penAt(x, y, t) {
             pen.x = x; pen.y = y;
@@ -300,20 +308,89 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
                 }, Math.max(0, at - MOVE));
             });
         }
+        /* ---------- 쓰기 전에 잉크병(종이 오른쪽 아래 그림)에 펜 적시기 ---------- */
+        var drop = document.createElement("span");
+        drop.className = "dc-ink-drop";
+        drop.setAttribute("aria-hidden", "true");
+        note.appendChild(drop);
+        // 종이 그림은 칸에 꽉 차게(cover) 깔려 있으므로, 칸 크기에 따라 잉크병 입구 자리를 계산해요
+        function inkSpot() {
+            var W = note.clientWidth, H = note.clientHeight;
+            if (!W || !H) return null;
+            var s = Math.max(W / PAPER_W, H / PAPER_H);
+            var x = (W - PAPER_W * s) / 2 + INK_PX * s, y = (H - PAPER_H * s) / 2 + INK_PY * s;
+            if (x < 8 || x > W - 8 || y < 30 || y > H - 4) return null;   // 잉크병이 칸 밖으로 잘리면 적시기 생략
+            return { x: x, y: y, r: INK_R * s };
+        }
+        // 펜을 a → b 로 부드럽게 옮겨요 (arc: 가운데에서 위로 뜨는 높이)
+        function move(a, b, ms, arc, cb) {
+            var s0 = null;
+            function f(t) {
+                if (s0 === null) s0 = t;
+                var q = Math.min(1, (t - s0) / ms), e = q < 0.5 ? 2 * q * q : 1 - Math.pow(-2 * q + 2, 2) / 2;
+                penAt(a.x + (b.x - a.x) * e, a.y + (b.y - a.y) * e - Math.sin(q * Math.PI) * (arc || 0), t);
+                if (q < 1) requestAnimationFrame(f); else cb();
+            }
+            requestAnimationFrame(f);
+        }
+        // 잉크 속에서 살짝 휘젓기
+        function stir(c, ms, cb) {
+            var s0 = null;
+            function f(t) {
+                if (s0 === null) s0 = t;
+                var q = Math.min(1, (t - s0) / ms);
+                penAt(c.x + Math.sin(q * Math.PI * 4) * 2.2, c.y + Math.sin(q * Math.PI * 2) * 1.2, t);
+                if (q < 1) requestAnimationFrame(f); else cb();
+            }
+            requestAnimationFrame(f);
+        }
+        function dipInk(done) {
+            var ink = INK_DIP && inkSpot();
+            if (!ink) { quill.style.opacity = "1"; done(); return; }
+            var above = { x: ink.x + 3, y: ink.y - 30 };          // 잉크병 위
+            var inside = { x: ink.x, y: ink.y + ink.r * 0.25 };   // 잉크 속
+            var lift = { x: ink.x + 1, y: ink.y - 12 };           // 살짝 들어 올림 (방울이 떨어지는 자리)
+            var rim = { x: ink.x + ink.r * 0.8, y: ink.y - 3 };   // 병 입구 가장자리 (남은 잉크 털기)
+            var first = lines[0].el, lr = rel(first.getBoundingClientRect());
+            var start = { x: lr.left + 2, y: lr.top + lr.height * 0.62 };   // 첫 글자 쓰는 자리
+            penAt(above.x, above.y, performance.now());
+            quill.style.opacity = "1";                              // 잉크병 위에서 펜이 나타나요
+            setTimeout(function () {
+                move(above, inside, 420, 0, function () {           // 쑥 담그고
+                    stir(inside, 520, function () {                 // 휘휘 적시고
+                        move(inside, lift, 300, 0, function () {    // 들어 올리면
+                            drop.style.left = lift.x + "px";        // 잉크 한 방울이 병으로 똑
+                            drop.style.top = lift.y + "px";
+                            drop.style.setProperty("--fall", (inside.y - lift.y) + "px");
+                            drop.classList.remove("fall"); void drop.offsetWidth; drop.classList.add("fall");
+                            setTimeout(function () {
+                                move(lift, rim, 220, 3, function () {        // 가장자리에 톡 털고
+                                    move(rim, { x: rim.x, y: rim.y - 8 }, 160, 0, function () {
+                                        move({ x: rim.x, y: rim.y - 8 }, start, 750, 22, function () {   // 첫 줄로 날아가요
+                                            setTimeout(done, 120);
+                                        });
+                                    });
+                                });
+                            }, 380);
+                        });
+                    });
+                });
+            }, 380);
+        }
+
         function run() {
             noteText.classList.remove("dc-fade");
             lines.forEach(function (l) {
                 l.el.style.clipPath = "inset(0 100% 0 0)";
                 l.dots.forEach(function (d) { d.classList.remove("on"); });
             });
-            quill.style.opacity = "1";
-            writeLine(0, function () {
+            dipInk(function () { writeLine(0, function () {
                 quill.style.opacity = "0";                     // 다 쓰면 펜이 사라져요
                 setTimeout(function () {
                     noteText.classList.add("dc-fade");        // 잠시 뒤 지우고 다시 쓰기
                     setTimeout(run, 350);
                 }, (window.matchMedia(MOBILE_QUERY).matches ? NOTE_HOLD_MOBILE : NOTE_HOLD) * 1000);
-            });
+            }); });
         }
         var ready = document.fonts && document.fonts.load ? document.fonts.load("28px 'Great Vibes'").catch(function () {}) : Promise.resolve();
         Promise.race([ready, new Promise(function (r) { setTimeout(r, 2500); })]).then(function () { setTimeout(run, 400); });
