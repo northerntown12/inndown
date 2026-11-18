@@ -637,6 +637,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         var key = normalize(filterText || "");
         var count = 0;
 
+        hotEl = null;
         dropdownEl.innerHTML = "";
 
         if (!key) {
@@ -687,6 +688,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
     }
 
     function closeDropdown() {
+        clearHot();
         dropdownEl.hidden = true;
         toggleBtn.setAttribute("aria-expanded", "false");
     }
@@ -852,6 +854,109 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
             closeDropdown();
         }
     });
+
+    /* ===== 지역 목록: 손가락·마우스가 지나가는 지역을 빨갛게 (2026-11-19) =====
+       - PC: 마우스가 지나가는 지역이 빨간색(지난번 고른 지역과 같은 색)으로 바뀌고, 지나간 칸은 0.35초에 걸쳐 원래대로.
+       - 폰: 목록 위에서 손가락을 끌면 지나가는 지역이 빨갛게. 이때 목록은 손가락을 따라 스크롤되지 않고,
+         손가락이 목록 위·아래 끝 가까이 가면 그쪽으로 저절로 스크롤돼요.
+         살짝 누르기(탭)는 예전처럼 그 지역 선택, 끌다가 손을 떼면 선택하지 않아요.
+       - 색은 css가 예전 것(캐시)이어도 되게 여기서 직접 칠해요. */
+    var HOT_BG = "rgba(255, 36, 0, 0.6)";
+    var HOT_FADE = "background-color 0.35s ease";
+    var hotEl = null;
+
+    function setHot(btn) {
+        if (btn === hotEl) return;
+        clearHot();
+        if (!btn) return;
+        hotEl = btn;
+        btn.style.transition = "none";
+        btn.style.backgroundColor = HOT_BG;
+    }
+    function clearHot() {
+        if (!hotEl) return;
+        hotEl.style.transition = HOT_FADE;
+        hotEl.style.backgroundColor = "";
+        hotEl = null;
+    }
+    function optionAt(x, y) {
+        var el = document.elementFromPoint(x, y);
+        var btn = el && el.closest ? el.closest(".weather-option") : null;
+        return btn && dropdownEl.contains(btn) ? btn : null;
+    }
+
+    // PC (마우스·펜)
+    dropdownEl.addEventListener("pointermove", function (e) {
+        if (e.pointerType === "touch") return;
+        setHot(e.target.closest ? e.target.closest(".weather-option") : null);
+    });
+    dropdownEl.addEventListener("pointerleave", function (e) {
+        if (e.pointerType !== "touch") clearHot();
+    });
+
+    // 폰 (손가락으로 끌기)
+    dropdownEl.style.touchAction = "none";        // 끌 때 목록이 같이 밀리지 않게 (탭은 그대로 됨)
+    var touch = null;                              // {x, y, sx, sy, moved}
+    var scrollTimer = null;
+    var EDGE = 40;                                 // 위·아래 끝에서 이 안쪽이면 저절로 스크롤(px)
+
+    function touchHot() {
+        if (!touch) return;
+        // 손가락이 목록 위·아래로 살짝 벗어나도 목록 끝 칸이 빨갛게 (저절로 스크롤되는 동안에도)
+        var r = dropdownEl.getBoundingClientRect();
+        var x = Math.min(Math.max(touch.x, r.left + 6), r.right - 6);
+        var y = Math.min(Math.max(touch.y, r.top + 6), r.bottom - 6);
+        setHot(optionAt(x, y));
+    }
+    function edgeScroll() {
+        scrollTimer = null;
+        if (!touch || dropdownEl.hidden) return;
+        var r = dropdownEl.getBoundingClientRect();
+        var step = 0;
+        if (touch.y < r.top + EDGE) step = -Math.ceil((r.top + EDGE - touch.y) / 4) - 2;
+        else if (touch.y > r.bottom - EDGE) step = Math.ceil((touch.y - (r.bottom - EDGE)) / 4) + 2;
+        if (step) {
+            var before = dropdownEl.scrollTop;
+            dropdownEl.scrollTop = before + step;
+            if (dropdownEl.scrollTop !== before) touchHot();
+        }
+        scrollTimer = setTimeout(edgeScroll, 16);
+    }
+    dropdownEl.addEventListener("touchstart", function (e) {
+        var t = e.touches[0];
+        touch = { x: t.clientX, y: t.clientY, sx: t.clientX, sy: t.clientY, moved: false };
+        touchHot();
+        if (!scrollTimer) edgeScroll();
+    }, { passive: true });
+    dropdownEl.addEventListener("touchmove", function (e) {
+        if (!touch) return;
+        var t = e.touches[0];
+        touch.x = t.clientX;
+        touch.y = t.clientY;
+        if (Math.abs(touch.x - touch.sx) > 10 || Math.abs(touch.y - touch.sy) > 10) touch.moved = true;
+        if (e.cancelable) e.preventDefault();      // 페이지가 같이 밀리지 않게
+        touchHot();
+    }, { passive: false });
+    function touchDone() {
+        if (touch && touch.moved) {
+            sweptAt = Date.now();                  // 끌다가 뗀 건 선택하지 않아요
+            clearHot();
+        } else {
+            setTimeout(clearHot, 250);             // 탭이면 잠깐 빨갛게 보였다가
+        }
+        touch = null;
+        clearTimeout(scrollTimer);
+        scrollTimer = null;
+    }
+    var sweptAt = 0;
+    dropdownEl.addEventListener("touchend", touchDone);
+    dropdownEl.addEventListener("touchcancel", touchDone);
+    dropdownEl.addEventListener("click", function (e) {
+        if (Date.now() - sweptAt < 350) {
+            e.stopPropagation();
+            e.preventDefault();
+        }
+    }, true);
 
     // 검색줄이나 목록 바깥을 누르면 닫아요. (화면 크기 변화나 키보드 때문에는 닫지 않아요)
     document.addEventListener("pointerdown", function (e) {
