@@ -417,3 +417,15 @@
     html body .tools-widget .tw-item[href^="loan"] small,      html body .tools-widget .tw-item[href^="loan"] .gw-go      { color: #a33b6b; }
     html body .tools-widget .tw-item[href^="tools"] small,     html body .tools-widget .tw-item[href^="tools"] .gw-go     { color: #5a57b5; }
 }
+
+/* ===== 2026-11-18: 도구 창에서 홈으로 왔을 때 "생활 도구로 돌아가기" 버튼 (index.html 맨 아래 스크립트가 붙여요) ===== */
+.back-to-tools {
+    position: fixed; left: 14px; top: 14px; z-index: 2147482000;
+    display: inline-flex; align-items: center; gap: 6px; padding: 9px 16px 9px 11px;
+    border-radius: 999px; background: linear-gradient(180deg, #4d4aa6, #36347a); color: #fff;
+    font: 700 0.92rem/1 "Noto Sans KR", "Malgun Gothic", sans-serif; text-decoration: none;
+    box-shadow: 0 6px 18px rgba(30, 28, 80, 0.35), inset 0 0 0 1px rgba(255, 255, 255, 0.25);
+}
+.back-to-tools svg { width: 16px; height: 16px; }
+.back-to-tools:hover { background: linear-gradient(180deg, #5a57b5, #3f3c8c); }
+@media screen and (max-width: 768px) { .back-to-tools { left: 10px; top: auto; bottom: 14px; font-size: 0.95rem; padding: 11px 18px 11px 13px; } }

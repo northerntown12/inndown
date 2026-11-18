@@ -328,5 +328,24 @@
         if (win) win.focus(); else window.open(url, "_blank");
     });
     </script>
+    <!-- 2026-11-18: 도구 창(생활 도구 모음 등)에서 홈의 칸(계산기·환율 등)을 눌러 이 홈으로 왔으면,
+         왼쪽 위에 "생활 도구로 돌아가기" 버튼을 띄워요. 누르면 바로 전 도구 페이지로 (모양은 tools.css 맨 끝 .back-to-tools) -->
+    <script>
+    (function () {
+        var EN = document.documentElement.lang === "en";
+        var TOOL_RE = /\/(tools|units|age|severance|charcount|loan)(-en)?\.html$/i;
+        var fromTool = false;
+        try { var r = document.referrer ? new URL(document.referrer) : null; fromTool = !!(r && r.origin === location.origin && TOOL_RE.test(r.pathname)); } catch (e) {}
+        if (!fromTool && window.name !== "toolsWin") return;
+        var a = document.createElement("a");
+        a.className = "back-to-tools";
+        a.href = EN ? "tools-en.html" : "tools.html";
+        a.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.5 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>' + (EN ? "Back to tools" : "생활 도구로 돌아가기");
+        a.addEventListener("click", function (e) {
+            if (fromTool && history.length > 1) { e.preventDefault(); history.back(); }   // 보던 도구 페이지로
+        });
+        document.body.appendChild(a);
+    })();
+    </script>
 </body>
 </html>
