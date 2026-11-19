@@ -643,7 +643,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         if (!key) {
             var here = document.createElement("button");
             here.type = "button";
-            here.className = "weather-option weather-option-loc" + (currentPlace.auto ? " current" : "");
+            here.className = "weather-option weather-option-loc";   // 직전 지역 빨간 표시는 뺐어요 (2026-11-19, 검색창에만 보여요)
             here.textContent = "📍 " + LOC_LABEL;
             here.addEventListener("click", function () { useMyLocation(false); });
             dropdownEl.appendChild(here);
@@ -658,7 +658,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
 
             var btn = document.createElement("button");
             btn.type = "button";
-            btn.className = "weather-option" + (p.label === currentPlace.label ? " current" : "");
+            btn.className = "weather-option";
             btn.textContent = nameOf(p);
             btn.addEventListener("click", function () {
                 choosePreset(p);
@@ -855,13 +855,13 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         }
     });
 
-    /* ===== 지역 목록: 손가락·마우스가 지나가는 지역을 빨갛게 (2026-11-19) =====
-       - PC: 마우스가 지나가는 지역이 빨간색(지난번 고른 지역과 같은 색)으로 바뀌고, 지나간 칸은 0.35초에 걸쳐 원래대로.
-       - 폰: 목록 위에서 손가락을 끌면 지나가는 지역이 빨갛게. 이때 목록은 손가락을 따라 스크롤되지 않고,
-         손가락이 목록 위·아래 끝 가까이 가면 그쪽으로 저절로 스크롤돼요.
-         살짝 누르기(탭)는 예전처럼 그 지역 선택, 끌다가 손을 떼면 선택하지 않아요.
+    /* ===== 지역 목록: 손가락·마우스가 지나가는 지역을 파랗게 (2026-11-19) =====
+       - PC: 마우스가 지나가는 지역이 파란색으로 바뀌고, 지나간 칸은 0.35초에 걸쳐 원래대로.
+       - 폰: 손가락을 올리면 목록도 위로 올라가요(보통 스크롤). 손가락 아래를 지나가는 지역이 파랗게,
+         손을 떼고 목록이 미끄러지는 동안에도 그 자리를 지나가는 지역이 파랗게 바뀌어요.
+       - 직전에 고른 지역은 목록에 따로 칠하지 않아요 (검색창에만 보여요).
        - 색은 css가 예전 것(캐시)이어도 되게 여기서 직접 칠해요. */
-    var HOT_BG = "rgba(255, 36, 0, 0.6)";
+    var HOT_BG = "rgba(40, 120, 255, 0.7)";
     var HOT_FADE = "background-color 0.35s ease";
     var hotEl = null;
 
@@ -894,69 +894,46 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         if (e.pointerType !== "touch") clearHot();
     });
 
-    // 폰 (손가락으로 끌기)
-    dropdownEl.style.touchAction = "none";        // 끌 때 목록이 같이 밀리지 않게 (탭은 그대로 됨)
-    var touch = null;                              // {x, y, sx, sy, moved}
-    var scrollTimer = null;
-    var EDGE = 40;                                 // 위·아래 끝에서 이 안쪽이면 저절로 스크롤(px)
+    // 폰 (손가락) - 스크롤은 브라우저 기본 그대로(손가락 방향으로 목록이 움직임)
+    var finger = null;          // 마지막 손가락 자리 {x, y}
+    var touching = false;
+    var idleTimer = null;
 
-    function touchHot() {
-        if (!touch) return;
-        // 손가락이 목록 위·아래로 살짝 벗어나도 목록 끝 칸이 빨갛게 (저절로 스크롤되는 동안에도)
-        var r = dropdownEl.getBoundingClientRect();
-        var x = Math.min(Math.max(touch.x, r.left + 6), r.right - 6);
-        var y = Math.min(Math.max(touch.y, r.top + 6), r.bottom - 6);
-        setHot(optionAt(x, y));
+    function fingerHot() {
+        if (finger) setHot(optionAt(finger.x, finger.y));
     }
-    function edgeScroll() {
-        scrollTimer = null;
-        if (!touch || dropdownEl.hidden) return;
-        var r = dropdownEl.getBoundingClientRect();
-        var step = 0;
-        if (touch.y < r.top + EDGE) step = -Math.ceil((r.top + EDGE - touch.y) / 4) - 2;
-        else if (touch.y > r.bottom - EDGE) step = Math.ceil((touch.y - (r.bottom - EDGE)) / 4) + 2;
-        if (step) {
-            var before = dropdownEl.scrollTop;
-            dropdownEl.scrollTop = before + step;
-            if (dropdownEl.scrollTop !== before) touchHot();
-        }
-        scrollTimer = setTimeout(edgeScroll, 16);
+    function endSoon(ms) {
+        clearTimeout(idleTimer);
+        idleTimer = setTimeout(function () {
+            if (touching) return;
+            finger = null;
+            clearHot();
+        }, ms);
     }
     dropdownEl.addEventListener("touchstart", function (e) {
         var t = e.touches[0];
-        touch = { x: t.clientX, y: t.clientY, sx: t.clientX, sy: t.clientY, moved: false };
-        touchHot();
-        if (!scrollTimer) edgeScroll();
+        touching = true;
+        clearTimeout(idleTimer);
+        finger = { x: t.clientX, y: t.clientY };
+        fingerHot();
     }, { passive: true });
     dropdownEl.addEventListener("touchmove", function (e) {
-        if (!touch) return;
         var t = e.touches[0];
-        touch.x = t.clientX;
-        touch.y = t.clientY;
-        if (Math.abs(touch.x - touch.sx) > 10 || Math.abs(touch.y - touch.sy) > 10) touch.moved = true;
-        if (e.cancelable) e.preventDefault();      // 페이지가 같이 밀리지 않게
-        touchHot();
-    }, { passive: false });
+        finger = { x: t.clientX, y: t.clientY };
+        fingerHot();
+    }, { passive: true });
+    // 목록이 움직일 때(끄는 중 + 손을 뗀 뒤 미끄러질 때) 손가락 자리를 지나가는 지역을 칠해요
+    dropdownEl.addEventListener("scroll", function () {
+        if (!finger) return;
+        fingerHot();
+        if (!touching) endSoon(180);
+    }, { passive: true });
     function touchDone() {
-        if (touch && touch.moved) {
-            sweptAt = Date.now();                  // 끌다가 뗀 건 선택하지 않아요
-            clearHot();
-        } else {
-            setTimeout(clearHot, 250);             // 탭이면 잠깐 빨갛게 보였다가
-        }
-        touch = null;
-        clearTimeout(scrollTimer);
-        scrollTimer = null;
+        touching = false;
+        endSoon(250);           // 탭이면 잠깐 파랗게 보였다가, 미끄러지는 중이면 멈출 때까지
     }
-    var sweptAt = 0;
     dropdownEl.addEventListener("touchend", touchDone);
     dropdownEl.addEventListener("touchcancel", touchDone);
-    dropdownEl.addEventListener("click", function (e) {
-        if (Date.now() - sweptAt < 350) {
-            e.stopPropagation();
-            e.preventDefault();
-        }
-    }, true);
 
     // 검색줄이나 목록 바깥을 누르면 닫아요. (화면 크기 변화나 키보드 때문에는 닫지 않아요)
     document.addEventListener("pointerdown", function (e) {
