@@ -5,7 +5,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
    - 내 편: 초(먼저 둠) / 한(나중에 둠). 내 말은 늘 아래쪽에 보여요
    - 난이도 쉬움/보통/어려움, 상차림 4가지, 글자 한자/한글
    - 판 위의 [▶ 시작]을 눌러야 대국이 시작돼요. 컴퓨터는 한 수에 1초쯤 뜸을 들이고 둬요
-   - 무르기, 한 수 쉬기(장군이 아닐 때), 기권. 200수(양쪽 합)가 넘으면 점수로 승부 (한 +1.5 덤)
+   - 무르기, 한 수 쉬기(장군이 아닐 때), 기권. 수 제한 없음 — 궁을 더 지킬 수 없으면(외통) 짐 (2026-11-19, 예전 200수 점수 승부는 뺌)
    - 기기에 기억: 하던 판 janggiState.v1, 설정 janggiSettings.v1, 기록 janggiRecord.v1, 소리 janggiMuted.v1
    ========================================================= */
 (function () {
@@ -193,7 +193,8 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
     function kingOf(side) { for (var i = 0; i < 90; i++) if (board[i] === side) return i; return -1; }
     function paintStatus() {
         var st = $("jStatus"), cho = J.material(board, 1), han = J.material(board, -1) + 1.5;
-        $("jScore").innerHTML = '<span class="cho">' + T("초", "Cho") + ' <b>' + cho + '</b></span> · <span class="han">' + T("한", "Han") + ' <b>' + han + '</b></span>' +
+        /* 2026-11-19: 판 위 점수 줄(초 n · 한 n · 수 n/200)은 사용자 요청으로 뺐어요 — html에 #jScore가 있으면 그때만 그림 */
+        if ($("jScore")) $("jScore").innerHTML = '<span class="cho">' + T("초", "Cho") + ' <b>' + cho + '</b></span> · <span class="han">' + T("한", "Han") + ' <b>' + han + '</b></span>' +
             '<small>' + T("수", "Moves") + ' ' + hist.length + '/' + MAX_PLY + '</small>';
         var txt;
         if (over) txt = over.text;
@@ -229,10 +230,6 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         var check = J.inCheck(board, turn);
         if (!legalCache.length && check) {
             finish(turn === gameSide ? "lose" : "win", turn === gameSide ? T("외통수예요. 졌어요 😢", "Checkmate. You lost 😢") : T("외통수! 이겼어요 🎉", "Checkmate! You won 🎉"));
-        } else if (hist.length >= MAX_PLY) {
-            var cho = J.material(board, 1), han = J.material(board, -1) + 1.5;
-            var mine = gameSide > 0 ? cho : han, theirs = gameSide > 0 ? han : cho;
-            finish(mine > theirs ? "win" : "lose", T("수가 다 찼어요 · 점수 ", "Move limit reached · score ") + cho + " : " + han + (mine > theirs ? T(" · 이겼어요!", " · You won!") : T(" · 졌어요", " · You lost")));
         } else if (check) {
             sndCheck(); toast(T("장군!", "Check!"));
         }

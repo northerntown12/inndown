@@ -86,7 +86,14 @@
     }
     function pieceMoves(b, i, side, mv, capOnly) {
         var t = Math.abs(b[i]), x = X(i), y = Y(i), d, k, nx, ny, j;
-        if (t === K || t === A) {
+        if (t === A) {
+            /* 2026-11-19 사용자 요청: 사는 자기 궁성 안에서 8방향(앞·뒤·옆·대각선) 어디로든 한 칸 (양쪽 같음) */
+            for (var ax = -1; ax <= 1; ax++) for (var ay = -1; ay <= 1; ay++) {
+                if (!ax && !ay) continue;
+                nx = x + ax; ny = y + ay;
+                if (ownPalace(nx, ny, side)) add(b, side, i, I(nx, ny), mv, capOnly);
+            }
+        } else if (t === K) {
             for (d = 0; d < 4; d++) {
                 nx = x + ORTH[d][0]; ny = y + ORTH[d][1];
                 if (ownPalace(nx, ny, side)) add(b, side, i, I(nx, ny), mv, capOnly);
