@@ -859,6 +859,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
        - PC: 마우스가 지나가는 지역이 파란색으로 바뀌고, 지나간 칸은 바로 원래대로 (늘 한 칸만 파랑).
        - 폰: 손가락을 올리면 목록도 위로 올라가요(보통 스크롤). 손가락 아래를 지나가는 지역이 파랗게,
          손을 떼고 목록이 미끄러지는 동안에도 그 자리를 지나가는 지역이 파랗게 바뀌어요.
+       - 손가락·마우스가 떠나도 마지막에 지나간 지역 한 칸은 파랗게 남아요 (2026-11-19 18:30). 목록을 닫으면 지워져요.
        - 직전에 고른 지역은 목록에 따로 칠하지 않아요 (검색창에만 보여요).
        - 색은 css가 예전 것(캐시)이어도 되게 여기서 직접 칠해요. */
     var HOT_BG = "rgba(40, 120, 255, 0.7)";
@@ -868,8 +869,8 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
 
     function setHot(btn) {
         if (btn === hotEl) return;
+        if (!btn) return;       // 칸 사이·목록 밖이면 마지막 파란 칸을 그대로 둬요 (18:30)
         clearHot();
-        if (!btn) return;
         hotEl = btn;
         btn.style.transition = "none";
         btn.style.backgroundColor = HOT_BG;
@@ -891,9 +892,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         if (e.pointerType === "touch") return;
         setHot(e.target.closest ? e.target.closest(".weather-option") : null);
     });
-    dropdownEl.addEventListener("pointerleave", function (e) {
-        if (e.pointerType !== "touch") clearHot();
-    });
+    // 마우스가 목록 밖으로 나가도 마지막 칸은 파랗게 남겨 둬요 (2026-11-19 18:30 사용자 요청). 목록을 닫을 때 지워져요
 
     // 폰 (손가락) - 스크롤은 브라우저 기본 그대로(손가락 방향으로 목록이 움직임)
     var finger = null;          // 마지막 손가락 자리 {x, y}
@@ -907,8 +906,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         clearTimeout(idleTimer);
         idleTimer = setTimeout(function () {
             if (touching) return;
-            finger = null;
-            clearHot();
+            finger = null;          // 마지막 칸은 파랗게 남겨 둬요 (18:30)
         }, ms);
     }
     dropdownEl.addEventListener("touchstart", function (e) {
