@@ -224,3 +224,13 @@ body {
     :root { --speed: 0ms; }
     .g-tile.new b, .g-tile.pop b { animation: none; }
 }
+
+/* 배경음악 버튼 (2026-11-20) — 소리 버튼과 같은 유리 모양, 음표는 흰 선+흰 머리 */
+.g-music svg { width: 25px; height: 25px; }
+.g-music .g-note { fill: #fff; filter: drop-shadow(0 1px 1.2px rgba(20, 40, 90, 0.55)); }
+.g-music.muted .g-note { opacity: 0.45; }
+.g-statusrow .g-music { margin-right: -2px; }
+@media (max-width: 760px) {
+    .g-statusrow { gap: 8px; }
+    .g-mute { width: 40px; height: 40px; }
+}
