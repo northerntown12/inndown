@@ -2,14 +2,14 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <script src="lang.js?v=1"></script>
+    <script src="lang.js?v=2"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>2048 · Records after work</title>
     <meta name="description" content="같은 숫자 타일을 밀어서 합쳐 2048을 만드는 퍼즐 게임.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="game2048.css?v=4">
+    <link rel="stylesheet" href="game2048.css?v=5">
 </head>
 <body>
     <header class="g-top">
@@ -25,6 +25,15 @@
             <div class="g-statusrow">
                 <div class="g-score"><span>점수</span><b id="gScore">0</b><i class="g-plus" id="gPlus"></i></div>
                 <div class="g-score g-best"><span>최고 점수</span><b id="gBest">0</b></div>
+                <!-- 배경음악 끄기·켜기 (2026-11-20, 끄면 빨간 빗금) -->
+                <button type="button" class="g-mute g-music" id="gMusic" aria-label="배경음악 끄기" title="배경음악 끄기">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path class="g-spk" d="M9 17.2V6.6l10-2.4v10.4"/>
+                        <ellipse class="g-spk" cx="6.6" cy="17.4" rx="2.9" ry="2.2"/>
+                        <ellipse class="g-spk" cx="16.6" cy="14.8" rx="2.9" ry="2.2"/>
+                        <path class="g-slash" d="M20.5 3.5 4 20"/>
+                    </svg>
+                </button>
                 <!-- 소리 끄기·켜기 (끄면 스피커에 오른쪽 위→왼쪽 아래 빨간 빗금) -->
                 <button type="button" class="g-mute" id="gSound" aria-label="소리 끄기" title="소리 끄기">
                     <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -72,6 +81,7 @@
                     <li>한 번 밀 때마다 빈칸에 새 타일(2, 가끔 4)이 하나 생겨요.</li>
                     <li><b>타일 하나에 2048</b>을 만들면 성공! 계속해서 더 큰 숫자에 도전할 수도 있어요.</li>
                     <li>빈칸이 없고 더 합칠 것도 없으면 끝나요. <b>되돌리기</b>는 바로 전 한 번만 돼요.</li>
+                    <li><b>♪ 버튼</b>으로 배경음악을, 스피커 버튼으로 효과음을 끄고 켤 수 있어요. 배경음악은 처음 키를 누르거나 판을 밀면 나와요.</li>
                     <li>하던 게임은 이 기기에 저장돼서, 창을 닫았다 열어도 이어서 할 수 있어요.</li>
                 </ul>
             </details>
@@ -80,6 +90,6 @@
 
     <footer class="g-foot">Copyright © 2026 Choi Yunhyok. All rights reserved.</footer>
 
-    <script src="game2048.js?v=2"></script>
+    <script src="game2048.js?v=4"></script>
 </body>
 </html>

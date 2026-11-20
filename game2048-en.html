@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <script src="lang.js?v=1"></script>
+    <script src="lang.js?v=2"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>2048 · Records after work</title>
     <meta name="description" content="A puzzle game: slide and merge matching number tiles to make 2048.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="game2048.css?v=4">
+    <link rel="stylesheet" href="game2048.css?v=5">
 </head>
 <body>
     <header class="g-top">
@@ -24,6 +24,15 @@
             <div class="g-statusrow">
                 <div class="g-score"><span>Score</span><b id="gScore">0</b><i class="g-plus" id="gPlus"></i></div>
                 <div class="g-score g-best"><span>Best</span><b id="gBest">0</b></div>
+                <!-- 배경음악 끄기·켜기 (2026-11-20, 끄면 빨간 빗금) -->
+                <button type="button" class="g-mute g-music" id="gMusic" aria-label="Music off" title="Music off">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path class="g-spk" d="M9 17.2V6.6l10-2.4v10.4"/>
+                        <ellipse class="g-spk" cx="6.6" cy="17.4" rx="2.9" ry="2.2"/>
+                        <ellipse class="g-spk" cx="16.6" cy="14.8" rx="2.9" ry="2.2"/>
+                        <path class="g-slash" d="M20.5 3.5 4 20"/>
+                    </svg>
+                </button>
                 <button type="button" class="g-mute" id="gSound" aria-label="Sound off" title="Sound off">
                     <svg viewBox="0 0 24 24" aria-hidden="true">
                         <path class="g-spk" d="M4 9.2h3.6L12.4 5v14l-4.8-4.2H4z"/>
@@ -68,6 +77,7 @@
                     <li>Each move adds a new tile (a 2, sometimes a 4) in an empty spot.</li>
                     <li>Make <b>a single 2048 tile</b> to win! You can keep going for bigger numbers.</li>
                     <li>The game ends when the board is full and nothing can merge. <b>Undo</b> works for the last move only.</li>
+                    <li>The <b>♪ button</b> turns the background music on or off, and the speaker button does the same for sound effects. The music starts once you press a key or slide the board.</li>
                     <li>Your game is saved on this device, so you can close the window and pick up where you left off.</li>
                 </ul>
             </details>
@@ -76,6 +86,6 @@
 
     <footer class="g-foot">Copyright © 2026 Choi Yunhyok. All rights reserved.</footer>
 
-    <script src="game2048.js?v=2"></script>
+    <script src="game2048.js?v=4"></script>
 </body>
 </html>
