@@ -61,12 +61,17 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         g.gain.exponentialRampToValueAtTime(0.18, t + 0.02); g.gain.exponentialRampToValueAtTime(0.001, t + 0.11);
         src.connect(f); f.connect(g); g.connect(a.destination); src.start(t);
     }
-    /* 합쳐질 때 "띵" — 숫자가 클수록 높은 소리 */
+    /* 합쳐질 때 "띵" — 숫자가 클수록 높은 소리
+       (2026-11-22) 배경음악(C장조)과 어울리게 도·레·미·솔·라(5음 음계)로만 올라감:
+       4 도4 · 8 레4 · 16 미4 · 32 솔4 · 64 라4 · 128 도5 · 256 레5 · 512 미5 · 1024 솔5 · 2048 이상 라5(880Hz) */
+    var MERGE_PENTA = [0, 2, 4, 7, 9];              // 도·레·미·솔·라 (도에서 반음 몇 개 위)
     function sndMerge(v) {
         var a = audio(); if (!a) return;
         var t = a.currentTime + SLIDE_MS / 1000;
         var k = Math.log2(v);                       // 4 → 2, 2048 → 11
-        var freq = 330 * Math.pow(2, (k - 2) * 2 / 12);
+        var i = Math.max(0, Math.min(9, k - 2));    // 2048보다 커도 라5에서 멈춤
+        var semi = MERGE_PENTA[i % 5] + 12 * Math.floor(i / 5);
+        var freq = 261.63 * Math.pow(2, semi / 12); // 261.63Hz = 도4
         [[freq, 0.22, "triangle"], [freq * 2, 0.06, "sine"]].forEach(function (n) {
             var o = a.createOscillator(); o.type = n[2]; o.frequency.value = n[0];
             var g = a.createGain();
@@ -91,7 +96,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
     function sndWin()  { tones([[523, 0, 0.18], [659, 0.13, 0.18], [784, 0.26, 0.18], [1047, 0.39, 0.5]]); }
     function sndLose() { tones([[392, 0, 0.25], [330, 0.2, 0.25], [262, 0.4, 0.5]], "sine", 0.2); }
     function sndClick() { tones([[880, 0, 0.05]], "sine", 0.12); }
-    function sndBump() { tones([[160, 0, 0.07]], "sine", 0.1); }   // 움직일 수 없는 쪽으로 밀었을 때
+    function sndBump() { tones([[130.81, 0, 0.07]], "sine", 0.1); }   // 움직일 수 없는 쪽으로 밀었을 때 (2026-11-22 곡의 으뜸음 낮은 도3에 맞춤, 예전 160Hz)
 
 
     /* ======================= 배경음악 (2026-11-20) =======================
