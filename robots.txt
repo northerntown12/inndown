@@ -1,0 +1,6 @@
+# wowezbox.com (2026-11-22)
+User-agent: *
+Allow: /
+Disallow: /game2048-1.html
+
+Sitemap: https://wowezbox.com/sitemap.xml

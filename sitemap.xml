@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- wowezbox.com 사이트맵 (2026-11-22). 새 글·새 페이지를 올리면 여기에 <url> 한 묶음 추가 -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://wowezbox.com/</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://wowezbox.com/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wowezbox.com/index-en.html"/>
+    <lastmod>2026-11-22</lastmod>
+  </url>
+  <url>
+    <loc>https://wowezbox.com/index-en.html</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://wowezbox.com/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wowezbox.com/index-en.html"/>
+    <lastmod>2026-11-22</lastmod>
+  </url>
+  <url>
+    <loc>https://wowezbox.com/blog.html</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://wowezbox.com/blog.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wowezbox.com/blog-en.html"/>
+    <lastmod>2026-11-22</lastmod>
+  </url>
+  <url>
+    <loc>https://wowezbox.com/blog-en.html</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://wowezbox.com/blog.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wowezbox.com/blog-en.html"/>
+    <lastmod>2026-11-22</lastmod>
+  </url>
+  <url>
+    <loc>https://wowezbox.com/about.html</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://wowezbox.com/about.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wowezbox.com/about-en.html"/>
+    <lastmod>2026-11-22</lastmod>
+  </url>
+  <url>
+    <loc>https://wowezbox.com/about-en.html</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://wowezbox.com/about.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wowezbox.com/about-en.html"/>
+    <lastmod>2026-11-22</lastmod>
+  </url>
+  <url>
+    <loc>https://wowezbox.com/contact.html</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://wowezbox.com/contact.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wowezbox.com/contact-en.html"/>
+    <lastmod>2026-11-22</lastmod>
+  </url>
+  <url>
+    <loc>https://wowezbox.com/contact-en.html</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://wowezbox.com/contact.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wowezbox.com/contact-en.html"/>
+    <lastmod>2026-11-22</lastmod>
+  </url>
+  <url>
+    <loc>https://wowezbox.com/privacy.html</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://wowezbox.com/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wowezbox.com/privacy-en.html"/>
+    <lastmod>2026-11-22</lastmod>
+  </url>
+  <url>
+    <loc>https://wowezbox.com/privacy-en.html</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://wowezbox.com/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wowezbox.com/privacy-en.html"/>
+    <lastmod>2026-11-22</lastmod>
+  </url>
+  <url>
+    <loc>https://wowezbox.com/tools.html</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://wowezbox.com/tools.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wowezbox.com/tools-en.html"/>
+    <lastmod>2026-11-22</lastmod>
+  </url>
+  <url>
+    <loc>https://wowezbox.com/tools-en.html</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://wowezbox.com/tools.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wowezbox.com/tools-en.html"/>
+    <lastmod>2026-11-22</lastmod>
+  </url>
+  <url>
+    <loc>https://wowezbox.com/units.html</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://wowezbox.com/units.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wowezbox.com/units-en.html"/>
+    <lastmod>2026-11-22</lastmod>
+  </url>
+  <url>
+    <loc>https://wowezbox.com/units-en.html</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://wowezbox.com/units.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wowezbox.com/units-en.html"/>
+    <lastmod>2026-11-22</lastmod>
+  </url>
+  <url>
+    <loc>https://wowezbox.com/age.html</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://wowezbox.com/age.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wowezbox.com/age-en.html"/>
+    <lastmod>2026-11-22</lastmod>
+  </url>
+  <url>
+    <loc>https://wowezbox.com/age-en.html</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://wowezbox.com/age.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wowezbox.com/age-en.html"/>
+    <lastmod>2026-11-22</lastmod>
+  </url>
+  <url>
+    <loc>https://wowezbox.com/loan.html</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://wowezbox.com/loan.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wowezbox.com/loan-en.html"/>
+    <lastmod>2026-11-22</lastmod>
+  </url>
+  <url>
+    <loc>https://wowezbox.com/loan-en.html</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://wowezbox.com/loan.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wowezbox.com/loan-en.html"/>
+    <lastmod>2026-11-22</lastmod>
+  </url>
+  <url>
+    <loc>https://wowezbox.com/severance.html</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://wowezbox.com/severance.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wowezbox.com/severance-en.html"/>
+    <lastmod>2026-11-22</lastmod>
+  </url>
+  <url>
+    <loc>https://wowezbox.com/severance-en.html</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://wowezbox.com/severance.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wowezbox.com/severance-en.html"/>
+    <lastmod>2026-11-22</lastmod>
+  </url>
+  <url>
+    <loc>https://wowezbox.com/charcount.html</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://wowezbox.com/charcount.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wowezbox.com/charcount-en.html"/>
+    <lastmod>2026-11-22</lastmod>
+  </url>
+  <url>
+    <loc>https://wowezbox.com/charcount-en.html</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://wowezbox.com/charcount.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wowezbox.com/charcount-en.html"/>
+    <lastmod>2026-11-22</lastmod>
+  </url>
+  <url>
+    <loc>https://wowezbox.com/omok.html</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://wowezbox.com/omok.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wowezbox.com/omok-en.html"/>
+    <lastmod>2026-11-22</lastmod>
+  </url>
+  <url>
+    <loc>https://wowezbox.com/omok-en.html</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://wowezbox.com/omok.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wowezbox.com/omok-en.html"/>
+    <lastmod>2026-11-22</lastmod>
+  </url>
+  <url>
+    <loc>https://wowezbox.com/game2048.html</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://wowezbox.com/game2048.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wowezbox.com/game2048-en.html"/>
+    <lastmod>2026-11-22</lastmod>
+  </url>
+  <url>
+    <loc>https://wowezbox.com/game2048-en.html</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://wowezbox.com/game2048.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wowezbox.com/game2048-en.html"/>
+    <lastmod>2026-11-22</lastmod>
+  </url>
+  <url>
+    <loc>https://wowezbox.com/word.html</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://wowezbox.com/word.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wowezbox.com/word-en.html"/>
+    <lastmod>2026-11-22</lastmod>
+  </url>
+  <url>
+    <loc>https://wowezbox.com/word-en.html</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://wowezbox.com/word.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wowezbox.com/word-en.html"/>
+    <lastmod>2026-11-22</lastmod>
+  </url>
+  <url>
+    <loc>https://wowezbox.com/mines.html</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://wowezbox.com/mines.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wowezbox.com/mines-en.html"/>
+    <lastmod>2026-11-22</lastmod>
+  </url>
+  <url>
+    <loc>https://wowezbox.com/mines-en.html</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://wowezbox.com/mines.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wowezbox.com/mines-en.html"/>
+    <lastmod>2026-11-22</lastmod>
+  </url>
+  <url>
+    <loc>https://wowezbox.com/janggi.html</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://wowezbox.com/janggi.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wowezbox.com/janggi-en.html"/>
+    <lastmod>2026-11-22</lastmod>
+  </url>
+  <url>
+    <loc>https://wowezbox.com/janggi-en.html</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://wowezbox.com/janggi.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wowezbox.com/janggi-en.html"/>
+    <lastmod>2026-11-22</lastmod>
+  </url>
+</urlset>
