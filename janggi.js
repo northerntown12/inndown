@@ -252,7 +252,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
 
     /* ---------- 컴퓨터 ---------- */
     var worker = null, reqId = 0;
-    try { worker = new Worker("janggi-engine.js"); } catch (e) { worker = null; }
+    try { worker = new Worker("janggi-engine.js?v=2");   /* ?v= 번호: 엔진을 고치면 같이 올리기 (html도) */ } catch (e) { worker = null; }
     function stopThinking() { reqId++; thinking = false; }
     function computerTurn() {
         if (over) return;

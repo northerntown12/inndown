@@ -7,6 +7,7 @@
    - 포: 다른 말 하나를 넘어서만 움직임, 포는 넘을 수도 잡을 수도 없음
    - 졸: 앞·옆 한 칸, 상대 궁성 안에서는 대각선 앞으로도
    - 컴퓨터: 알파베타 탐색 + 잡기 수 끝까지 보기(quiescence)
+   - 2026-11-22: 졸만 앞으로 미는 버릇 고침 (판 평가 바꿈 + 비슷한 수 중 무작위)
    ========================================================= */
 (function (global) {
     "use strict";
@@ -212,25 +213,41 @@
         return s;
     }
 
-    /* ---------------- 판 평가 (둘 차례인 쪽에서 본 점수) ---------------- */
+    /* ---------------- 판 평가 (둘 차례인 쪽에서 본 점수) ----------------
+       2026-11-22: 컴퓨터가 졸만 앞으로 미는 버릇 고침
+       - 졸: 자기 진영 안에서 한 칸 나가는 것엔 거의 점수 없음, 강을 건넌 뒤부터 점수 (예전엔 첫 칸부터 +18)
+       - 졸 두 개가 옆으로 나란히 붙어 있으면 서로 지켜 줘서 + (옆으로 붙이는 수도 두게)
+       - 마·상이 처음 자리(맨 뒷줄)에 그대로 있으면 - (말을 꺼내 쓰게)
+       - 차는 앞뒤옆으로 갈 수 있는 빈칸이 많을수록 + (길 열린 차) */
     function evaluate(b, side) {
         var s = 0;
         for (var i = 0; i < 90; i++) {
             var p = b[i]; if (!p) continue;
             var t = Math.abs(p), own = p > 0 ? 1 : -1, x = X(i), y = Y(i);
             var v = VAL[t];
-            var adv = own > 0 ? 9 - y : y;                    // 앞으로 나간 정도 (0~9)
+            var adv = own > 0 ? 9 - y : y;                    // 앞으로 나간 정도 (0~9, 졸은 3에서 시작)
             if (t === P) {
-                v += adv >= 4 ? 18 + (adv - 4) * 12 : 0;      // 강 건넌 졸은 조금 더
-                if (adv >= 7 && x >= 3 && x <= 5) v += 25;    // 상대 궁성 근처
+                if (adv >= 5) v += 12 + (adv - 5) * 10;       // 강 건넌 졸
+                else if (adv === 4) v += 3;                   // 자기 진영에서 한 칸은 거의 그대로
+                if (adv >= 7 && x >= 3 && x <= 5) v += 20;    // 상대 궁성 근처
+                if ((x > 0 && b[i - 1] === p) || (x < 8 && b[i + 1] === p)) v += 4;   // 옆에 우리 졸 (서로 지킴)
             } else if (t === H || t === E) {
-                v += (4 - Math.abs(4 - x)) * 4 + Math.min(adv, 5) * 4;
+                v += (4 - Math.abs(4 - x)) * 4 + Math.min(adv, 4) * 4;
+                if (adv === 0) v -= 12;                       // 아직 안 꺼낸 마·상
             } else if (t === R) {
-                v += Math.min(adv, 6) * 3;
+                v += Math.min(adv, 6) * 2;
+                var free = 0;                                 // 차가 갈 수 있는 빈칸 수
+                for (var d = 0; d < 4; d++) {
+                    var nx = x + ORTH[d][0], ny = y + ORTH[d][1];
+                    while (on(nx, ny) && !b[I(nx, ny)]) { free++; nx += ORTH[d][0]; ny += ORTH[d][1]; }
+                }
+                v += free * 2;
             } else if (t === C) {
                 v += (adv >= 2 && adv <= 6 ? 15 : 0);
             } else if (t === A) {
                 v += (x === 4 ? 10 : 0);
+            } else if (t === K) {
+                v += (x === 4 && (y === 1 || y === 8)) ? 10 : 0;   // 궁은 궁성 가운데가 편함 (괜히 돌아다니지 않게)
             }
             s += own * v;
         }
@@ -301,12 +318,13 @@
         var b = new Int8Array(board);
         var legal = legalMoves(b, side);
         if (!legal.length) return null;
-        var conf = level === "easy" ? { depth: 1, time: 400, noise: 140 }
-                 : level === "hard" ? { depth: 5, time: 1600, noise: 0 }
-                 : { depth: 2, time: 800, noise: 25 };
+        /* pick: 가장 좋은 수와 점수 차이가 이만큼 안이면 그중에서 무작위로 (2026-11-22, 매번 같은 수만 두지 않게) */
+        var conf = level === "easy" ? { depth: 1, time: 400, noise: 140, pick: 0 }
+                 : level === "hard" ? { depth: 5, time: 1600, noise: 0, pick: 12 }
+                 : { depth: 2, time: 800, noise: 25, pick: 20 };
         var s = new Searcher(conf);
         s.deadline = Date.now() + conf.time;
-        var best = legal[0], bestScore = -Infinity;
+        var best = legal[0], bestScore = -Infinity, done = null;
         for (var d = 1; d <= conf.depth; d++) {
             var scores = [], localBest = null, localScore = -Infinity;
             var order = ordered(b, legal);
@@ -321,8 +339,13 @@
                 if (sc > localScore) { localScore = sc; localBest = m; }
             }
             if (s.stop && d > 1) break;                          // 시간이 다 됐으면 바로 전 깊이 결과로
-            if (localBest !== null) { best = localBest; bestScore = localScore; }
+            if (localBest !== null) { best = localBest; bestScore = localScore; done = scores; }
             if (bestScore >= MATE - 50) break;                    // 외통수를 찾았음
+        }
+        /* 비슷하게 좋은 수가 여럿이면 그중 하나를 무작위로 (외통수·큰 차이 날 땐 그대로 가장 좋은 수) */
+        if (conf.pick && done && Math.abs(bestScore) < MATE - 500) {
+            var near = done.filter(function (e) { return e[1] >= bestScore - conf.pick; });
+            if (near.length > 1) best = near[(Math.random() * near.length) | 0][0];
         }
         return best;
     }
