@@ -22,7 +22,7 @@
 /* ---------------- 0) 소개 · 개인정보처리방침 · 연락처 ---------------- */
 /* 시계(clock.js, 높이 --dc-h) 아래 따로 떨어진 박스. 막대 3개를 위에서 아래로, 가로 길이 모두 같게.
    밝고 친근한 색 (2026-11-09: 알약 → 블로그 박스 안 가로 → 따로 박스 세로로) */
-.tree-panel { --ib-h: 114px; }         /* 박스 높이 = 테두리 2 + 위아래 여백 6+6 + 막대 30×3 + 사이 5×2 */
+.tree-panel { --ib-h: 114px; }         /* 박스 높이 (2026-11-22부터 여백·틈 없이 막대 3개가 테두리 안 112px를 꽉 채움, 막대 하나 약 37px) */
 /* 2026-11-11: 막대를 굵게(24→30px), 색 자주·진청·아이보리. 막대 밖으로 튀어나오는 부분이 보이도록
    왼쪽 칸(.tree-panel)의 overflow를 풀어 둠 (styles.css는 hidden) */
 .page-layout > .tree-panel { overflow: visible; }
@@ -35,8 +35,8 @@
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    gap: 5px;
-    padding: 6px;
+    gap: 0;                             /* 2026-11-22: 막대 사이 틈 없앰 (예전 5px) */
+    padding: 0;                         /* 2026-11-22: 막대가 박스를 꽉 채움 (예전 6px) */
     border: 1px solid #d8ccb4;
     border-radius: 4px;
     background: var(--bb-cream);
@@ -46,12 +46,12 @@
     position: relative;
     flex: none;
     width: 100%;
-    height: 30px;
+    height: calc((var(--ib-h) - 2px) / 3);   /* 2026-11-22: 3개가 박스(테두리 안)를 똑같이 나눠 꽉 채움 (약 37px, 예전 30px) */
     box-sizing: border-box;
     display: grid;
     place-items: center;
     padding: 0 6px;
-    border-radius: 5px;
+    border-radius: 0;                   /* 붙어 있으니 가운데는 네모, 맨 위·맨 아래만 박스 모서리에 맞춤 */
     font-size: 0.8rem;
     font-weight: 700;
     letter-spacing: 0.06em;
@@ -59,6 +59,8 @@
     text-decoration: none;
     box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08), inset 0 -2px 0 rgba(0, 0, 0, 0.1);
 }
+.info-bar .ib-bar:first-child { border-radius: 3px 3px 0 0; }
+.info-bar .ib-bar:last-child  { border-radius: 0 0 3px 3px; }
 /* 글씨 옆 작은 아이콘 (2026-11-12: 홈피 소개=집, 게임=게임 패드, index.html 안 SVG) */
 .info-bar .ib-bar { grid-auto-flow: column; justify-content: center; column-gap: 7px; }
 .info-bar .ib-ic { width: 17px; height: 17px; order: 1; }   /* order 1 = 글씨 오른쪽 (2026-11-12 왼쪽 → 오른쪽) */
@@ -457,7 +459,7 @@
         overflow: visible;
     }
     .info-bar { position: static; height: auto; gap: 7px; padding: 8px; margin-bottom: 12px; border-radius: 8px; }
-    .info-bar .ib-bar { height: 40px; font-size: 0.9rem; border-radius: 7px; }
+    .info-bar .ib-bar { flex: none; height: 40px; font-size: 0.9rem; border-radius: 7px; }
     .blog-box { position: static; border-radius: 8px; font-size: 0.9rem; }
     .bb-cover { height: 120px; padding: 12px 14px; }
     .bb-cover-title { font-size: 1.8rem; }
