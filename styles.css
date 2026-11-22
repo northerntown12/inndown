@@ -80,6 +80,18 @@ body {
     background: #a6a6a6;
 }
 
+/* 2026-11-22: "Testing..." 문구를 뗌 → 제목(h1)은 검색엔진·화면낭독기용으로만 남기고 화면에서는 숨김. 회색 구분선은 그대로 */
+.site-header .page-header.ph-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    animation: none;
+}
+
 @keyframes blink {
     0%, 49% { opacity: 1; }
     50%, 100% { opacity: 0; }
