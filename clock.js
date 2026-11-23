@@ -36,6 +36,8 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         ".dc-wrap.dc-float { position: fixed; right: 16px; bottom: 16px; width: 170px; z-index: 2147483000; }",
         ".dc-ph { display: none; padding: 6px 2px; font-size: 10px; line-height: 1.4; color: #888; cursor: pointer; }",
         ".dc-home.dc-away .dc-ph { display: block; }",
+        /* 2026-11-23: 마우스로 끌어서 옮기기 — 끄는 동안 주먹 커서, 글자 선택 막기 */
+        "html.dc-dragging, html.dc-dragging * { cursor: grabbing !important; user-select: none !important; -webkit-user-select: none !important; }",
         /* 시계 옆 종이 칸: 낡은 종이(note-paper.webp, 원본 paper.webp) 위에 깃털 펜으로 쓰는 필기체 글씨 */
         ".dc-note { position: relative; flex: 1 1 auto; min-width: 0; background: #3a2617 url('" + NOTE_PAPER + "') center / cover no-repeat; overflow: hidden; container-type: inline-size; }",
         ".dc-note-text { position: absolute; left: 0; right: 0; top: 0; margin: 0; padding: 13% 6px 0 13%;",
@@ -151,7 +153,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
 
     // 아주 작은 안내 문구
     var hint = el("text", { x: 309, y: 762, "font-size": 12, fill: "rgba(255,255,255,0.5)", "text-anchor": "middle", "font-family": "'Malgun Gothic', sans-serif" }, svg);
-    hint.textContent = T("더블클릭: 최소화", "Double-click: minimize");
+    hint.textContent = T("끌어서 옮기기 · 더블클릭: 최소화", "Drag to move · Double-click: minimize");
 
     /* ---------- 화면에 넣기 ---------- */
     var home = document.createElement("div");
@@ -162,7 +164,8 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
     wrap.appendChild(svg);
     var ph = document.createElement("div");
     ph.className = "dc-ph";
-    ph.textContent = T("시계가 작은 창으로 떠 있어요. 여기를 클릭하면 돌아와요.", "The clock is in a small window. Click here to bring it back.");
+    var PH_TEXT = T("시계가 작은 창으로 떠 있어요. 여기를 클릭하면 돌아와요.", "The clock is in a small window. Click here to bring it back.");
+    ph.textContent = PH_TEXT;
     var slot = document.createElement("div");
     slot.className = "dc-slot";
     slot.appendChild(wrap);
@@ -439,10 +442,12 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
     var pipWin = null;
 
     function backHome() {
-        wrap.classList.remove("dc-float");
+        wrap.classList.remove("dc-float", "dc-moved");
+        wrap.style.left = wrap.style.top = wrap.style.right = wrap.style.bottom = wrap.style.width = "";
+        ph.textContent = PH_TEXT;
         if (wrap.parentNode !== slot) slot.insertBefore(wrap, ph);
         home.classList.remove("dc-away");
-        hint.textContent = T("더블클릭: 최소화", "Double-click: minimize");
+        hint.textContent = T("끌어서 옮기기 · 더블클릭: 최소화", "Drag to move · Double-click: minimize");
         pipWin = null;
         restartTimer(window);
     }
@@ -496,6 +501,60 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         home.classList.add("dc-away");
         hint.textContent = T("더블클릭: 원래대로", "Double-click: restore");
     }
+
+    /* ---------- 2026-11-23: 마우스로 끌어서 옮기기 (PC만) ----------
+       시계를 누른 채 6px 넘게 움직이면 홈 칸에서 떨어져 나와 마우스를 따라오고, 놓은 자리에 머물러요.
+       옮겨 둔 시계도 다시 끌 수 있고, 더블클릭하면 원래 자리로 돌아와요.
+       홈 자리에서 그냥 더블클릭하면 예전처럼 작은 창(항상 위)으로 떠요. */
+    var drag = null;
+    function canDrag(e) {
+        return e.button === 0 && e.pointerType === "mouse" && !pipWin &&
+            wrap.ownerDocument === document && window.innerWidth > 768;
+    }
+    function placeAt(x, y) {
+        var r = wrap.getBoundingClientRect();
+        x = Math.max(0, Math.min(x, window.innerWidth - r.width));
+        y = Math.max(0, Math.min(y, window.innerHeight - r.height));
+        wrap.style.left = x + "px"; wrap.style.top = y + "px";
+        wrap.style.right = "auto"; wrap.style.bottom = "auto";
+    }
+    function detach(width) {
+        if (wrap.classList.contains("dc-moved")) return;
+        document.body.appendChild(wrap);
+        wrap.classList.add("dc-float", "dc-moved");
+        wrap.style.width = width + "px";
+        home.classList.add("dc-away");
+        ph.textContent = T("시계를 옮겨 두었어요. 여기를 클릭하거나 시계를 더블클릭하면 돌아와요.", "The clock has been moved. Click here or double-click it to bring it back.");
+        hint.textContent = T("끌어서 옮기기 · 더블클릭: 원래대로", "Drag to move · Double-click: restore");
+    }
+    wrap.addEventListener("pointerdown", function (e) {
+        if (!canDrag(e)) return;
+        var r = wrap.getBoundingClientRect();
+        drag = { id: e.pointerId, x: e.clientX, y: e.clientY, dx: e.clientX - r.left, dy: e.clientY - r.top, w: r.width, moved: false };
+    });
+    document.addEventListener("pointermove", function (e) {
+        if (!drag || e.pointerId !== drag.id) return;
+        if (!drag.moved) {
+            if (Math.abs(e.clientX - drag.x) + Math.abs(e.clientY - drag.y) < 6) return;
+            drag.moved = true;
+            detach(drag.w);
+            document.documentElement.classList.add("dc-dragging");
+        }
+        e.preventDefault();
+        placeAt(e.clientX - drag.dx, e.clientY - drag.dy);
+    });
+    function endDrag() {
+        if (!drag) return;
+        document.documentElement.classList.remove("dc-dragging");
+        drag = null;
+    }
+    document.addEventListener("pointerup", endDrag);
+    document.addEventListener("pointercancel", endDrag);
+    window.addEventListener("resize", function () {
+        if (!wrap.classList.contains("dc-moved")) return;
+        if (window.innerWidth <= 768) { backHome(); return; }
+        var r = wrap.getBoundingClientRect(); placeAt(r.left, r.top);
+    });
 
     wrap.addEventListener("dblclick", function (e) { e.preventDefault(); popOut(); });
     ph.addEventListener("click", function () {
