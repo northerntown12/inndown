@@ -146,6 +146,16 @@
         if (!document.body || !document.body.classList.contains("tool-page")) return;
         var a = e.target.closest && e.target.closest('a[href^="index"]:not([href*="#"])');   // 홈의 어느 칸(#…)으로 가는 링크는 그냥 이동
         if (!a || e.ctrlKey || e.metaKey || e.shiftKey || e.button !== 0) return;
+        /* 2026-11-23: 홈이 연 도구 창("toolsWin")이면, 안에서 계산기 등으로 옮겨 다녔어도 창을 닫아 원래 홈으로 */
+        var popup = false;
+        try { popup = window.name === "toolsWin" && !!window.opener && !window.opener.closed; } catch (err) {}
+        if (popup) {
+            e.preventDefault();
+            try { window.opener.focus(); } catch (err) {}
+            window.close();
+            setTimeout(function () { location.href = a.href; }, 250);   // 안 닫혔으면 홈으로
+            return;
+        }
         if (!fromOurHome() || history.length > 1) return;   // 탭 안에서 다른 도구로 옮겨 다녔으면 그냥 이동
         e.preventDefault();
         window.close();

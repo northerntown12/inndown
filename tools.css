@@ -419,13 +419,14 @@
 }
 
 /* ===== 2026-11-18: 도구 창에서 홈으로 왔을 때 "생활 도구로 돌아가기" 버튼 (index.html 맨 아래 스크립트가 붙여요) ===== */
-.back-to-tools {
+.back-to-tools {   /* 2026-11-23: 알약 → 직사각형 막대, 화살표는 왼쪽 */
     position: fixed; left: 14px; top: 14px; z-index: 2147482000;
-    display: inline-flex; align-items: center; gap: 6px; padding: 9px 16px 9px 11px;
-    border-radius: 999px; background: linear-gradient(180deg, #4d4aa6, #36347a); color: #fff;
-    font: 700 0.92rem/1 "Noto Sans KR", "Malgun Gothic", sans-serif; text-decoration: none;
-    box-shadow: 0 6px 18px rgba(30, 28, 80, 0.35), inset 0 0 0 1px rgba(255, 255, 255, 0.25);
+    display: inline-flex; align-items: center; gap: 7px; padding: 7px 16px 7px 10px;
+    border-radius: 6px; background: linear-gradient(180deg, #f27ba3, #db4f80); color: #fff;   /* 2026-11-23: 분홍 */
+    border: 1px solid rgba(255, 214, 228, 0.75);
+    font: 600 0.82rem/1.2 "Noto Sans KR", "Malgun Gothic", sans-serif; text-decoration: none; white-space: nowrap;
+    box-shadow: 0 4px 12px rgba(150, 30, 80, 0.3);
 }
-.back-to-tools svg { width: 16px; height: 16px; }
-.back-to-tools:hover { background: linear-gradient(180deg, #5a57b5, #3f3c8c); }
+.back-to-tools svg { width: 15px; height: 15px; flex: none; }
+.back-to-tools:hover { background: linear-gradient(180deg, #f58db1, #e3618e); }
 @media screen and (max-width: 768px) { .back-to-tools { left: 10px; top: auto; bottom: 14px; font-size: 0.95rem; padding: 11px 18px 11px 13px; } }
