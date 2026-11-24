@@ -458,4 +458,8 @@
     html body .stock-widget .stk-price { font-size: 0.72rem; }
     html body .stock-widget .stk-chg   { font-size: 0.66rem; min-width: 52px; }
     html body .stock-widget .stk-foot  { font-size: 0.55rem; gap: 0; margin-top: 3px; }
+    /* 17:4x: 이름과 숫자 사이가 너무 멀어서, 표를 가운데로 모아 폭을 좁힘 (숫자는 오른쪽 맞춤 열) */
+    html body .stock-widget .stk-group,
+    html body .stock-widget .stk-list { width: 100%; max-width: 280px; margin-left: auto; margin-right: auto; box-sizing: border-box; }
+    html body .stock-widget .stk-price { min-width: 72px; text-align: right; }
 }
