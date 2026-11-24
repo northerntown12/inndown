@@ -25,15 +25,26 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="blog.css?v=2">
-    <!-- 2026-11-24: 소개 페이지 배경 = 야자수 바닷가 사진(about-bg.webp, 원본 palmtree1124.jpg)을 은은하고 연하게.
-         더 진하게 하려면 아래 두 rgba의 마지막 숫자(0.80, 0.86)를 줄이고, 더 연하게 하려면 키우기 -->
+    <!-- 2026-11-24: 소개 글 상자 안 배경 = 야자수 바닷가 사진(about-bg.webp, 원본 palmtree1124.jpg) 전체가 보이게(contain), 은은하고 연하게.
+         더 진하게 하려면 아래 opacity(0.24)를 키우고, 더 연하게 하려면 줄이기 -->
     <style>
-        body.pg-about::before {
-            content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
-            background: linear-gradient(rgba(250, 246, 238, 0.80), rgba(250, 246, 238, 0.86)),
-                        url("about-bg.webp") center 35% / cover no-repeat;
+        body.pg-about .ip-card { position: relative; isolation: isolate; }
+        body.pg-about .ip-card::before {
+            content: ""; position: absolute; z-index: -1; pointer-events: none;
+            top: 0; bottom: 0; left: 50%; transform: translateX(-50%);
+            height: 100%; aspect-ratio: 1153 / 2048; max-width: 100%;
+            background: url("about-bg.webp") center / contain no-repeat;
+            opacity: 0.24;
+            /* 사진 가장자리를 부드럽게 흐리게 */
+            -webkit-mask-image: linear-gradient(to right, transparent, #000 14%, #000 86%, transparent), linear-gradient(to bottom, transparent, #000 8%, #000 92%, transparent);
+            -webkit-mask-composite: source-in;
+                    mask-image: linear-gradient(to right, transparent, #000 14%, #000 86%, transparent), linear-gradient(to bottom, transparent, #000 8%, #000 92%, transparent);
+                    mask-composite: intersect;
         }
-        body.pg-about .ip-card { background: rgba(255, 255, 255, 0.86); }
+        /* 폰: 글 상자가 좁고 길어서, 사진을 상자 폭에 맞춰 가운데에 (가장자리도 부드럽게) */
+        @media (max-width: 640px) {
+            body.pg-about .ip-card::before { top: 50%; bottom: auto; height: auto; width: 100%; transform: translate(-50%, -50%); }
+        }
     </style>
 </head>
 <body class="blog-page info-page pg-about">
