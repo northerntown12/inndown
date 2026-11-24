@@ -40,6 +40,12 @@ window.BLOG = {
     ],
 
     posts: [
+        { id: "2026-11-24-wonderful-world", title: "루이 암스트롱 \"What a Wonderful World\" 이야기", date: "2026-11-24",
+          cat: "music", sub: "jazz",
+          summary: "음반사 사장이 싫어해 미국에서 1,000장도 안 팔렸던 노래가 어떻게 세계의 노래가 되었을까. 노래에 얽힌 이야기와 노래 듣기.",
+          thumb: "posts/img/wonderful-world.webp",
+          titleEn: "The Story of Louis Armstrong's \"What a Wonderful World\"",
+          summaryEn: "How a song the label boss hated became the whole world's song — the story, plus the official video. (Written in Korean)" },
         { id: "2026-11-09-start", title: "블로그를 시작하며", date: "2026-11-09",
           cat: "life", sub: "notice",
           summary: "퇴근 후의 시간을 기록해 보려고 합니다. 이 블로그에서 다룰 이야기들을 소개해요.",
