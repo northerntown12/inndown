@@ -441,17 +441,19 @@
         grid-row: auto;
         height: auto;
         min-height: 0;
-        padding: 12px 14px 10px;
+        padding: 9px 12px 7px;
         border-radius: 8px;
-        font-size: 0.95rem;
+        font-size: 0.85rem;
     }
     html body .ad-grid .tools-widget { order: 6; }
     html body .ad-grid .game-widget  { order: 7; }
-    html body .stock-widget .stk-title { font-size: 1.05rem; margin-bottom: 4px; }
-    html body .stock-widget .stk-group { font-size: 0.8rem; margin-top: 10px; padding-bottom: 4px; }
-    html body .stock-widget .stk-list li { padding: 7px 2px; gap: 8px; }
-    html body .stock-widget .stk-name  { font-size: 0.9rem; }
-    html body .stock-widget .stk-price { font-size: 0.95rem; }
-    html body .stock-widget .stk-chg   { font-size: 0.85rem; min-width: 70px; }
-    html body .stock-widget .stk-foot  { font-size: 0.7rem; gap: 3px; margin-top: 8px; }
+    /* 2026-11-24 두 번째: 사용자 요청으로 촘촘하게 (줄 간격·글씨 줄임, 내용은 그대로) */
+    html body .stock-widget .stk-title { font-size: 0.95rem; margin-bottom: 1px; }
+    html body .stock-widget .stk-date  { font-size: 0.7rem; margin-bottom: 0; }
+    html body .stock-widget .stk-group { font-size: 0.7rem; margin-top: 6px; padding-bottom: 2px; }
+    html body .stock-widget .stk-list li { padding: 3px 2px; gap: 6px; }
+    html body .stock-widget .stk-name  { font-size: 0.8rem; }
+    html body .stock-widget .stk-price { font-size: 0.84rem; }
+    html body .stock-widget .stk-chg   { font-size: 0.76rem; min-width: 60px; }
+    html body .stock-widget .stk-foot  { font-size: 0.62rem; gap: 1px; margin-top: 5px; }
 }
