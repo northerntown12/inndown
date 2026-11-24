@@ -252,7 +252,7 @@
         gap: 14px;
     }
     /* 졸라맨·주식은 모바일에서 숨김 (2026-11-15: 주식 대신 환율이 보임, 2026-11-18: 우편번호도 보임) */
-    .ad-sidebar .ad-grid > :not(.unit-widget):not(.quick-links):not(.game-widget):not(.tools-widget):not(.fx-widget):not(.pst-col) { display: none; }
+    .ad-sidebar .ad-grid > :not(.unit-widget):not(.quick-links):not(.game-widget):not(.tools-widget):not(.fx-widget):not(.pst-col):not(.stock-widget) { display: none; }   /* 2026-11-24: 주식시장도 보임 */
 
     .ad-grid .unit-widget,
     .ad-grid .quick-links {
@@ -430,3 +430,28 @@
 .back-to-tools svg { width: 15px; height: 15px; flex: none; }
 .back-to-tools:hover { background: linear-gradient(180deg, #f58db1, #e3618e); }
 @media screen and (max-width: 768px) { .back-to-tools { left: 10px; top: auto; bottom: 14px; font-size: 0.95rem; padding: 11px 18px 11px 13px; } }
+
+/* ===== 2026-11-24: 폰에서도 오늘의 주식시장 보이기 (우편번호 바로 아래) =====
+   폰 맨 끝 순서: 바로가기 → 단위 환산 → 환율 → 우편번호 → 주식시장 → 생활 도구 → 게임 */
+@media screen and (max-width: 768px), screen and (hover: none) and (pointer: coarse) and (max-width: 1000px) {
+    html body .ad-sidebar .ad-grid > .stock-widget {
+        display: flex;
+        order: 5;
+        grid-column: 1;
+        grid-row: auto;
+        height: auto;
+        min-height: 0;
+        padding: 12px 14px 10px;
+        border-radius: 8px;
+        font-size: 0.95rem;
+    }
+    html body .ad-grid .tools-widget { order: 6; }
+    html body .ad-grid .game-widget  { order: 7; }
+    html body .stock-widget .stk-title { font-size: 1.05rem; margin-bottom: 4px; }
+    html body .stock-widget .stk-group { font-size: 0.8rem; margin-top: 10px; padding-bottom: 4px; }
+    html body .stock-widget .stk-list li { padding: 7px 2px; gap: 8px; }
+    html body .stock-widget .stk-name  { font-size: 0.9rem; }
+    html body .stock-widget .stk-price { font-size: 0.95rem; }
+    html body .stock-widget .stk-chg   { font-size: 0.85rem; min-width: 70px; }
+    html body .stock-widget .stk-foot  { font-size: 0.7rem; gap: 3px; margin-top: 8px; }
+}
