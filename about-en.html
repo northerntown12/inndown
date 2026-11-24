@@ -25,6 +25,16 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="blog.css?v=2">
+    <!-- 2026-11-24: 소개 페이지 배경 = 야자수 바닷가 사진(about-bg.webp, 원본 palmtree1124.jpg)을 은은하고 연하게.
+         더 진하게 하려면 아래 두 rgba의 마지막 숫자(0.80, 0.86)를 줄이고, 더 연하게 하려면 키우기 -->
+    <style>
+        body.pg-about::before {
+            content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+            background: linear-gradient(rgba(250, 246, 238, 0.80), rgba(250, 246, 238, 0.86)),
+                        url("about-bg.webp") center 35% / cover no-repeat;
+        }
+        body.pg-about .ip-card { background: rgba(255, 255, 255, 0.86); }
+    </style>
 </head>
 <body class="blog-page info-page pg-about">
     <header class="bp-top">

@@ -769,3 +769,10 @@ body.info-page.pg-contact { --accent: #f07a52; --accent-soft: #ffe3d8; }
     .ip-card { padding: 22px 18px; }
     .ip-card h1 { font-size: 1.35rem; }
 }
+
+/* 2026-11-24: 블로그 이름이 "What a Wonderful World~"로 길어져 폰에서 위 막대가 넘침 →
+   폰(640px 이하)에서는 이름을 첫 줄, 언어 버튼·홈으로를 둘째 줄로 */
+@media (max-width: 640px) {
+    .bp-top-in { height: auto; flex-wrap: wrap; row-gap: 4px; padding: 7px 12px 8px; }
+    .bp-brand { flex: 1 0 100%; font-size: 1.2rem; line-height: 1.2; white-space: nowrap; }
+}
