@@ -449,17 +449,17 @@
     html body .ad-sidebar .ad-grid > .pst-col { order: 5; }
     html body .ad-grid .tools-widget { order: 6; }
     html body .ad-grid .game-widget  { order: 7; }
-    /* 촘촘하게: 줄 간격·글씨 줄임, 내용은 그대로 */
-    html body .stock-widget .stk-title { font-size: 0.82rem; margin-bottom: 0; }
-    html body .stock-widget .stk-date  { font-size: 0.6rem; margin-bottom: 0; }
-    html body .stock-widget .stk-group { font-size: 0.6rem; margin-top: 3px; padding-bottom: 1px; }
-    html body .stock-widget .stk-list li { padding: 1px 2px; gap: 5px; line-height: 1.25; }
-    html body .stock-widget .stk-name  { font-size: 0.68rem; }
-    html body .stock-widget .stk-price { font-size: 0.72rem; }
-    html body .stock-widget .stk-chg   { font-size: 0.66rem; min-width: 52px; }
-    html body .stock-widget .stk-foot  { font-size: 0.55rem; gap: 0; margin-top: 3px; }
-    /* 17:4x: 이름과 숫자 사이가 너무 멀어서, 표를 가운데로 모아 폭을 좁힘 (숫자는 오른쪽 맞춤 열) */
+    /* 18:29: 글씨를 옆 칸(환율 달러·유로, 우편번호 찾기)과 비슷한 크기로, 줄 간격은 촘촘하게 */
+    html body .stock-widget .stk-title { font-size: 1.05rem; margin-bottom: 2px; }
+    html body .stock-widget .stk-date  { font-size: 0.72rem; margin-bottom: 0; }
+    html body .stock-widget .stk-group { font-size: 0.74rem; margin-top: 5px; padding-bottom: 2px; }
+    html body .stock-widget .stk-list li { padding: 3px 2px; gap: 8px; line-height: 1.3; }
+    html body .stock-widget .stk-name  { font-size: 0.86rem; }
+    html body .stock-widget .stk-price { font-size: 0.95rem; }
+    html body .stock-widget .stk-chg   { font-size: 0.82rem; min-width: 66px; }
+    html body .stock-widget .stk-foot  { font-size: 0.66rem; gap: 1px; margin-top: 5px; }
+    /* 이름과 숫자가 너무 떨어지지 않게 표를 가운데로 모음 (폭 330px까지) */
     html body .stock-widget .stk-group,
-    html body .stock-widget .stk-list { width: 100%; max-width: 280px; margin-left: auto; margin-right: auto; box-sizing: border-box; }
-    html body .stock-widget .stk-price { min-width: 72px; text-align: right; }
+    html body .stock-widget .stk-list { width: 100%; max-width: 330px; margin-left: auto; margin-right: auto; box-sizing: border-box; }
+    html body .stock-widget .stk-price { min-width: 88px; text-align: right; }
 }
