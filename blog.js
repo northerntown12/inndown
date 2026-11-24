@@ -36,7 +36,8 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         var s = c && c.subs.find(function (x) { return x.id === id; });
         return s ? s.name : "";
     }
-    function postUrl(p) { return BASE + "posts/" + p.id + ".html"; }
+    /* 2026-11-25: 영문 페이지에서는 영문판이 있는 글(posts.js의 en: true)을 글이름-en.html 로 연결 */
+    function postUrl(p) { return BASE + "posts/" + p.id + (window.SITE_EN && p.en ? "-en" : "") + ".html"; }
     function shortDate(d) { return d.slice(5).replace("-", "."); }
     function fullDate(d) { return d.replace(/-/g, "."); }
 
@@ -146,7 +147,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
                         box.appendChild(section(2, s.name, list.length, null, function (sin) {
                             sin.appendChild(postList(list, 6));
                             if (list.length > 6) {
-                                sin.appendChild(moreLink(BASE + "blog.html?cat=" + c.id + "&sub=" + s.id, T("더 보기 →", "More →")));
+                                sin.appendChild(moreLink(BASE + BLOG_PAGE + "?cat=" + c.id + "&sub=" + s.id, T("더 보기 →", "More →")));
                             }
                         }));
                     });
@@ -155,7 +156,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
                     if (loose.length) box.appendChild(postList(loose, 6));
                     inner.appendChild(box);
                 }
-                inner.appendChild(moreLink(BASE + "blog.html?cat=" + c.id, T(c.name + " 전체 보기 →", "All in " + c.name + " →")));
+                inner.appendChild(moreLink(BASE + BLOG_PAGE + "?cat=" + c.id, T(c.name + " 전체 보기 →", "All in " + c.name + " →")));
             }));
         });
 
@@ -279,9 +280,9 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
                 var parts = [
                     [T("홈", "Home"), BASE + T("index.html", "index-en.html")],
                     [T("블로그", "Blog"), BASE + BLOG_PAGE],
-                    [c2.name, BASE + "blog.html?cat=" + c2.id]
+                    [c2.name, BASE + BLOG_PAGE + "?cat=" + c2.id]
                 ];
-                if (subName(c2, me.sub)) parts.push([subName(c2, me.sub), BASE + "blog.html?cat=" + c2.id + "&sub=" + me.sub]);
+                if (subName(c2, me.sub)) parts.push([subName(c2, me.sub), BASE + BLOG_PAGE + "?cat=" + c2.id + "&sub=" + me.sub]);
                 parts.forEach(function (pt, i) {
                     if (i) crumb.appendChild(h("span", "pc-sep", "›"));
                     var a = h("a", null, pt[0]);

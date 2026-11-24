@@ -196,6 +196,14 @@
   </url>
   <url>
     <loc>https://wowezbox.com/posts/2026-11-24-wonderful-world.html</loc>
-    <lastmod>2026-11-24</lastmod>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://wowezbox.com/posts/2026-11-24-wonderful-world.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wowezbox.com/posts/2026-11-24-wonderful-world-en.html"/>
+    <lastmod>2026-11-25</lastmod>
+  </url>
+  <url>
+    <loc>https://wowezbox.com/posts/2026-11-24-wonderful-world-en.html</loc>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://wowezbox.com/posts/2026-11-24-wonderful-world.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://wowezbox.com/posts/2026-11-24-wonderful-world-en.html"/>
+    <lastmod>2026-11-25</lastmod>
   </url>
 </urlset>

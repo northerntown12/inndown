@@ -17,6 +17,8 @@
 //     summary : 목록에 보이는 한두 줄 소개
 //     thumb   : (선택) 목록 사진. 예) "posts/img/jeju-1.webp"  — 없으면 빼도 돼요
 //     titleEn·summaryEn : (선택) 영문 페이지(blog-en.html 등)에 보일 영어 제목·소개 — 없으면 한국어 그대로
+//     en      : (선택) true 이면 영문판 글 posts/글이름-en.html 이 있다는 뜻 → 영문 페이지에서 그 글로 연결
+//               (영문판을 만들면 lang.js 의 POSTS_EN 에도 글 id 추가, sitemap.xml 에도 추가)
 // =========================================================
 window.BLOG = {
     title: "What a Wonderful World~",
@@ -50,6 +52,7 @@ window.BLOG = {
           cat: "music", sub: "jazz",
           summary: "음반사 사장이 싫어해 미국에서 1,000장도 안 팔렸던 노래가 어떻게 세계의 노래가 되었을까. 노래에 얽힌 이야기와 노래 듣기.",
           titleEn: "The Story of Louis Armstrong's \"What a Wonderful World\"",
-          summaryEn: "How a song the label boss hated became the whole world's song — the story, plus the official video. (Written in Korean)" }
+          summaryEn: "How a song the label boss hated became the whole world's song — the story, plus the official video.",
+          en: true }
     ]
 };
