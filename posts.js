@@ -1,5 +1,5 @@
 // =========================================================
-// 블로그 글 목록 (왼쪽 "Records after work" 칸, blog.html, 글 페이지가 모두 이 파일을 읽어요)
+// 블로그 글 목록 (왼쪽 "What a Wonderful World~" 칸, blog.html, 글 페이지가 모두 이 파일을 읽어요)
 //
 // ▶ 새 글을 올리는 방법
 //   1) posts 폴더의 글 하나(예: 2026-11-09-start.html)를 복사해서 이름을 바꿔요.  예) posts/2026-11-20-jeju.html
@@ -19,7 +19,7 @@
 //     titleEn·summaryEn : (선택) 영문 페이지(blog-en.html 등)에 보일 영어 제목·소개 — 없으면 한국어 그대로
 // =========================================================
 window.BLOG = {
-    title: "Records after work",
+    title: "What a Wonderful World~",
     tagline: "여행 · 영미문화 · 음악 · 일상",
 
     cats: [
