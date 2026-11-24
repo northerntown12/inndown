@@ -776,3 +776,19 @@ body.info-page.pg-contact { --accent: #f07a52; --accent-soft: #ffe3d8; }
     .bp-top-in { height: auto; flex-wrap: wrap; row-gap: 4px; padding: 7px 12px 8px; }
     .bp-brand { flex: 1 0 100%; font-size: 1.2rem; line-height: 1.2; white-space: nowrap; }
 }
+
+/* ===== 2026-11-24: 홈 왼쪽 블로그 메뉴 색 = 로즈 더스트 (빛바랜 장밋빛, 따뜻하고 차분하게) =====
+   예전 연보라(#DAD9FF)로 돌리려면 이 묶음을 통째로 지우기. 위 안내 박스의 "게임" 막대 연보라는 그대로 */
+.blog-box {
+    --bb-lav: #EDD5D0;       /* 큰 막대 */
+    --bb-lav2: #F5E4E0;      /* 큰 막대 위쪽 살짝 밝게 */
+    --bb-plum: #6B3540;      /* 막대 글씨: 진한 와인빛 */
+}
+.blog-box .bb-l1 > .bb-bar { box-shadow: 0 1px 2px rgba(107, 53, 64, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.6); }
+.blog-box .bb-l1 > .bb-bar:hover { background: linear-gradient(180deg, #F2DCD7, #E4C3BD); }
+.blog-box .bb-l1.open > .bb-body > .bb-body-in { border-color: #EDD5D0; }
+.blog-box .bb-l2 > .bb-bar { background: #F9EEEB; color: #7A3E4A; border-left-color: #D49A9F; }
+.blog-box .bb-l2 > .bb-bar:hover { background: #F3E1DD; }
+.blog-box .bb-l2 > .bb-bar .bb-cnt { color: #7A3E4A; }
+.blog-box .bb-post:hover .bb-title,
+.blog-box .bb-more { color: #9A4B5A; }
