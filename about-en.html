@@ -31,7 +31,7 @@
         body.pg-about .ip-card { position: relative; isolation: isolate; }
         body.pg-about .ip-card::before {
             content: ""; position: absolute; z-index: -1; pointer-events: none;
-            top: 0; bottom: 0; left: 50%; transform: translateX(-50%);
+            top: 0; bottom: 0; right: 0;   /* 2026-11-24: 사진을 글 상자 오른쪽 끝으로 */
             height: 100%; aspect-ratio: 1153 / 2048; max-width: 100%;
             background: url("about-bg.webp") center / contain no-repeat;
             opacity: 0.24;
@@ -43,7 +43,7 @@
         }
         /* 폰: 글 상자가 좁고 길어서, 사진을 상자 폭에 맞춰 가운데에 (가장자리도 부드럽게) */
         @media (max-width: 640px) {
-            body.pg-about .ip-card::before { top: 50%; bottom: auto; height: auto; width: 100%; transform: translate(-50%, -50%); }
+            body.pg-about .ip-card::before { top: 50%; bottom: auto; right: auto; left: 50%; height: auto; width: 100%; transform: translate(-50%, -50%); }
         }
     </style>
 </head>
