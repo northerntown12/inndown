@@ -431,29 +431,31 @@
 .back-to-tools:hover { background: linear-gradient(180deg, #f58db1, #e3618e); }
 @media screen and (max-width: 768px) { .back-to-tools { left: 10px; top: auto; bottom: 14px; font-size: 0.95rem; padding: 11px 18px 11px 13px; } }
 
-/* ===== 2026-11-24: 폰에서도 오늘의 주식시장 보이기 (우편번호 바로 아래) =====
-   폰 맨 끝 순서: 바로가기 → 단위 환산 → 환율 → 우편번호 → 주식시장 → 생활 도구 → 게임 */
+/* ===== 2026-11-24: 폰에서도 오늘의 주식시장 보이기 (환율 바로 아래) =====
+   폰 맨 끝 순서: 바로가기 → 단위 환산 → 환율 → 주식시장 → 우편번호 → 생활 도구 → 게임
+   (처음엔 우편번호 아래였다가 같은 날 환율 아래로, 크기도 두 번 줄임 — 사용자 요청) */
 @media screen and (max-width: 768px), screen and (hover: none) and (pointer: coarse) and (max-width: 1000px) {
     html body .ad-sidebar .ad-grid > .stock-widget {
         display: flex;
-        order: 5;
+        order: 4;
         grid-column: 1;
         grid-row: auto;
         height: auto;
         min-height: 0;
-        padding: 9px 12px 7px;
+        padding: 6px 10px 5px;
         border-radius: 8px;
-        font-size: 0.85rem;
+        font-size: 0.75rem;
     }
+    html body .ad-sidebar .ad-grid > .pst-col { order: 5; }
     html body .ad-grid .tools-widget { order: 6; }
     html body .ad-grid .game-widget  { order: 7; }
-    /* 2026-11-24 두 번째: 사용자 요청으로 촘촘하게 (줄 간격·글씨 줄임, 내용은 그대로) */
-    html body .stock-widget .stk-title { font-size: 0.95rem; margin-bottom: 1px; }
-    html body .stock-widget .stk-date  { font-size: 0.7rem; margin-bottom: 0; }
-    html body .stock-widget .stk-group { font-size: 0.7rem; margin-top: 6px; padding-bottom: 2px; }
-    html body .stock-widget .stk-list li { padding: 3px 2px; gap: 6px; }
-    html body .stock-widget .stk-name  { font-size: 0.8rem; }
-    html body .stock-widget .stk-price { font-size: 0.84rem; }
-    html body .stock-widget .stk-chg   { font-size: 0.76rem; min-width: 60px; }
-    html body .stock-widget .stk-foot  { font-size: 0.62rem; gap: 1px; margin-top: 5px; }
+    /* 촘촘하게: 줄 간격·글씨 줄임, 내용은 그대로 */
+    html body .stock-widget .stk-title { font-size: 0.82rem; margin-bottom: 0; }
+    html body .stock-widget .stk-date  { font-size: 0.6rem; margin-bottom: 0; }
+    html body .stock-widget .stk-group { font-size: 0.6rem; margin-top: 3px; padding-bottom: 1px; }
+    html body .stock-widget .stk-list li { padding: 1px 2px; gap: 5px; line-height: 1.25; }
+    html body .stock-widget .stk-name  { font-size: 0.68rem; }
+    html body .stock-widget .stk-price { font-size: 0.72rem; }
+    html body .stock-widget .stk-chg   { font-size: 0.66rem; min-width: 52px; }
+    html body .stock-widget .stk-foot  { font-size: 0.55rem; gap: 0; margin-top: 3px; }
 }
