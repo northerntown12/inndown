@@ -643,3 +643,10 @@ body.tool-page.theme-fx { --tp-emerald: #8a3c00; --tp-emerald2: #c25a00; --tp-em
     .tp-tabs a { padding: 6px 11px; font-size: 0.82rem; }
 }
 .fx-all-box .uc-table th:first-child { text-align: left; }
+
+/* 2026-11-25: 폰에서 시급·주휴수당 계산기 하단의 블로그·소개·연락 이메일 링크 숨김 */
+@media (max-width: 760px) {
+    body.tool-page.theme-wage .bp-foot a[href^="blog"],
+    body.tool-page.theme-wage .bp-foot a[href^="about"],
+    body.tool-page.theme-wage .bp-foot a[href^="contact"] { display: none; }
+}
