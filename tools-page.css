@@ -619,12 +619,12 @@ body.tool-page.theme-wage { --tp-emerald: #4a1f0c; --tp-emerald2: #7a3414; --tp-
 .tp-tabs a[href^="wage"]:not(.on) { border-left: 4px solid #d9773a; }
 .th-ic.c7 { background: linear-gradient(160deg, #c2410c, #f08a4b); }
 
-/* 2026-11-25: 환율 계산기 (fx.html) — 홈 환율 칸과 같은 청보라 테마 */
-body.tool-page.theme-fx { --tp-emerald: #2b2f6b; --tp-emerald2: #4a4a9a; --tp-emerald3: #7a5aa8; --tp-gold: #d9ccff; --tp-gold-deep: #6b46c1; --tp-tint: #f0edfb; --tp-tint2: #ebe6fa; }
-.tp-tabs a[href^="fx"].on { background: #4a4a9a; border-color: #4a4a9a; }
-.tp-tabs a[href^="fx"]:not(.on) { border-left: 4px solid #7a6ac8; }
-.th-ic.c8 { background: linear-gradient(160deg, #3d5391, #a2639f); }
-.fx-conv { border-color: #2b2f6b; }
+/* 2026-11-25: 환율 계산기 (fx.html) — 오렌지 테마 (19:4x 사용자 요청, 처음엔 홈 환율 칸과 같은 청보라였음: #2b2f6b/#4a4a9a/#7a5aa8) */
+body.tool-page.theme-fx { --tp-emerald: #8a3c00; --tp-emerald2: #c25a00; --tp-emerald3: #ec8a1c; --tp-gold: #ffe2a8; --tp-gold-deep: #d2640a; --tp-tint: #fff2e3; --tp-tint2: #ffecd6; }
+.tp-tabs a[href^="fx"].on { background: #c25a00; border-color: #c25a00; }
+.tp-tabs a[href^="fx"]:not(.on) { border-left: 4px solid #f0922b; }
+.th-ic.c8 { background: linear-gradient(160deg, #d2640a, #ffb04a); }
+.fx-conv { border-color: #8a3c00; }
 .fx-chips button b { font-weight: 800; letter-spacing: 0.02em; }
 .fx-info { font-size: 0.92rem; }
 .fx-info b { color: var(--tp-gold); }
