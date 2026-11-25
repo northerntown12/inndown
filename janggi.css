@@ -403,3 +403,15 @@ body {
     .jo-flash { font-size: 0.85rem; white-space: normal; text-align: center; width: max-content; max-width: 86%; }
     .j-statusrow .jo-timer { width: 42px; height: 42px; }
 }
+
+/* ===== 2026-11-25: PC 대화창 — 정해진 말은 작게, 메시지 입력칸은 한 줄 통째로 크게 (이모지·보내기는 그 아래 줄) ===== */
+.jo-chat-presets { gap: 4px; }
+.jo-chat-presets button { padding: 2px 7px; font-size: 0.7rem; line-height: 1.5; }
+.jo-chat-form { flex-wrap: wrap; align-items: center; gap: 6px; }
+.jo-chat-form input { flex: 1 1 100%; min-height: 44px; padding: 10px 12px; font-size: 0.95rem; }
+.jo-chat-form .jo-chat-emo { order: 1; flex: 1 1 0; min-width: 0; gap: 3px; }
+.jo-chat-form .jo-chat-emo button { padding: 1px 5px; font-size: 0.92rem; }
+.jo-chat-form .jo-chat-send { order: 2; flex: none; }
+/* 폰(화면 아래 붙은 대화창)은 예전처럼 입력칸 + 보내기 한 줄 */
+.jo-chat-dock .jo-chat-form { flex-wrap: nowrap; }
+.jo-chat-dock .jo-chat-form input { flex: 1 1 auto; min-height: 0; }

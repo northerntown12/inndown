@@ -453,7 +453,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
        - 방 만들기(코드 4자리, 링크 공유) / 코드로 입장 / 빠른 매칭
        - 상대 수는 /state 로 기다렸다 받음 (서버가 최대 20초 붙잡고 있다가 바뀌면 바로 대답)
        - 시간 초과·금수·승리는 서버가 최종 판정
-       - 새로고침해도 같은 방으로 돌아옴 (sessionStorage omokOnline.v1)
+       - 새로고침하거나 새 탭으로 다시 열어도 같은 방으로 돌아옴 (localStorage omokOnline.v1, 30분 — 2026-11-25)
        ========================================================= */
     var elOnBox = $("omOnlineBox"), elOnLobby = $("omOnLobby"), elOnWait = $("omOnWait"), elOnPlay = $("omOnPlay");
     var elOnErr = $("omOnErr"), elOnInfo = $("omOnInfo"), elWaitMsg = $("omWaitMsg"), elCodeBox = $("omCodeBox");
@@ -463,6 +463,32 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         btnStop2 = $("omStop2") || document.createElement("button"),
         btnNewOpp = $("omNewOpp") || document.createElement("button");
     var SESSION_KEY = "omokOnline.v1";
+    /* 2026-11-25: 두던 방을 이 기기에 기억해요 (localStorage). 폰에서 홈의 게임 카드를 다시 누르면 새 탭이 열려서,
+       예전처럼 그 탭에만 기억하면(sessionStorage) 두던 방을 못 찾고 처음 화면이 나왔어요.
+       30분 넘게 소식이 없던 방은 다시 들어가지 않아요 */
+    var RESUME_MS = 30 * 60 * 1000;
+    function sessSave(o) {
+        o.t = Date.now();
+        var v = JSON.stringify(o);
+        try { localStorage.setItem(SESSION_KEY, v); } catch (e) {}
+        try { sessionStorage.setItem(SESSION_KEY, v); } catch (e) {}
+    }
+    function sessLoad() {
+        var v = null;
+        try { v = JSON.parse(localStorage.getItem(SESSION_KEY)); } catch (e) {}
+        if (!v) { try { v = JSON.parse(sessionStorage.getItem(SESSION_KEY)); } catch (e) {} }
+        if (v && v.t && Date.now() - v.t > RESUME_MS) { sessDel(); return null; }
+        return v;
+    }
+    function sessDel() {
+        try { localStorage.removeItem(SESSION_KEY); } catch (e) {}
+        try { sessionStorage.removeItem(SESSION_KEY); } catch (e) {}
+    }
+    function sessTouch(me) {                    // 두는 동안 20초마다 "아직 이 방에 있어요" 시각을 새로
+        if (me.savedAt && Date.now() - me.savedAt < 20000) return;
+        me.savedAt = Date.now();
+        sessSave({ code: me.code, token: me.token, quick: me.quick });
+    }
 
     function api(path, body, signal) {
         /* Content-Type을 안 붙이면 text/plain 요청이라 사전 확인(OPTIONS) 없이 바로 감 */
@@ -512,7 +538,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
             if (ON.abort) ON.abort.abort();
         }
         ON = null;
-        try { sessionStorage.removeItem(SESSION_KEY); } catch (e) {}
+        sessDel();
         if (!silent) {
             mode = "ai"; TIME_LIMIT = AI_LIMIT; document.body.classList.remove("om-mode-online", "om-on-pre"); elOnBox.hidden = true;
             $("omAgain").textContent = T("한 판 더", "Play again"); $("omAgain").hidden = false; btnStop2.hidden = true;
@@ -522,7 +548,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
     function backToLobby(msg) {
         if (ON && ON.abort) ON.abort.abort();
         ON = null;
-        try { sessionStorage.removeItem(SESSION_KEY); } catch (e) {}
+        sessDel();
         enterOnline();
         if (msg) onErr(msg);
     }
@@ -540,7 +566,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
                 return;
             }
             ON = { code: res.code, token: res.token, ver: 0, status: "waiting", quick: !!res.quick || path === "/quick", gameKey: "", via: path };
-            try { sessionStorage.setItem(SESSION_KEY, JSON.stringify({ code: ON.code, token: ON.token, quick: ON.quick })); } catch (e) {}
+            sessSave({ code: ON.code, token: ON.token, quick: ON.quick }); ON.savedAt = Date.now();
             showWaiting();
             poll();
         }).catch(function () { setBusy(false); onErr(netErrText()); });
@@ -564,9 +590,13 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         me.abort = ctl;
         api("/state", { code: me.code, token: me.token, ver: me.ver, cver: me.cver || 0, cid: me.cid || 0 }, ctl && ctl.signal).then(function (s) {
             if (ON !== me) return;
+            /* 기억해 둔 방으로 다시 들어왔는데 방이 없거나 이미 끝나고 둘 중 하나가 나갔으면 → 조용히 컴퓨터와 두기로 */
+            if (me.resumedFrom && !me.state && (s.error === "noroom" || s.error === "notyou" ||
+                    (s.status === "over" && (s.meDeclined || s.oppLeft || s.oppDeclined)))) { sessDel(); ON = null; leaveOnline(false); return; }
             if (s.error === "noroom" || s.error === "notyou") { backToLobby(T("방이 사라졌어요. 다시 시작해 주세요.", "The room is gone. Please start again.")); return; }
             if (s.error) throw new Error(s.error);
             me.netFail = 0; onErr("");
+            sessTouch(me);
             chatSync(s);
             applyState(s);
             setTimeout(function () { if (ON === me) poll(); }, 30);
@@ -1010,6 +1040,8 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         });
         elChat.querySelector(".om-chat-emo").appendChild(b);
     });
+    /* 2026-11-25: PC에서 메시지 입력칸이 좁아서 — 입력칸을 한 줄 통째로 쓰고, 이모지·보내기는 그 아래 줄로 (모양은 css) */
+    (function () { var f = elChat.querySelector(".om-chat-form"), e = elChat.querySelector(".om-chat-emo"); if (f && e) f.appendChild(e); })();
 
     function sndChat() { tones([[880, 0, 0.06], [1320, 0.07, 0.09]], "sine", 0.1); }
     function chatNoteSet(t, warn) { chatNote.textContent = t; chatNote.classList.toggle("warn", !!warn); }
@@ -1167,11 +1199,11 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
     /* 주소에 ?room=ABCD 가 있으면 바로 그 방으로 / 새로고침이면 하던 방으로 */
     function autoOnline() {
         var saved = null;
-        try { saved = JSON.parse(sessionStorage.getItem(SESSION_KEY)); } catch (e) {}
+        saved = sessLoad();
         var m = /[?&]room=([A-Za-z0-9]{4})/.exec(location.search);
         if (saved && saved.code && saved.token && (!m || m[1].toUpperCase() === saved.code)) {
             enterOnline();
-            ON = { code: saved.code, token: saved.token, ver: 0, status: "waiting", quick: !!saved.quick, gameKey: "", resumed: true };
+            ON = { code: saved.code, token: saved.token, ver: 0, status: "waiting", quick: !!saved.quick, gameKey: "", resumed: true, resumedFrom: true };
             showWaiting();
             poll();
             return;

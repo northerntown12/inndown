@@ -419,7 +419,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
        - 한 수 1분(서버가 정함). 컴퓨터와 두기는 예전처럼 시간 제한 없음
        - 초·한은 들어올 때 무작위, 한 판 더는 서로 바꿔서. 상차림은 각자 설정의 "내 상차림"
        - 둘 수 있는 수·외통수·시간 초과는 서버가 최종 판정
-       - 새로고침해도 같은 방으로 돌아옴 (sessionStorage janggiOnline.v1)
+       - 새로고침하거나 새 탭으로 다시 열어도 같은 방으로 돌아옴 (localStorage janggiOnline.v1, 30분)
        - 하던 컴퓨터 대국(janggiState.v1)은 그대로 남고, [← 컴퓨터와 두기]를 누르면 이어서 둘 수 있어요
        ========================================================= */
     var elOnBtn = $("joOnlineBtn");
@@ -428,6 +428,32 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         var elErr = $("joErr"), elInfo = $("joInfo"), elWaitMsg = $("joWaitMsg"), elCodeBox = $("joCodeBox");
         var btnOnResign = $("joResign"), btnRematch = $("joRematch"), btnStop = $("joStop"), btnNewOpp = $("joNewOpp"), inCode = $("joCodeIn");
         var SESSION_KEY = "janggiOnline.v1";
+        /* 2026-11-25: 두던 방을 이 기기에 기억해요 (localStorage). 폰에서 홈의 게임 카드를 다시 누르면 새 탭이 열려서,
+           예전처럼 그 탭에만 기억하면(sessionStorage) 두던 방을 못 찾고 처음 화면이 나왔어요.
+           30분 넘게 소식이 없던 방은 다시 들어가지 않아요 */
+        var RESUME_MS = 30 * 60 * 1000;
+        function sessSave(o) {
+            o.t = Date.now();
+            var v = JSON.stringify(o);
+            try { localStorage.setItem(SESSION_KEY, v); } catch (e) {}
+            try { sessionStorage.setItem(SESSION_KEY, v); } catch (e) {}
+        }
+        function sessLoad() {
+            var v = null;
+            try { v = JSON.parse(localStorage.getItem(SESSION_KEY)); } catch (e) {}
+            if (!v) { try { v = JSON.parse(sessionStorage.getItem(SESSION_KEY)); } catch (e) {} }
+            if (v && v.t && Date.now() - v.t > RESUME_MS) { sessDel(); return null; }
+            return v;
+        }
+        function sessDel() {
+            try { localStorage.removeItem(SESSION_KEY); } catch (e) {}
+            try { sessionStorage.removeItem(SESSION_KEY); } catch (e) {}
+        }
+        function sessTouch(me) {                    // 두는 동안 20초마다 "아직 이 방에 있어요" 시각을 새로
+            if (me.savedAt && Date.now() - me.savedAt < 20000) return;
+            me.savedAt = Date.now();
+            sessSave({ code: me.code, token: me.token, quick: me.quick });
+        }
         var onlineRecord = load("janggiOnlineRecord.v1", { w: 0, l: 0, d: 0 });
         var LIMIT = 60;                                        // 한 수 1분 (서버가 보낸 limit로 다시 맞춤)
         var fanfareAt = 0;
@@ -534,7 +560,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
                 if (ON.abort) ON.abort.abort();
             }
             ON = null;
-            try { sessionStorage.removeItem(SESSION_KEY); } catch (e) {}
+            sessDel();
             stopTimer(); hideUndo();
             if (!silent) {
                 mode = "ai";
@@ -550,7 +576,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         function backToLobby(msg) {
             if (ON && ON.abort) ON.abort.abort();
             ON = null;
-            try { sessionStorage.removeItem(SESSION_KEY); } catch (e) {}
+            sessDel();
             enterOnline();
             if (msg) onErr(msg);
         }
@@ -572,7 +598,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
                 ON = { code: res.code, token: res.token, ver: 0, status: "waiting", quick: !!res.quick || path === "/quick", gameKey: "", via: path };
                 /* 링크(?room=)로 들어온 주소는 지워 둬요 — 나중에 새로고침해도 예전 방 코드로 다시 들어가지 않게 */
                 try { if (/[?&]room=/.test(location.search) && history.replaceState) history.replaceState(null, "", location.pathname); } catch (e) {}
-                try { sessionStorage.setItem(SESSION_KEY, JSON.stringify({ code: ON.code, token: ON.token, quick: ON.quick })); } catch (e) {}
+                sessSave({ code: ON.code, token: ON.token, quick: ON.quick }); ON.savedAt = Date.now();
                 showWaiting();
                 poll();
             }).catch(function () { setBusy(false); onErr(netErrText()); });
@@ -596,9 +622,13 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
             me.abort = ctl;
             api("/state", { code: me.code, token: me.token, ver: me.ver, cver: me.cver || 0, cid: me.cid || 0 }, ctl && ctl.signal).then(function (s) {
                 if (ON !== me) return;
+                /* 기억해 둔 방으로 다시 들어왔는데 방이 없거나 이미 끝나고 둘 중 하나가 나갔으면 → 조용히 컴퓨터와 두기로 */
+                if (me.resumedFrom && !me.state && (s.error === "noroom" || s.error === "notyou" ||
+                        (s.status === "over" && (s.meDeclined || s.oppLeft || s.oppDeclined)))) { sessDel(); ON = null; leaveOnline(false); return; }
                 if (s.error === "noroom" || s.error === "notyou") { backToLobby(T("방이 사라졌어요. 다시 시작해 주세요.", "The room is gone. Please start again.")); return; }
                 if (s.error) throw new Error(s.error);
                 me.netFail = 0; onErr("");
+                sessTouch(me);
                 chatSync(s);
                 applyState(s);
                 setTimeout(function () { if (ON === me) poll(); }, 30);
@@ -1039,6 +1069,8 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
             });
             elChat.querySelector(".jo-chat-emo").appendChild(b);
         });
+        /* 2026-11-25: PC에서 메시지 입력칸이 좁아서 — 입력칸을 한 줄 통째로 쓰고, 이모지·보내기는 그 아래 줄로 (모양은 css) */
+        (function () { var f = elChat.querySelector(".jo-chat-form"), e = elChat.querySelector(".jo-chat-emo"); if (f && e) f.appendChild(e); })();
         function chatNoteSet(t, warn) { chatNote.textContent = t; chatNote.classList.toggle("warn", !!warn); }
         function chatDefaultNote() {
             chatNoteSet(ON && ON.quick ? T("모르는 상대와는 정해진 말만 보낼 수 있어요.", "With random opponents you can only send quick phrases.")
@@ -1217,11 +1249,11 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         /* 주소에 ?room=ABCD 가 있으면 바로 그 방으로 / 새로고침이면 하던 방으로 */
         autoOnline = function () {
             var saved = null;
-            try { saved = JSON.parse(sessionStorage.getItem(SESSION_KEY)); } catch (e) {}
+            saved = sessLoad();
             var m = /[?&]room=([A-Za-z0-9]{4})/.exec(location.search);
             if (saved && saved.code && saved.token && (!m || m[1].toUpperCase() === saved.code)) {
                 enterOnline();
-                ON = { code: saved.code, token: saved.token, ver: 0, status: "waiting", quick: !!saved.quick, gameKey: "", resumed: true };
+                ON = { code: saved.code, token: saved.token, ver: 0, status: "waiting", quick: !!saved.quick, gameKey: "", resumed: true, resumedFrom: true };
                 showWaiting();
                 poll();
                 return;
