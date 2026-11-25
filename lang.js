@@ -11,7 +11,7 @@
     window.T = function (ko, en) { return EN ? en : ko; };
 
     /* 영문 페이지가 있는 한국어 페이지 이름 (여기 없는 페이지에는 전환 버튼을 안 붙여요) */
-    var PAGES = ["index", "blog", "about", "privacy", "contact", "omok", "game2048", "units", "age", "word", "mines", "tools", "severance", "charcount", "loan", "janggi"];
+    var PAGES = ["index", "blog", "about", "privacy", "contact", "omok", "game2048", "units", "age", "word", "mines", "tools", "severance", "charcount", "loan", "janggi", "wage"];
     /* 2026-11-25: 영문판이 있는 블로그 글 (posts 폴더, 글이름.html ↔ 글이름-en.html) */
     var POSTS_EN = ["2026-11-24-wonderful-world"];
     PAGES = PAGES.concat(POSTS_EN);

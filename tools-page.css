@@ -612,3 +612,9 @@ body.tool-page.theme-loan { --tp-emerald: #3a1430; --tp-emerald2: #5c2248; --tp-
 .bp-back:hover:not(:disabled) { background: rgba(216, 192, 138, 0.22); }
 .bp-back:disabled { opacity: 0.35; cursor: default; }
 @media (max-width: 480px) { .bp-back { width: 28px; height: 28px; margin-right: -4px; } }
+
+/* 2026-11-25: 시급·주휴수당 계산기 (wage.html) — 주황 테마 */
+body.tool-page.theme-wage { --tp-emerald: #4a1f0c; --tp-emerald2: #7a3414; --tp-emerald3: #9c4a1e; --tp-gold: #ffcf8a; --tp-gold-deep: #c2410c; --tp-tint: #fbefe6; --tp-tint2: #f9e7da; }
+.tp-tabs a[href^="wage"].on { background: #7a3414; border-color: #7a3414; }
+.tp-tabs a[href^="wage"]:not(.on) { border-left: 4px solid #d9773a; }
+.th-ic.c7 { background: linear-gradient(160deg, #c2410c, #f08a4b); }

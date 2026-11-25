@@ -463,3 +463,9 @@
     html body .stock-widget .stk-list { width: 100%; max-width: 330px; margin-left: auto; margin-right: auto; box-sizing: border-box; }
     html body .stock-widget .stk-price { min-width: 88px; text-align: right; }
 }
+
+/* 2026-11-25: 폰 홈 생활 도구 카드 — 시급·주휴수당 (주황) */
+@media (max-width: 760px) {
+    html body .tools-widget .tw-item[href^="wage"] { background: #fbeadf; border-color: #eab796; color: #4a1f0c; }
+    html body .tools-widget .tw-item[href^="wage"] small, html body .tools-widget .tw-item[href^="wage"] .gw-go { color: #b4501c; }
+}
