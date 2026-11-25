@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <script src="lang.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>장기 – 컴퓨터와 두는 무료 장기 게임 · WowEzBox</title>
-    <meta name="description" content="컴퓨터와 두는 무료 장기 게임이에요. 초·한 편과 상차림을 고르고, 쉬움·보통·어려움 세 단계로 둘 수 있어요. 궁성 대각선, 포 규칙, 장군·외통수까지 진짜 장기 규칙 그대로예요.">
+    <title>장기 – 컴퓨터·온라인 대결 무료 장기 게임 · WowEzBox</title>
+    <meta name="description" content="컴퓨터와 두거나 친구·아무나와 온라인 대결(한 수 1분, 대화 가능)을 할 수 있는 무료 장기 게임이에요. 초·한 편과 상차림을 고르고, 컴퓨터는 쉬움·보통·어려움 세 단계예요. 궁성 대각선, 포 규칙, 장군·외통수까지 진짜 장기 규칙 그대로예요.">
     <!-- 2026-11-23: 검색·공유용 정보 (대표 주소·한영 연결·공유 미리보기·구조화 데이터) -->
     <link rel="canonical" href="https://wowezbox.com/janggi.html">
     <link rel="alternate" hreflang="ko" href="https://wowezbox.com/janggi.html">
@@ -14,14 +14,14 @@
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="WowEzBox">
     <meta property="og:locale" content="ko_KR">
-    <meta property="og:title" content="장기 – 컴퓨터와 두는 무료 장기 게임 · WowEzBox">
-    <meta property="og:description" content="컴퓨터와 두는 무료 장기 게임이에요. 초·한 편과 상차림을 고르고, 쉬움·보통·어려움 세 단계로 둘 수 있어요. 궁성 대각선, 포 규칙, 장군·외통수까지 진짜 장기 규칙 그대로예요.">
+    <meta property="og:title" content="장기 – 컴퓨터·온라인 대결 무료 장기 게임 · WowEzBox">
+    <meta property="og:description" content="컴퓨터와 두거나 친구·아무나와 온라인 대결(한 수 1분, 대화 가능)을 할 수 있는 무료 장기 게임이에요. 초·한 편과 상차림을 고르고, 컴퓨터는 쉬움·보통·어려움 세 단계예요. 궁성 대각선, 포 규칙, 장군·외통수까지 진짜 장기 규칙 그대로예요.">
     <meta property="og:url" content="https://wowezbox.com/janggi.html">
     <meta property="og:image" content="https://wowezbox.com/og-image.jpg">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta name="twitter:card" content="summary_large_image">
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "장기", "url": "https://wowezbox.com/janggi.html", "description": "컴퓨터와 두는 무료 장기 게임이에요. 초·한 편과 상차림을 고르고, 쉬움·보통·어려움 세 단계로 둘 수 있어요. 궁성 대각선, 포 규칙, 장군·외통수까지 진짜 장기 규칙 그대로예요.", "applicationCategory": "GameApplication", "operatingSystem": "Any", "inLanguage": "ko", "browserRequirements": "Requires JavaScript", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "KRW"}}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "장기", "url": "https://wowezbox.com/janggi.html", "description": "컴퓨터와 두거나 친구·아무나와 온라인 대결(한 수 1분, 대화 가능)을 할 수 있는 무료 장기 게임이에요. 초·한 편과 상차림을 고르고, 컴퓨터는 쉬움·보통·어려움 세 단계예요. 궁성 대각선, 포 규칙, 장군·외통수까지 진짜 장기 규칙 그대로예요.", "applicationCategory": "GameApplication", "operatingSystem": "Any", "inLanguage": "ko", "browserRequirements": "Requires JavaScript", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "KRW"}}</script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Noto+Sans+KR:wght@400;600;700;900&family=Noto+Serif+KR:wght@700;900&display=swap" rel="stylesheet">
@@ -30,7 +30,7 @@
 <body>
     <header class="g-top">
         <div class="g-top-in">
-            <h1 class="g-title">장기 <small>컴퓨터와 두기</small></h1>
+            <h1 class="g-title">장기 <small>컴퓨터 · 온라인</small></h1>
             <span class="g-brand">WowEzBox</span>
         </div>
     </header>
@@ -75,33 +75,64 @@
                 </div>
             </div>
             <div class="j-toolrow">
-                <button type="button" class="g-btn" id="jUndo">↩ 무르기</button>
+                <button type="button" class="g-btn j-ai-only" id="jUndo">↩ 무르기</button>
                 <button type="button" class="g-btn" id="jPass">한 수 쉬기</button>
-                <button type="button" class="g-btn j-resign" id="jResign">🏳️ 기권</button>
+                <button type="button" class="g-btn j-resign j-ai-only" id="jResign">🏳️ 기권</button>
             </div>
         </section>
 
         <aside class="g-panel">
-            <div class="g-actions">
+            <div class="g-actions j-ai-only">
                 <button type="button" class="g-btn g-primary" id="jNew">새 게임</button>
                 <button type="button" class="g-btn g-exit" id="jExit" title="창 닫기">종료</button>
             </div>
+            <!-- 🌐 온라인 대결 (2026-11-25, 오목과 같은 구조 · 서버: Worker omok-online의 /j/... · janggi.js 맨 위 ONLINE_URL) -->
+            <button type="button" class="g-btn jo-online j-ai-only" id="joOnlineBtn">🌐 온라인 대결 <span class="jo-new">NEW</span></button>
+            <div class="jo-box" id="joBox" hidden>
+                <div class="jo-head">🌐 온라인 대결 <small>한 수 1분 · 대화</small></div>
+                <div id="joLobby" class="jo-sec">
+                    <button type="button" class="g-btn g-primary" id="joQuick">⚡ 빠른 매칭 <small>아무나와</small></button>
+                    <button type="button" class="g-btn" id="joCreate">🏠 방 만들기 <small>친구와</small></button>
+                    <div class="jo-join">
+                        <input type="text" id="joCodeIn" maxlength="4" placeholder="방 코드" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-label="방 코드 4자리">
+                        <button type="button" class="g-btn" id="joJoin">입장</button>
+                    </div>
+                    <p class="jo-tip">초·한은 들어올 때 무작위로 정해지고, 한 판 더는 서로 바꿔요. 상차림은 아래 "내 상차림"으로 둬요.</p>
+                </div>
+                <div id="joWait" class="jo-sec" hidden>
+                    <p class="jo-msg" id="joWaitMsg"></p>
+                    <div class="jo-code-box" id="joCodeBox">
+                        <span>방 코드</span><b id="joCodeShow">----</b>
+                        <button type="button" class="g-btn" id="joCopy">링크 복사</button>
+                    </div>
+                    <button type="button" class="g-btn" id="joCancel">취소</button>
+                </div>
+                <div id="joPlay" class="jo-sec" hidden>
+                    <p class="jo-info" id="joInfo"></p>
+                    <button type="button" class="g-btn" id="joResign">🏳️ 기권</button>
+                    <button type="button" class="g-btn" id="joRematch" hidden>한 판 더</button>
+                    <button type="button" class="g-btn jo-stop" id="joStop" hidden>🙅 그만할래요</button>
+                    <button type="button" class="g-btn g-primary" id="joNewOpp" hidden>🔄 새 대결 찾기</button>
+                </div>
+                <p class="jo-err" id="joErr" role="alert" hidden></p>
+                <button type="button" class="g-btn g-exit" id="joBack">← 컴퓨터와 두기</button>
+            </div>
             <div class="j-settings">
-                <div class="j-set">
+                <div class="j-set j-ai-only">
                     <span>내 편</span>
                     <div class="j-seg">
                         <label><input type="radio" name="jSide" id="jSideCho"> <b class="cho">초</b> (먼저)</label>
                         <label><input type="radio" name="jSide" id="jSideHan"> <b class="han">한</b> (나중)</label>
                     </div>
                 </div>
-                <label class="j-set"><span>난이도</span>
+                <label class="j-set j-ai-only"><span>난이도</span>
                     <select id="jLevel"><option value="easy">쉬움</option><option value="normal">보통</option><option value="hard">어려움</option></select>
                 </label>
                 <label class="j-set"><span>내 상차림 (왼쪽부터)</span>
                     <select id="jSetup"><option value="HEHE">마상마상</option><option value="EHEH">상마상마</option><option value="HEEH">마상상마</option><option value="EHHE">상마마상</option></select>
                 </label>
                 <label class="j-check"><input type="checkbox" id="jHangul"> 말 글자를 한글로 (차·포·마…)</label>
-                <p class="j-note">편·난이도·상차림을 고른 뒤 판 위의 [▶ 시작]을 누르세요. 두는 중에 바꾸면 [새 게임]부터 적용돼요. 컴퓨터 상차림은 무작위예요.</p>
+                <p class="j-note j-ai-only">편·난이도·상차림을 고른 뒤 판 위의 [▶ 시작]을 누르세요. 두는 중에 바꾸면 [새 게임]부터 적용돼요. 컴퓨터 상차림은 무작위예요.</p>
             </div>
             <div class="g-record" id="jRecord"></div>
             <details class="g-rules">
@@ -113,6 +144,7 @@
                     <li>장군을 받으면 꼭 막아야 해요. 장군이 아닐 때는 <b>한 수 쉬기</b>를 할 수 있어요.</li>
                     <li>수 제한은 없어요. 궁을 더 이상 지킬 수 없게 되면(외통수) 지고, 그 전에는 끝까지 둬요.</li>
                     <li>이 게임에서는 <b>빅장</b>(두 궁이 가운데 줄에서 마주 보기)을 따로 무승부로 치지 않아요.</li>
+                    <li><b>🌐 온라인 대결</b>: 빠른 매칭(아무나) 또는 방 만들기(친구에게 코드·링크 보내기). 한 수에 <b>1분</b>, 시간 안에 못 두면 져요. 무르기는 상대에게 요청해서 허락받으면 돼요(한 판 3번). 두 사람만 보는 대화도 할 수 있어요. 컴퓨터와 둘 때는 시간 제한이 없어요.</li>
                     <li>하던 판은 이 기기에 저장돼서, 창을 닫았다 열어도 이어서 둘 수 있어요.</li>
                 </ul>
             </details>

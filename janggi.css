@@ -201,3 +201,205 @@ body {
 .j-start { background: rgba(54, 52, 122, 0.14); }
 .j-start .j-result-card { padding: 16px 20px 18px; }
 .j-start-btn { font-size: 1.15rem; padding: 10px 34px; font-weight: 700; }
+
+/* =========================================================
+   🌐 온라인 대결 + 대화 (2026-11-25) — 오목 온라인과 같은 모양, janggi.js의 "온라인 대결" 부분
+   ========================================================= */
+.jo-mode .j-ai-only { display: none !important; }
+.jo-only { display: none; }
+.jo-mode .jo-only { display: inline-block; }
+.jo-mode .jo-only[hidden] { display: none; }
+.j-status.win  { background: #fff4cf; color: #7a5200; box-shadow: inset 0 0 0 1px #e8c66a; }
+.j-status.lose { background: #eef0f7; color: #2b3a5c; box-shadow: inset 0 0 0 1px #c4cbe0; }
+.g-btn.jo-hot { border-color: #ff8fab; box-shadow: 0 0 0 3px rgba(255, 94, 138, 0.22); }
+
+/* 온라인 대결 버튼 + NEW (홈 게임 막대 FREE!와 같은 모양) */
+.jo-online { width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; background: #DAD9FF; border-color: #c3c1f0; color: #36347a; }
+.jo-online:hover { background: #cfcdfb; }
+.jo-new {
+    display: inline-block; font-family: "Chewy", "Comic Sans MS", cursive; font-weight: 400; font-size: 1rem; letter-spacing: 0.04em; line-height: 1;
+    color: #ff5e8a; text-shadow: 1px 1px 0 #fff, -1px 1px 0 #fff, 0 2px 0 rgba(255, 179, 71, 0.9);
+    transform: rotate(-7deg); animation: joNewWiggle 2.6s ease-in-out infinite;
+}
+@keyframes joNewWiggle {
+    0%, 70%, 100% { transform: rotate(-7deg) scale(1); }
+    78% { transform: rotate(4deg) scale(1.12); }
+    86% { transform: rotate(-10deg) scale(1.05); }
+    93% { transform: rotate(-5deg) scale(1); }
+}
+
+/* 남은 시간 동그라미 (한 수 1분) */
+.jo-timer { position: relative; flex: none; width: 46px; height: 46px; display: grid; place-items: center; }
+.jo-timer[hidden] { display: none; }
+.jo-timer svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
+.jo-tr-bg { fill: #fff; stroke: #eadfcb; stroke-width: 4; }
+.jo-tr { fill: none; stroke: #2fae7a; stroke-width: 4; stroke-linecap: round; stroke-dasharray: 119.38; stroke-dashoffset: 0; transition: stroke 0.2s; }
+.jo-timer span { position: relative; font-weight: 700; font-size: 1.02rem; color: var(--g-ink); font-variant-numeric: tabular-nums; }
+.jo-timer.idle .jo-tr { stroke: #d8ccb4; }
+.jo-timer.idle span { color: var(--g-mute); }
+.jo-timer.opp .jo-tr { stroke: #9aa6c4; }
+.jo-timer.opp span { color: #6b7799; }
+.jo-timer.warn .jo-tr { stroke: #e5402b; }
+.jo-timer.warn span { color: #c62f1c; animation: joBeat 1s ease-in-out infinite; }
+.jo-timer.end .jo-tr { stroke: #c9bfae; }
+@keyframes joBeat { 0%, 100% { transform: scale(1); } 15% { transform: scale(1.22); } }
+
+/* 온라인 칸 */
+.jo-box { display: flex; flex-direction: column; gap: 10px; background: linear-gradient(180deg, #f1f0ff, #e6e5ff); border: 1px solid #c3c1f0; border-radius: 12px; padding: 12px; }
+.jo-box[hidden] { display: none; }
+.jo-head { font-weight: 800; color: #36347a; font-size: 1rem; }
+.jo-head small { font-weight: 600; font-size: 0.75rem; color: #6d6aa8; margin-left: 4px; }
+.jo-sec { display: flex; flex-direction: column; gap: 8px; }
+.jo-sec[hidden] { display: none; }
+.jo-sec .g-btn small { font-weight: 600; font-size: 0.75rem; opacity: 0.8; margin-left: 4px; }
+.jo-join { display: flex; gap: 6px; }
+.jo-join input {
+    flex: 1; min-width: 0; font: inherit; font-size: 1rem; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; text-align: center;
+    padding: 9px 8px; border: 1px solid #c3c1f0; border-radius: 10px; background: #fff; color: #36347a;
+}
+.jo-join input::placeholder { letter-spacing: 0.02em; font-weight: 600; color: #a5a3cf; }
+.jo-join .g-btn { flex: none; }
+.jo-tip { margin: 0; font-size: 0.74rem; color: #6d6aa8; line-height: 1.5; }
+.jo-msg { margin: 0; font-size: 0.86rem; color: #4b4880; line-height: 1.5; }
+.jo-code-box { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; background: #fff; border: 1px dashed #a9a6e8; border-radius: 10px; padding: 8px 10px; }
+.jo-code-box[hidden] { display: none; }
+.jo-code-box span { flex-basis: 100%; white-space: nowrap; font-size: 0.75rem; font-weight: 700; color: #6d6aa8; }
+.jo-code-box b { font-size: 1.5rem; letter-spacing: 0.18em; color: #36347a; font-variant-numeric: tabular-nums; flex: 1; }
+.jo-code-box .g-btn { padding: 7px 10px; font-size: 0.82rem; white-space: nowrap; }
+.jo-info { margin: 0; font-size: 0.86rem; color: #3f3c74; line-height: 1.6; }
+.jo-info b.cho { color: #1f5fae; } .jo-info b.han { color: #c62828; }
+.jo-opp { font-weight: 700; }
+.jo-opp.on { color: #23905a; }
+.jo-opp.off { color: #c2412b; }
+.jo-err { margin: 0; font-size: 0.82rem; color: #b8321f; background: #fff1ee; border-radius: 8px; padding: 7px 9px; }
+.jo-err[hidden] { display: none; }
+.jo-stop { background: #fff4f1; border-color: #efc2b8; color: #a3402c; }
+.jo-stop:hover:not(:disabled) { background: #ffe9e3; }
+.jo-stop.jo-stop-hot { border-color: #e08a76; box-shadow: 0 0 0 2px rgba(224, 138, 118, 0.25); }
+.g-btn.jo-share { background: #fee500; border-color: #e6cf00; color: #3a2a00; font-weight: 800; }
+.g-btn.jo-share:hover { background: #ffeb3b; }
+#joPlay .jo-on-exit { order: 9; }
+#joPlay .jo-chat { order: 10; }
+.j-result-btns { flex-wrap: wrap; }
+
+/* 대화 */
+.jo-chat { display: flex; flex-direction: column; gap: 7px; margin-top: 4px; padding-top: 10px; border-top: 1px dashed #b9b6ee; }
+.jo-chat[hidden] { display: none; }
+.jo-chat-head { display: flex; align-items: center; gap: 6px; font-weight: 800; color: #36347a; font-size: 0.92rem; }
+.jo-chat-head > span { margin-right: auto; }
+.jo-chat-off, .jo-chat-min {
+    flex: none; padding: 3px 9px; border-radius: 999px; border: 1px solid #c3c1f0; background: #fff;
+    color: #5a57b5; font: inherit; font-size: 0.74rem; font-weight: 700; cursor: pointer;
+}
+.jo-chat-min[hidden] { display: none; }
+.jo-chat-off:hover, .jo-chat-min:hover { background: #f1f0ff; }
+.jo-chat-off.has-new, .jo-chat-min.has-new { border-color: #ff8fab; color: #d63c6a; box-shadow: 0 0 0 2px rgba(255, 94, 138, 0.18); }
+.jo-chat-body { display: flex; flex-direction: column; gap: 7px; }
+.jo-chat-body[hidden], .jo-chat-free[hidden], .jo-chat-offmsg[hidden] { display: none; }
+.jo-chat-log {
+    height: 150px; overflow-y: auto; display: flex; flex-direction: column; gap: 5px;
+    padding: 8px; border-radius: 10px; background: #fff; border: 1px solid #d6d4f7;
+    scrollbar-width: thin; overscroll-behavior: contain;
+}
+.jo-chat-log:empty::before { content: attr(aria-label); margin: auto; font-size: 0.78rem; color: #b0aed6; }
+.jo-msg { display: flex; flex-direction: column; max-width: 86%; }
+.jo-msg small { font-size: 0.66rem; color: #9a98c8; margin: 0 4px 1px; }
+.jo-msg span { padding: 5px 10px; border-radius: 12px; font-size: 0.86rem; line-height: 1.4; word-break: break-word; overflow-wrap: anywhere; white-space: pre-wrap; }
+.jo-msg.theirs { align-self: flex-start; }
+.jo-msg.theirs span { background: #f1f0ff; color: #2f2c66; border-top-left-radius: 4px; }
+.jo-msg.mine { align-self: flex-end; align-items: flex-end; }
+.jo-msg.mine span { background: #36347a; color: #fff; border-top-right-radius: 4px; }
+.jo-chat-presets { display: flex; flex-wrap: wrap; gap: 5px; }
+.jo-chat-presets button, .jo-chat-emo button {
+    padding: 4px 9px; border-radius: 999px; border: 1px solid #c3c1f0; background: #fff;
+    color: #36347a; font: inherit; font-size: 0.76rem; cursor: pointer; white-space: nowrap;
+}
+.jo-chat-presets button:hover, .jo-chat-emo button:hover { background: #f1f0ff; }
+.jo-chat-form { display: flex; gap: 6px; }
+.jo-chat-form input { flex: 1; min-width: 0; padding: 8px 10px; border: 1px solid #c3c1f0; border-radius: 10px; background: #fff; color: var(--g-ink); font: inherit; font-size: 0.9rem; }
+.jo-chat-form input:focus { outline: none; border-color: #8f8ce0; box-shadow: 0 0 0 2px rgba(143, 140, 224, 0.25); }
+.jo-chat-form .g-btn { flex: none; padding: 8px 12px; font-size: 0.84rem; }
+.jo-chat-emo { display: flex; flex-wrap: wrap; gap: 4px; }
+.jo-chat-emo button { padding: 2px 7px; font-size: 1rem; border-radius: 8px; }
+.jo-chat-note { margin: 0; font-size: 0.72rem; color: #8a87bb; }
+.jo-chat-note.warn { color: #c2412b; font-weight: 700; }
+.jo-chat-offmsg { margin: 0; font-size: 0.78rem; color: #8a87bb; }
+/* 폰: 대화창을 화면 아래에 붙여 늘 떠 있게 */
+.jo-chat.jo-chat-dock {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 60;
+    margin: 0 auto; padding: 8px 10px calc(8px + env(safe-area-inset-bottom, 0px));
+    gap: 6px; border-top: 2px solid #b9b6ee; border-radius: 14px 14px 0 0;
+    background: rgba(246, 245, 255, 0.98); box-shadow: 0 -6px 18px rgba(54, 52, 122, 0.18); max-width: 640px;
+}
+.jo-chat-dock .jo-chat-body { gap: 6px; }
+.jo-chat-dock .jo-chat-log { height: 72px; padding: 6px 8px; }
+.jo-chat-dock .jo-msg span { padding: 4px 9px; font-size: 0.84rem; }
+.jo-chat-dock .jo-msg small { display: none; }
+.jo-chat-dock .jo-chat-presets { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; padding-bottom: 1px; }
+.jo-chat-dock .jo-chat-presets::-webkit-scrollbar { display: none; }
+.jo-chat-dock .jo-chat-presets button { flex: none; }
+.jo-chat-dock .jo-chat-emo { display: none; }
+.jo-chat-dock .jo-chat-note:not(.warn) { display: none; }
+.jo-chat-dock .jo-chat-form input { padding: 7px 10px; font-size: 16px; }
+.jo-chat-dock.is-min .jo-chat-body, .jo-chat-dock.is-min .jo-chat-offmsg { display: none; }
+
+/* 판 위: 입장 축하 띠 · 카운트다운 · 무르기 요청 · 알림 */
+.jo-join-banner { position: absolute; inset: 0; z-index: 8; pointer-events: none; overflow: hidden; display: grid; place-items: start center; padding-top: 9%; animation: joFadeIn 0.35s ease-out; border-radius: 10px; }
+.jo-join-banner p {
+    margin: 0; padding: 12px 22px; border-radius: 999px; background: linear-gradient(135deg, #ff5e8a, #ffb36b);
+    color: #fff; font-size: 1.25rem; font-weight: 800; box-shadow: 0 8px 24px rgba(180, 60, 90, 0.35), 0 0 0 4px rgba(255, 255, 255, 0.7);
+    animation: joPop 0.5s cubic-bezier(.2, 1.6, .4, 1); text-align: center; word-break: keep-all;
+}
+.jo-join-banner i { position: absolute; top: -12px; width: 8px; height: 13px; border-radius: 2px; animation-name: joConfetti; animation-timing-function: ease-in; animation-fill-mode: forwards; }
+.jo-join-banner.out { opacity: 0; transition: opacity 0.45s; }
+@keyframes joFadeIn { from { opacity: 0; } }
+@keyframes joPop { from { transform: scale(0.4); opacity: 0; } }
+@keyframes joConfetti { to { transform: translateY(110vh) rotate(720deg); } }
+.jo-countdown {
+    position: absolute; inset: 0; z-index: 7; pointer-events: none; border-radius: 10px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; background: rgba(255, 255, 255, 0.22);
+}
+.jo-countdown b { font-size: clamp(4rem, 18vw, 7rem); line-height: 1; font-weight: 900; color: #fff; text-shadow: 0 4px 0 #5a57b5, 0 8px 22px rgba(40, 30, 90, 0.45); }
+.jo-countdown b.pop { animation: joCdPop 0.9s ease-out; }
+.jo-countdown b.go { color: #ffd166; text-shadow: 0 4px 0 #c2410c, 0 8px 22px rgba(120, 50, 0, 0.4); animation: joCdPop 0.5s ease-out; }
+.jo-countdown small { padding: 6px 14px; border-radius: 999px; background: rgba(54, 52, 122, 0.88); color: #fff; font-size: 0.92rem; font-weight: 700; text-align: center; word-break: keep-all; max-width: 90%; }
+.jo-countdown.out { opacity: 0; transition: opacity 0.3s; }
+@keyframes joCdPop { 0% { transform: scale(1.8); opacity: 0; } 25% { transform: scale(1); opacity: 1; } 100% { transform: scale(0.92); opacity: 0.85; } }
+.jo-undo-ask { position: absolute; inset: 0; z-index: 9; display: grid; place-items: center; background: rgba(30, 24, 60, 0.28); border-radius: 10px; }
+.jo-undo-ask[hidden] { display: none; }
+.jo-undo-card { width: min(86%, 340px); padding: 16px 18px 12px; border-radius: 14px; text-align: center; background: var(--g-cream); border: 2px solid var(--g-gold); box-shadow: 0 10px 28px rgba(0, 0, 0, 0.3); animation: joPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.jo-undo-t { margin: 0 0 4px; font-size: 1.1rem; font-weight: 800; color: #36347a; }
+.jo-undo-d { margin: 0 0 12px; font-size: 0.82rem; color: #6b6890; line-height: 1.5; word-break: keep-all; }
+.jo-undo-b { display: flex; gap: 8px; justify-content: center; }
+.jo-undo-b .g-btn { flex: 1; }
+.jo-undo-bar { margin-top: 10px; height: 5px; border-radius: 3px; background: #ece8dc; overflow: hidden; }
+.jo-undo-bar i { display: block; height: 100%; width: 100%; background: linear-gradient(90deg, #ff8fab, #ffd166); }
+.jo-flash {
+    position: absolute; left: 50%; top: 12%; transform: translateX(-50%); z-index: 9; pointer-events: none;
+    padding: 9px 18px; border-radius: 999px; background: rgba(54, 52, 122, 0.92); color: #fff;
+    font-weight: 800; font-size: 0.95rem; white-space: nowrap; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25); animation: joPop 0.4s cubic-bezier(.2, 1.6, .4, 1);
+}
+.jo-flash.out { opacity: 0; transition: opacity 0.35s; }
+@media (prefers-reduced-motion: reduce) { .jo-new, .jo-join-banner p { animation: none; } .jo-join-banner i { display: none; } }
+
+/* 폰: 고르기·기다리기 동안은 온라인 칸을 판 위로, 글씨·여백 조금 작게 */
+@media (max-width: 760px) {
+    .g-main { grid-template-columns: minmax(0, 1fr); }
+    .j-play, .g-panel { min-width: 0; }
+    .jo-mode.jo-pre .g-panel { order: -1; }
+    .jo-mode .g-panel { padding: 10px; gap: 10px; }
+    .jo-box { padding: 10px; gap: 7px; border-radius: 10px; }
+    .jo-head { font-size: 0.92rem; }
+    .jo-box .g-btn { padding: 9px 10px; font-size: 0.86rem; }
+    .jo-join input { font-size: 16px; padding: 7px 6px; }
+    .jo-msg, .jo-info { font-size: 0.8rem; line-height: 1.45; }
+    .jo-code-box b { font-size: 1.3rem; }
+    #joPlay { flex-direction: row; flex-wrap: wrap; }
+    #joPlay .jo-info { flex-basis: 100%; }
+    #joPlay > .g-btn { flex: 1 1 40%; min-width: 0; }
+    #joPlay .jo-chat { flex-basis: 100%; }
+    .jo-chat-log { height: 120px; }
+    .jo-chat-form input { font-size: 16px; }
+    .jo-flash { font-size: 0.85rem; white-space: normal; text-align: center; width: max-content; max-width: 86%; }
+    .j-statusrow .jo-timer { width: 42px; height: 42px; }
+}
