@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <script src="lang.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>환율 계산기 – 달러·엔·유로 원화 환산 · WowEzBox</title>
+    <meta name="description" content="달러·엔·유로·위안·파운드 등 13개 통화를 원화로, 원화를 외화로 바로 바꿔 주는 무료 환율 계산기예요. 위아래 어느 칸에 넣어도 계산되고, 자주 쓰는 금액 표와 은행 환율과 다른 이유도 쉽게 정리했어요.">
+    <!-- 2026-11-25: 검색·공유용 정보 -->
+    <link rel="canonical" href="https://wowezbox.com/fx.html">
+    <link rel="alternate" hreflang="ko" href="https://wowezbox.com/fx.html">
+    <link rel="alternate" hreflang="en" href="https://wowezbox.com/fx-en.html">
+    <link rel="alternate" hreflang="x-default" href="https://wowezbox.com/fx.html">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="WowEzBox">
+    <meta property="og:locale" content="ko_KR">
+    <meta property="og:title" content="환율 계산기 – 달러·엔·유로 원화 환산 · WowEzBox">
+    <meta property="og:description" content="달러·엔·유로·위안·파운드 등 13개 통화를 원화로, 원화를 외화로 바로 바꿔 주는 무료 환율 계산기예요. 위아래 어느 칸에 넣어도 계산되고, 자주 쓰는 금액 표와 은행 환율과 다른 이유도 쉽게 정리했어요.">
+    <meta property="og:url" content="https://wowezbox.com/fx.html">
+    <meta property="og:image" content="https://wowezbox.com/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
+    <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "환율 계산기", "url": "https://wowezbox.com/fx.html", "description": "달러·엔·유로·위안·파운드 등 13개 통화를 원화로, 원화를 외화로 바로 바꿔 주는 무료 환율 계산기예요. 위아래 어느 칸에 넣어도 계산되고, 자주 쓰는 금액 표와 은행 환율과 다른 이유도 쉽게 정리했어요.", "applicationCategory": "FinanceApplication", "operatingSystem": "Any", "inLanguage": "ko", "browserRequirements": "Requires JavaScript", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "KRW"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "홈", "item": "https://wowezbox.com/"}, {"@type": "ListItem", "position": 2, "name": "생활 도구", "item": "https://wowezbox.com/tools.html"}, {"@type": "ListItem", "position": 3, "name": "환율 계산기", "item": "https://wowezbox.com/fx.html"}]}]}</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="blog.css">
+    <link rel="stylesheet" href="tools-page.css">
+</head>
+<body class="blog-page tool-page theme-fx">
+    <header class="bp-top">
+        <div class="bp-top-in">
+            <a class="bp-brand" href="index.html">WowEzBox<small>생활 도구</small></a>
+            <a class="bp-home" href="index.html">← 홈으로</a>
+        </div>
+    </header>
+
+    <main class="tp-main">
+        <nav class="tp-crumb" aria-label="현재 위치"><ol><li><a href="index.html">홈</a></li><li><a href="tools.html">생활 도구</a></li><li><span aria-current="page">환율 계산기</span></li></ol></nav>
+        <!-- 도구 탭: 새 도구 페이지를 만들면 모든 도구 페이지에 한 칸씩 추가 -->
+        <nav class="tp-tabs" aria-label="생활 도구"><a href="tools.html">🧰 전체 도구</a><a href="units.html">📏 단위 환산</a><a href="fx.html" class="on" aria-current="page">💱 환율</a><a href="age.html">📅 만 나이 · D-day</a><a href="severance.html">💼 퇴직금</a><a href="wage.html">💰 시급·주휴수당</a><a href="charcount.html">✍️ 글자 수</a><a href="loan.html">🏦 대출 이자</a></nav>
+        <div class="tp-head">
+            <span class="tp-kicker">생활 도구</span>
+            <h1>환율 계산기</h1>
+            <p>달러·엔·유로처럼 자주 쓰는 외화를 원화로, 원화를 외화로 바로 바꿔 드려요. 위아래 어느 칸에 숫자를 넣어도 반대쪽이 계산돼요.</p>
+        </div>
+
+        <section class="tp-tool" aria-label="환율 계산기">
+            <!-- fxcalc.js가 이 칸을 움직여요 -->
+            <div class="tp-conv fx-conv">
+                <h2 class="uc-title">어떤 돈을 바꿀까요?</h2>
+                <div class="uc-chips fx-chips" id="fx-chips" role="group" aria-label="통화 고르기"></div>
+                <label class="uc-in">
+                    <input type="text" id="fx-amt" inputmode="decimal" autocomplete="off" aria-label="외화 금액">
+                    <span class="uc-unit" id="fx-code">USD</span>
+                </label>
+                <div class="uc-link" aria-hidden="true"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M3 1v8M1 3l2-2 2 2M7 9V1M5 7l2 2 2-2"/></svg></div>
+                <label class="uc-in">
+                    <input type="text" id="fx-won" inputmode="decimal" autocomplete="off" aria-label="원화 금액">
+                    <span class="uc-unit">원 (KRW)</span>
+                </label>
+                <div class="uc-hint fx-info" id="fx-info"></div>
+                <div class="fx-row"><button type="button" class="tp-btn" id="fx-swap">⇅ 금액 바꿔 넣기</button><span class="fx-date" id="fx-date"></span></div>
+                <p class="tp-note">마지막으로 고른 통화와 금액은 이 기기에 기억돼요. <a href="https://www.exchangerate-api.com" target="_blank" rel="noopener noreferrer">Rates By Exchange Rate API</a></p>
+            </div>
+
+            <div class="tp-table-box">
+                <h2>자주 쓰는 금액<small class="fx-cur-name"></small></h2>
+                <table class="uc-table" id="fx-table"></table>
+                <table class="uc-table fx-won-table" id="fx-won-table"></table>
+            </div>
+        </section>
+
+        <section class="tp-table-box fx-all-box" aria-label="오늘의 환율 한눈에">
+            <h2>오늘의 환율 한눈에<small>엔·동은 100 단위</small></h2>
+            <table class="uc-table" id="fx-all"></table>
+        </section>
+
+        <article class="tp-article">
+            <h2>이 환율은 어떤 환율인가요?</h2>
+            <p>이 계산기는 ExchangeRate-API가 하루 한 번 알려 주는 <b>시장 중간 환율</b>로 계산해요. 뉴스에서 말하는 "오늘 원·달러 환율"이나 은행이 고시하는 <b>매매기준율</b>과 비슷한 값이에요.</p>
+            <h2>은행에서 바꾸면 왜 더 비싼가요?</h2>
+            <p>은행은 매매기준율에 수수료(환전 마진)를 붙여서 팔고 사요. 그래서 같은 날이라도 이렇게 값이 달라요.</p>
+            <ul>
+                <li><b>현찰 살 때</b> — 원화를 내고 외화 현금을 받을 때. 기준율보다 비싸요. 달러는 보통 2% 안팎이고, 덜 쓰는 통화일수록 차이가 커요.</li>
+                <li><b>현찰 팔 때</b> — 남은 외화 현금을 원화로 바꿀 때. 기준율보다 싸게 쳐줘요.</li>
+                <li><b>송금 보낼 때·받을 때</b> — 현찰보다는 차이가 작아요.</li>
+            </ul>
+            <p class="tp-tip">여행 전 환전은 은행 앱의 <b>환율 우대</b>(수수료 할인)를 쓰거나, 해외 결제 수수료가 적은 카드를 쓰면 이 계산기 값에 더 가까워져요.</p>
+            <h2>계산하는 법</h2>
+            <p>예를 들어 1달러가 1,400원이라면 50달러는 50 × 1,400 = 70,000원이에요. 엔화와 베트남 동은 단위가 작아서 보통 <b>100엔, 100동</b> 기준으로 말해요. 100엔이 950원이면 1만 엔은 95,000원이에요.</p>
+            <h2>자주 묻는 질문</h2>
+            <div class="tp-faq">
+                <details><summary>환율은 얼마나 자주 바뀌나요?</summary><p>실제 환율은 장이 열리는 동안 계속 움직여요. 이 계산기는 하루 한 번 갱신되는 값을 쓰니, 큰돈을 바꿀 때는 은행 앱의 실시간 환율을 꼭 확인하세요.</p></details>
+                <details><summary>홈 화면 환율 칸과 같은 값인가요?</summary><p>네. 같은 곳에서 받은 환율을 이 기기에 함께 저장해서 써요. 그래서 홈과 이 페이지 숫자가 같아요.</p></details>
+                <details><summary>입력한 금액이 저장되나요?</summary><p>마지막으로 고른 통화와 금액만 이 기기(브라우저)에 기억해요. 어디로도 보내지 않아요.</p></details>
+            </div>
+            <p class="tp-small">참고용 환율이에요. 실제 환전·송금 금액은 은행과 카드사의 환율·수수료에 따라 달라요. <a href="https://www.exchangerate-api.com" target="_blank" rel="noopener noreferrer">Rates By Exchange Rate API</a></p>
+        </article>
+
+        <nav class="tp-related" aria-label="다른 도구">
+            <div class="tp-related-head"><h2>다른 도구도 써 보세요</h2><a href="tools.html">전체 도구 보기 →</a></div>
+            <div class="th-grid">
+                <a class="th-card" href="units.html"><span class="th-ic" aria-hidden="true">📏</span><span class="th-text"><b>단위 환산기</b><small>마일↔km, 파운드↔kg, 화씨↔섭씨</small></span></a>
+                <a class="th-card" href="wage.html"><span class="th-ic c7" aria-hidden="true">💰</span><span class="th-text"><b>시급·주휴수당</b><small>알바 주급·월급 계산</small></span></a>
+                <a class="th-card" href="index.html#calculator"><span class="th-ic c5" aria-hidden="true">🧮</span><span class="th-text"><b>계산기</b><small>식을 보며 계산 (홈)</small></span></a>
+                <a class="th-card" href="loan.html"><span class="th-ic c6" aria-hidden="true">🏦</span><span class="th-text"><b>대출 이자 계산기</b><small>원리금균등·원금균등 비교</small></span></a>
+            </div>
+        </nav>
+    </main>
+
+    <footer class="bp-foot">
+        <a href="index.html">홈</a><a href="tools.html">생활 도구</a><a href="blog.html">블로그</a><a href="about.html">소개</a><a href="privacy.html">개인정보처리방침</a><a href="contact.html">연락 이메일</a>
+        <div>Copyright © 2026 WowEzBox. All rights reserved.</div>
+    </footer>
+
+    <script src="fxcalc.js"></script>
+</body>
+</html>

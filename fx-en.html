@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="lang.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KRW Exchange Rate Calculator – Dollar, Yen, Euro to Won · WowEzBox</title>
+    <meta name="description" content="Free Korean won exchange rate calculator. Convert US dollars, yen, euros, yuan, pounds and 8 more currencies to and from KRW, with handy amount tables and a note on why bank rates differ.">
+    <!-- 2026-11-25: 검색·공유용 정보 -->
+    <link rel="canonical" href="https://wowezbox.com/fx-en.html">
+    <link rel="alternate" hreflang="ko" href="https://wowezbox.com/fx.html">
+    <link rel="alternate" hreflang="en" href="https://wowezbox.com/fx-en.html">
+    <link rel="alternate" hreflang="x-default" href="https://wowezbox.com/fx.html">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="WowEzBox">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:title" content="KRW Exchange Rate Calculator – Dollar, Yen, Euro to Won · WowEzBox">
+    <meta property="og:description" content="Free Korean won exchange rate calculator. Convert US dollars, yen, euros, yuan, pounds and 8 more currencies to and from KRW, with handy amount tables and a note on why bank rates differ.">
+    <meta property="og:url" content="https://wowezbox.com/fx-en.html">
+    <meta property="og:image" content="https://wowezbox.com/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
+    <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "Exchange Rate Calculator", "url": "https://wowezbox.com/fx-en.html", "description": "Free Korean won exchange rate calculator. Convert US dollars, yen, euros, yuan, pounds and 8 more currencies to and from KRW, with handy amount tables and a note on why bank rates differ.", "applicationCategory": "FinanceApplication", "operatingSystem": "Any", "inLanguage": "en", "browserRequirements": "Requires JavaScript", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "KRW"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://wowezbox.com/index-en.html"}, {"@type": "ListItem", "position": 2, "name": "Everyday tools", "item": "https://wowezbox.com/tools-en.html"}, {"@type": "ListItem", "position": 3, "name": "Exchange Rate Calculator", "item": "https://wowezbox.com/fx-en.html"}]}]}</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="blog.css">
+    <link rel="stylesheet" href="tools-page.css">
+</head>
+<body class="blog-page tool-page theme-fx">
+    <header class="bp-top">
+        <div class="bp-top-in">
+            <a class="bp-brand" href="index-en.html">WowEzBox<small>Everyday tools</small></a>
+            <a class="bp-home" href="index-en.html">← Home</a>
+        </div>
+    </header>
+
+    <main class="tp-main">
+        <nav class="tp-crumb" aria-label="Breadcrumb"><ol><li><a href="index-en.html">Home</a></li><li><a href="tools-en.html">Everyday tools</a></li><li><span aria-current="page">Exchange Rate Calculator</span></li></ol></nav>
+        <!-- 도구 탭: 새 도구 페이지를 만들면 모든 도구 페이지에 한 칸씩 추가 -->
+        <nav class="tp-tabs" aria-label="Everyday tools"><a href="tools-en.html">🧰 All tools</a><a href="units-en.html">📏 Unit Converter</a><a href="fx-en.html" class="on" aria-current="page">💱 Exchange</a><a href="age-en.html">📅 Age &amp; D-day</a><a href="severance-en.html">💼 Severance</a><a href="wage-en.html">💰 Hourly Wage</a><a href="charcount-en.html">✍️ Characters</a><a href="loan-en.html">🏦 Loan</a></nav>
+        <div class="tp-head">
+            <span class="tp-kicker">Everyday tools</span>
+            <h1>Exchange Rate Calculator</h1>
+            <p>Convert foreign currencies to Korean won and back. Type in either box and the other one updates.</p>
+        </div>
+
+        <section class="tp-tool" aria-label="Exchange Rate Calculator">
+            <!-- fxcalc.js가 이 칸을 움직여요 -->
+            <div class="tp-conv fx-conv">
+                <h2 class="uc-title">Which currency?</h2>
+                <div class="uc-chips fx-chips" id="fx-chips" role="group" aria-label="Choose a currency"></div>
+                <label class="uc-in">
+                    <input type="text" id="fx-amt" inputmode="decimal" autocomplete="off" aria-label="Foreign amount">
+                    <span class="uc-unit" id="fx-code">USD</span>
+                </label>
+                <div class="uc-link" aria-hidden="true"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M3 1v8M1 3l2-2 2 2M7 9V1M5 7l2 2 2-2"/></svg></div>
+                <label class="uc-in">
+                    <input type="text" id="fx-won" inputmode="decimal" autocomplete="off" aria-label="Amount in won">
+                    <span class="uc-unit">KRW</span>
+                </label>
+                <div class="uc-hint fx-info" id="fx-info"></div>
+                <div class="fx-row"><button type="button" class="tp-btn" id="fx-swap">⇅ Swap amounts</button><span class="fx-date" id="fx-date"></span></div>
+                <p class="tp-note">Your last currency and amount are remembered on this device. <a href="https://www.exchangerate-api.com" target="_blank" rel="noopener noreferrer">Rates By Exchange Rate API</a></p>
+            </div>
+
+            <div class="tp-table-box">
+                <h2>Common amounts<small class="fx-cur-name"></small></h2>
+                <table class="uc-table" id="fx-table"></table>
+                <table class="uc-table fx-won-table" id="fx-won-table"></table>
+            </div>
+        </section>
+
+        <section class="tp-table-box fx-all-box" aria-label="All rates">
+            <h2>All rates today<small>yen and dong per 100</small></h2>
+            <table class="uc-table" id="fx-all"></table>
+        </section>
+
+        <article class="tp-article">
+            <h2>Which rate is this?</h2>
+            <p>This calculator uses the <b>mid-market rate</b> published once a day by ExchangeRate-API. It is close to the "today's won–dollar rate" in the news and to the base rate (매매기준율) Korean banks announce.</p>
+            <h2>Why is the bank more expensive?</h2>
+            <p>Banks add a margin to the base rate, so on the same day you will see different prices:</p>
+            <ul>
+                <li><b>Buying cash</b> — paying won for foreign banknotes, above the base rate — around 2% for US dollars, more for less common currencies.</li>
+                <li><b>Selling cash</b> — changing leftover notes back to won, below the base rate.</li>
+                <li><b>Sending / receiving transfers</b> — a smaller gap than cash.</li>
+            </ul>
+            <p class="tp-tip">Exchange discounts in Korean banking apps, or a card with low foreign-transaction fees, get you closer to the rate shown here.</p>
+            <h2>How to calculate</h2>
+            <p>If 1 US dollar is 1,400 won, then 50 dollars is 50 × 1,400 = 70,000 won. Yen and Vietnamese dong are usually quoted <b>per 100</b>: if 100 yen is 950 won, 10,000 yen is 95,000 won.</p>
+            <h2>FAQ</h2>
+            <div class="tp-faq">
+                <details><summary>How often do rates change?</summary><p>Real rates move all day while markets are open. This page uses a rate updated once a day, so check your bank's live rate before changing a large amount.</p></details>
+                <details><summary>Is it the same as the rates box on the home page?</summary><p>Yes. Both use the same data, saved once on this device, so the numbers match.</p></details>
+                <details><summary>Is my amount saved?</summary><p>Only the last currency and amount, in this browser. Nothing is sent anywhere.</p></details>
+            </div>
+            <p class="tp-small">For reference only. Actual exchange and transfer amounts depend on your bank's or card company's rates and fees. <a href="https://www.exchangerate-api.com" target="_blank" rel="noopener noreferrer">Rates By Exchange Rate API</a></p>
+        </article>
+
+        <nav class="tp-related" aria-label="Other tools">
+            <div class="tp-related-head"><h2>Try another tool</h2><a href="tools-en.html">All tools →</a></div>
+            <div class="th-grid">
+                <a class="th-card" href="units-en.html"><span class="th-ic" aria-hidden="true">📏</span><span class="th-text"><b>Unit Converter</b><small>Miles↔km, pounds↔kg, °F↔°C</small></span></a>
+                <a class="th-card" href="wage-en.html"><span class="th-ic c7" aria-hidden="true">💰</span><span class="th-text"><b>Hourly Wage</b><small>Weekly and monthly part-time pay</small></span></a>
+                <a class="th-card" href="index-en.html#calculator"><span class="th-ic c5" aria-hidden="true">🧮</span><span class="th-text"><b>Calculator</b><small>See the whole formula (home)</small></span></a>
+                <a class="th-card" href="loan-en.html"><span class="th-ic c6" aria-hidden="true">🏦</span><span class="th-text"><b>Loan Interest</b><small>Compare repayment methods</small></span></a>
+            </div>
+        </nav>
+    </main>
+
+    <footer class="bp-foot">
+        <a href="index-en.html">Home</a><a href="tools-en.html">Tools</a><a href="blog-en.html">Blog</a><a href="about-en.html">About</a><a href="privacy-en.html">Privacy Policy</a><a href="contact-en.html">Contact</a>
+        <div>Copyright © 2026 WowEzBox. All rights reserved.</div>
+    </footer>
+
+    <script src="fxcalc.js"></script>
+</body>
+</html>
