@@ -21,6 +21,19 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
     var UNITS = { USD: 1, JPY: 100, EUR: 1, CNY: 1, GBP: 1, VND: 100, THB: 1, AUD: 1 };   // 2026-11-15 베트남 동(100동)·태국 바트·호주 달러 추가 (대만 달러는 같은 날 호주 달러로 바꿈)
 
     var dateEl = document.getElementById("fx-date");
+
+    /* 2026-11-25: 제목 옆 "크게 보기 ›" → 환율 계산기 페이지 (단위 환산 칸과 같은 방식, 홈 스크립트가 새 창으로 열어요) */
+    var fxTitle = widget.querySelector(".fx-title");
+    if (fxTitle && !widget.querySelector(".fx-more")) {
+        var more = document.createElement("a");
+        more.className = "uc-more fx-more";
+        more.href = window.SITE_EN ? "fx-en.html" : "fx.html";
+        more.textContent = T("크게 보기 ›", "Open ›");
+        more.title = T("환율 계산기에서 크게 보기", "Open the exchange rate calculator");
+        more.target = "_blank"; more.rel = "noopener";
+        widget.classList.add("has-more");
+        fxTitle.appendChild(more);
+    }
     var rows = widget.querySelectorAll("li[data-code]");
 
     function readCache() {

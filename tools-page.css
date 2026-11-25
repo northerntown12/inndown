@@ -618,3 +618,28 @@ body.tool-page.theme-wage { --tp-emerald: #4a1f0c; --tp-emerald2: #7a3414; --tp-
 .tp-tabs a[href^="wage"].on { background: #7a3414; border-color: #7a3414; }
 .tp-tabs a[href^="wage"]:not(.on) { border-left: 4px solid #d9773a; }
 .th-ic.c7 { background: linear-gradient(160deg, #c2410c, #f08a4b); }
+
+/* 2026-11-25: 환율 계산기 (fx.html) — 홈 환율 칸과 같은 청보라 테마 */
+body.tool-page.theme-fx { --tp-emerald: #2b2f6b; --tp-emerald2: #4a4a9a; --tp-emerald3: #7a5aa8; --tp-gold: #d9ccff; --tp-gold-deep: #6b46c1; --tp-tint: #f0edfb; --tp-tint2: #ebe6fa; }
+.tp-tabs a[href^="fx"].on { background: #4a4a9a; border-color: #4a4a9a; }
+.tp-tabs a[href^="fx"]:not(.on) { border-left: 4px solid #7a6ac8; }
+.th-ic.c8 { background: linear-gradient(160deg, #3d5391, #a2639f); }
+.fx-conv { border-color: #2b2f6b; }
+.fx-chips button b { font-weight: 800; letter-spacing: 0.02em; }
+.fx-info { font-size: 0.92rem; }
+.fx-info b { color: var(--tp-gold); }
+.fx-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.fx-date { font-size: 0.78rem; opacity: 0.85; }
+.tp-conv .tp-note a { color: inherit; opacity: 0.8; }
+.fx-won-table { margin-top: 12px; }
+.fx-all-box { margin: 0 0 26px; }
+.fx-all-box .uc-table td:first-child { text-align: left; }
+.fx-all-box .uc-table td:first-child b { display: inline-block; min-width: 72px; }
+.tp-table-box .uc-table td:first-child { white-space: nowrap; }
+@media (max-width: 760px) { .fx-all-box .uc-table td:first-child b { min-width: 64px; } }
+/* 2026-11-25: 도구가 8개로 늘어 PC에서도 탭이 한 줄에 들어가게 조금 작게 */
+@media (min-width: 761px) {
+    .tp-tabs { gap: 6px; }
+    .tp-tabs a { padding: 6px 11px; font-size: 0.82rem; }
+}
+.fx-all-box .uc-table th:first-child { text-align: left; }

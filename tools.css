@@ -469,3 +469,12 @@
     html body .tools-widget .tw-item[href^="wage"] { background: #fbeadf; border-color: #eab796; color: #4a1f0c; }
     html body .tools-widget .tw-item[href^="wage"] small, html body .tools-widget .tw-item[href^="wage"] .gw-go { color: #b4501c; }
 }
+
+/* 2026-11-25: 홈 환율 칸 "크게 보기 ›" → 환율 계산기 (fx.js가 붙여요) */
+.fx-widget.has-more .fx-title { position: relative; }
+.fx-more { border-color: rgba(255, 255, 255, 0.55); color: #fff; margin-left: 4px; vertical-align: 1px; }
+.fx-more:hover, .fx-more:focus-visible { background: #fff; color: #4a4a9a; }
+@media screen and (max-width: 768px), screen and (hover: none) and (pointer: coarse) and (max-width: 1000px) {
+    html body .fx-widget.has-more .fx-title { padding: 0 84px; }
+    html body .fx-widget.has-more .fx-more { position: absolute; right: 0; top: 50%; transform: translateY(-50%); margin: 0; font-size: 0.8rem; padding: 3px 11px; }
+}
