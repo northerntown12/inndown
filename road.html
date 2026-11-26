@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <script src="lang.js?v=3"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>로드 트립 – 차 피하기 자동차 게임 · WowEzBox</title>
+    <meta name="description" content="차 뒤에서 보며 달리는 무료 자동차 게임. 차를 골라 가로수길·상점가·사막·숲길을 지나 낮과 밤을 달리며, 갈수록 많아지는 차들을 피해 12km 목적지까지 가요.">
+    <!-- 2026-11-26: 검색·공유용 정보 -->
+    <link rel="canonical" href="https://wowezbox.com/road.html">
+    <link rel="alternate" hreflang="ko" href="https://wowezbox.com/road.html">
+    <link rel="alternate" hreflang="en" href="https://wowezbox.com/road-en.html">
+    <link rel="alternate" hreflang="x-default" href="https://wowezbox.com/road.html">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="WowEzBox">
+    <meta property="og:locale" content="ko_KR">
+    <meta property="og:title" content="로드 트립 – 차 피하기 자동차 게임 · WowEzBox">
+    <meta property="og:description" content="차 뒤에서 보며 달리는 무료 자동차 게임. 차를 골라 가로수길·상점가·사막·숲길을 지나 낮과 밤을 달리며, 갈수록 많아지는 차들을 피해 12km 목적지까지 가요.">
+    <meta property="og:url" content="https://wowezbox.com/road.html">
+    <meta property="og:image" content="https://wowezbox.com/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "로드 트립", "url": "https://wowezbox.com/road.html", "description": "차 뒤에서 보며 달리는 무료 자동차 게임. 차를 골라 가로수길·상점가·사막·숲길을 지나 낮과 밤을 달리며, 갈수록 많아지는 차들을 피해 12km 목적지까지 가요.", "applicationCategory": "GameApplication", "operatingSystem": "Any", "inLanguage": "ko", "browserRequirements": "Requires JavaScript", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "KRW"}}</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Noto+Sans+KR:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="road.css?v=1">
+</head>
+<body>
+    <header class="g-top">
+        <div class="g-top-in">
+            <h1 class="g-title">로드 트립 <small>차들을 피해 목적지까지</small></h1>
+            <span class="g-brand">WowEzBox</span>
+        </div>
+    </header>
+
+    <main class="r-main">
+        <div class="r-hud" aria-label="점수판">
+            <div class="r-cell"><small>점수</small><b id="rScore">0</b></div>
+            <div class="r-cell"><small>남은 거리</small><b><span id="rLeft">12.0</span><i>km</i></b></div>
+            <div class="r-cell"><small>속도</small><b><span id="rSpeed">0</span><i>km/h</i></b></div>
+            <div class="r-cell r-lives"><small>생명</small><b id="rLives">♥♥♥</b></div>
+            <div class="r-cell r-best-cell"><small>최고</small><b id="rBest">0</b></div>
+            <button type="button" class="r-hud-btn" id="rPauseBtn" aria-label="일시정지" title="일시정지 (P)"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1.2" fill="#fff"/><rect x="14" y="5" width="4" height="14" rx="1.2" fill="#fff"/></svg></button>
+            <button type="button" class="r-hud-btn" id="rSound" aria-label="소리 끄기"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="g-spk" d="M4 9.2h3.6L12.4 5v14l-4.8-4.2H4z"/><path class="g-wave" d="M15.3 9.2a4 4 0 0 1 0 5.6M17.8 6.8a7.4 7.4 0 0 1 0 10.4"/><path class="g-slash" d="M20.5 3.5 4 20"/></svg></button>
+        </div>
+        <div class="r-progress"><span class="r-zone" id="rZone"></span><div class="r-bar"><span id="rProg"></span></div><span class="r-flag" aria-hidden="true">🏁</span></div>
+
+        <div class="r-stage" id="rStage">
+            <canvas id="rCanvas" tabindex="0" aria-label="도로 화면"></canvas>
+
+            <div class="r-over" id="rStart">
+                <div class="r-card">
+                    <h2>어떤 차로 달릴까요?</h2>
+                    <p class="r-lead">가로수길 → 상점가 → 사막 → 숲길 → 도시. 낮에서 밤까지 12km를 달려 목적지에 닿으면 성공! 갈수록 차가 많아져요.</p>
+                    <div class="r-cars" id="rCars" role="group" aria-label="차 고르기"></div>
+                    <button type="button" class="r-go" id="rGo">출발!</button>
+                    <p class="r-keys">조작: <kbd>←</kbd> <kbd>→</kbd> 차선 · <kbd>↑</kbd> 가속 · <kbd>↓</kbd> 브레이크 · <kbd>P</kbd> 일시정지</p>
+                    <p class="r-best" id="rStartBest"></p>
+                </div>
+            </div>
+            <div class="r-over" id="rPause" hidden>
+                <div class="r-card">
+                    <h2>잠깐 쉬는 중</h2>
+                    <div class="r-btns"><button type="button" class="r-go" id="rResume">계속 달리기</button><button type="button" class="g-btn" id="rQuit">그만하기</button></div>
+                </div>
+            </div>
+            <div class="r-over" id="rEnd" hidden>
+                <div class="r-card">
+                    <h2 id="rEndTitle"></h2>
+                    <p class="r-end-sub" id="rEndSub"></p>
+                    <div class="r-btns"><button type="button" class="r-go" id="rAgain">다시 달리기</button><button type="button" class="g-btn" id="rChange">차 바꾸기</button></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="r-pad" id="rPad" aria-label="운전 버튼">
+            <div class="r-grp">
+                <button type="button" data-key="left" aria-label="왼쪽"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5 8 12l7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                <button type="button" data-key="right" aria-label="오른쪽"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 7 7-7 7" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            </div>
+            <div class="r-grp">
+                <button type="button" class="r-brake" data-key="down">브레이크</button>
+                <button type="button" class="r-gas" data-key="up">가속 ▲</button>
+            </div>
+        </div>
+
+        <div class="r-below">
+            <aside class="g-panel">
+                <div class="g-actions">
+                    <button type="button" class="g-btn g-primary" id="rNew">새 게임</button>
+                    <button type="button" class="g-btn g-exit" id="rExit" title="창 닫기">종료</button>
+                </div>
+                <div class="g-record" id="rRecord"></div>
+            </aside>
+            <details class="g-panel g-rules" open>
+                <summary>어떻게 해요?</summary>
+                <ul>
+                    <li><b>가속</b>(PC는 ↑ 또는 스페이스, 폰은 [가속 ▲])을 누르고 있으면 빨라지고, 떼면 천천히 느려져요. <b>브레이크</b>(↓)로 확 줄일 수 있어요.</li>
+                    <li><b>← →</b>(폰은 화살표 버튼)로 차선을 바꿔 앞차들을 피하세요. 굽은 길에서는 차가 바깥쪽으로 밀려요.</li>
+                    <li>차에 부딪히면 <b>생명 ♥</b>이 하나 줄어요. 다 잃으면 게임 오버! 길 밖(풀밭·모래)으로 나가면 느려져요.</li>
+                    <li>앞차를 <b>추월하면 +20</b>, 아주 가깝게 스치면 <b>아슬아슬 +50</b>. 멀리 달릴수록 점수가 쌓여요.</li>
+                    <li>목적지(12km)에 닿으면 남은 생명 하나에 +1,000, 빨리 도착할수록 시간 보너스도 있어요.</li>
+                    <li>처음엔 차가 드문드문 오지만 갈수록 많아지고, 깜빡이를 켜고 차선을 바꾸는 차도 생겨요. 노랗게 깜빡이면 조심!</li>
+                    <li>차 4종: 스포츠카(가장 빠름), 세단(무난), 지프(핸들이 잘 꺾이고 흙길에서 덜 느려짐), 픽업트럭(튼튼해서 생명 4개).</li>
+                </ul>
+            </details>
+        </div>
+    </main>
+
+    <footer class="g-foot">Copyright © 2026 WowEzBox. All rights reserved.</footer>
+
+    <script src="road.js?v=1"></script>
+</body>
+</html>

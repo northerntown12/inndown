@@ -794,3 +794,9 @@ body.info-page.pg-contact { --accent: #f07a52; --accent-soft: #ffe3d8; }
 .blog-box .bb-l2 > .bb-bar .bb-cnt { color: #7A4424; }
 .blog-box .bb-post:hover .bb-title,
 .blog-box .bb-more { color: #A2582C; }
+
+/* 2026-11-26: 게임 막대 6번째 칸 "로드 트립" (장기 아래, 0.12초 늦게 펼쳐짐) */
+.info-bar .ib-pop6 { top: calc(5 * (100% + 3px)); background: linear-gradient(90deg, #ffb27a, #ffe4cc); color: #7a3010; }  /* 살구 주황 */
+.info-bar .ib-pop6::after { content: ""; position: absolute; left: 0; top: -4px; width: 100%; height: 4px; }
+.info-bar .ib-game:hover .ib-pop6 { transition-delay: 0.6s; clip-path: inset(-4px 0 0 -4px round 5px); }
+.info-bar .ib-game:is(:focus-visible, :has(:focus-visible)) .ib-pop6 { transition-delay: 0.6s; clip-path: inset(-4px 0 0 -4px round 5px); }
