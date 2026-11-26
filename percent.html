@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <script src="lang.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>퍼센트 계산기 – 할인가·부가세·증감률 % 계산 · WowEzBox</title>
+    <meta name="description" content="할인가, 부가세, 증감률, 몇 % 인지를 숫자만 넣으면 바로 계산해 주는 무료 퍼센트 계산기예요. 계산식도 같이 보여 주고, 부가세 거꾸로 계산처럼 자주 틀리는 계산도 쉽게 정리했어요.">
+    <!-- 2026-11-26: 검색·공유용 정보 -->
+    <link rel="canonical" href="https://wowezbox.com/percent.html">
+    <link rel="alternate" hreflang="ko" href="https://wowezbox.com/percent.html">
+    <link rel="alternate" hreflang="en" href="https://wowezbox.com/percent-en.html">
+    <link rel="alternate" hreflang="x-default" href="https://wowezbox.com/percent.html">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="WowEzBox">
+    <meta property="og:locale" content="ko_KR">
+    <meta property="og:title" content="퍼센트 계산기 – 할인가·부가세·증감률 % 계산 · WowEzBox">
+    <meta property="og:description" content="할인가, 부가세, 증감률, 몇 % 인지를 숫자만 넣으면 바로 계산해 주는 무료 퍼센트 계산기예요. 계산식도 같이 보여 주고, 부가세 거꾸로 계산처럼 자주 틀리는 계산도 쉽게 정리했어요.">
+    <meta property="og:url" content="https://wowezbox.com/percent.html">
+    <meta property="og:image" content="https://wowezbox.com/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
+    <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "퍼센트 계산기", "url": "https://wowezbox.com/percent.html", "description": "할인가, 부가세, 증감률, 몇 % 인지를 숫자만 넣으면 바로 계산해 주는 무료 퍼센트 계산기예요. 계산식도 같이 보여 주고, 부가세 거꾸로 계산처럼 자주 틀리는 계산도 쉽게 정리했어요.", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ko", "browserRequirements": "Requires JavaScript", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "KRW"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "홈", "item": "https://wowezbox.com/"}, {"@type": "ListItem", "position": 2, "name": "생활 도구", "item": "https://wowezbox.com/tools.html"}, {"@type": "ListItem", "position": 3, "name": "퍼센트 계산기", "item": "https://wowezbox.com/percent.html"}]}]}</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="blog.css">
+    <link rel="stylesheet" href="tools-page.css">
+</head>
+<body class="blog-page tool-page theme-pct">
+    <header class="bp-top">
+        <div class="bp-top-in">
+            <a class="bp-brand" href="index.html">WowEzBox<small>생활 도구</small></a>
+            <a class="bp-home" href="index.html">← 홈으로</a>
+        </div>
+    </header>
+
+    <main class="tp-main">
+        <nav class="tp-crumb" aria-label="현재 위치"><ol><li><a href="index.html">홈</a></li><li><a href="tools.html">생활 도구</a></li><li><span aria-current="page">퍼센트 계산기</span></li></ol></nav>
+        <!-- 도구 탭: 새 도구 페이지를 만들면 모든 도구 페이지에 한 칸씩 추가 -->
+        <nav class="tp-tabs" aria-label="생활 도구"><a href="tools.html">🧰 전체 도구</a><a href="units.html">📏 단위 환산</a><a href="fx.html">💱 환율</a><a href="percent.html" class="on" aria-current="page">🏷️ 퍼센트</a><a href="age.html">📅 만 나이 · D-day</a><a href="severance.html">💼 퇴직금</a><a href="wage.html">💰 시급·주휴수당</a><a href="charcount.html">✍️ 글자 수</a><a href="loan.html">🏦 대출 이자</a></nav>
+        <div class="tp-head">
+            <span class="tp-kicker">생활 도구</span>
+            <h1>퍼센트 계산기</h1>
+            <p>할인가, 부가세, 몇 % 올랐는지처럼 헷갈리는 % 계산을 숫자만 넣으면 바로 해 드려요. 어떤 식으로 계산했는지도 같이 보여 드려요.</p>
+        </div>
+
+        <div class="tp-grid sv-grid">
+            <section class="tp-panel" aria-labelledby="pc-in-h">
+                <h2 id="pc-in-h"><span class="tp-num-badge">1</span>무엇을 계산할까요?</h2>
+                <!-- percent.js가 버튼을 채워요 -->
+                <div class="uc-chips pc-chips" id="pc-chips" role="group" aria-label="계산 종류"></div>
+                <p class="pc-q" id="pc-q"></p>
+                <div class="tp-fields" id="pc-dir-box" hidden>
+                    <label class="tp-field tp-wide"><span>구하는 것</span><select id="pc-dir"></select></label>
+                </div>
+                <div class="tp-fields">
+                    <label class="tp-field"><span id="pc-a-lb">값</span><span class="pc-in"><input type="text" id="pc-a" inputmode="decimal" autocomplete="off"><em id="pc-a-unit" hidden></em></span></label>
+                    <label class="tp-field"><span id="pc-b-lb">퍼센트</span><span class="pc-in"><input type="text" id="pc-b" inputmode="decimal" autocomplete="off"><em id="pc-b-unit" hidden></em></span></label>
+                </div>
+                <div class="tp-presets pc-presets" id="pc-presets" aria-label="자주 쓰는 비율"></div>
+                <div class="tp-fields sv-btns"><button type="button" class="tp-btn" id="pc-swap">⇄ 두 칸 바꾸기</button><button type="button" class="tp-btn" id="pc-reset">처음으로</button></div>
+                <p class="tp-small">넣은 값은 다음에 편하도록 이 기기에만 기억되고, 어디로도 보내지 않아요.</p>
+            </section>
+
+            <section class="tp-card" aria-labelledby="pc-out-h">
+                <h2 id="pc-out-h"><span class="tp-num-badge">2</span>계산 결과</h2>
+                <div id="pc-out" aria-live="polite"></div>
+            </section>
+        </div>
+
+        <section class="tp-table-box pc-table-box" id="pc-table-box" aria-label="비율별 금액" hidden>
+            <h2>비율별로 한눈에<small id="pc-table-base"></small></h2>
+            <table class="uc-table" id="pc-table"></table>
+        </section>
+
+        <article class="tp-article">
+            <h2>퍼센트 계산 공식</h2>
+            <table>
+                <thead><tr><th>알고 싶은 것</th><th>계산식</th><th>예시</th></tr></thead>
+                <tbody>
+                    <tr><td>A의 B%</td><td>A × B ÷ 100</td><td>50,000의 15% = 7,500</td></tr>
+                    <tr><td>A는 B의 몇 %</td><td>A ÷ B × 100</td><td>30은 40의 75%</td></tr>
+                    <tr><td>증감률</td><td>(바뀐 값 − 처음 값) ÷ 처음 값 × 100</td><td>8,000 → 10,000 = +25%</td></tr>
+                    <tr><td>할인가</td><td>정가 × (1 − 할인율 ÷ 100)</td><td>89,000원 20% 할인 = 71,200원</td></tr>
+                    <tr><td>부가세 포함</td><td>공급가 × 1.1</td><td>100,000원 → 110,000원</td></tr>
+                    <tr><td>부가세 빼기</td><td>합계 ÷ 1.1</td><td>110,000원 → 100,000원</td></tr>
+                </tbody>
+            </table>
+
+            <h2>자주 틀리는 세 가지</h2>
+            <ul>
+                <li><b>부가세 빼기는 × 0.9가 아니에요.</b> 11만 원 × 0.9 = 99,000원이지만, 실제 공급가는 11만 원 ÷ 1.1 = 100,000원이에요. 부가세 10%는 공급가에 붙은 거라 합계에서 10%를 빼면 너무 많이 빠져요.</li>
+                <li><b>20% 오르고 20% 내리면 제자리가 아니에요.</b> 10,000원이 20% 올라 12,000원이 된 뒤 20% 내리면 9,600원이에요. 내릴 때는 이미 커진 12,000원을 기준으로 하기 때문이에요.</li>
+                <li><b>%와 %p는 달라요.</b> 금리가 3%에서 4%가 되면 "1%p(퍼센트포인트) 올랐다"고 해요. 비율로 따지면 33% 오른 거예요.</li>
+            </ul>
+            <p class="tp-tip">할인을 두 번 받을 때도 마찬가지예요. 20% 할인 뒤 10% 추가 할인은 30% 할인이 아니라 <b>28% 할인</b>이에요. (0.8 × 0.9 = 0.72)</p>
+
+            <h2>자주 묻는 질문</h2>
+            <div class="tp-faq">
+                <details><summary>할인된 가격만 알 때 원래 가격은 어떻게 구하나요?</summary><p>할인가 ÷ (1 − 할인율)로 구해요. 30% 할인해서 35,000원이면 35,000 ÷ 0.7 = 50,000원이에요. 위 계산기에서 "할인"을 고르고 "원래 가격 찾기"를 고르면 돼요.</p></details>
+                <details><summary>부가세율은 몇 %인가요?</summary><p>우리나라 부가가치세는 10%예요. 다른 나라 세율로 계산하고 싶으면 "부가세"에서 세율 칸 숫자를 바꾸면 돼요.</p></details>
+                <details><summary>입력한 값이 저장되나요?</summary><p>계산 종류마다 마지막으로 넣은 값만 이 기기(브라우저)에 기억해요. 어디로도 보내지 않고, "처음으로"를 누르면 그 종류의 값이 처음 예시로 돌아가요.</p></details>
+            </div>
+            <p class="tp-small">원 금액은 1원 단위로, 그 밖의 숫자는 소수 둘째 자리까지 반올림해서 보여 드려요. 세금 신고처럼 중요한 계산은 원 단위 끝수 처리 기준을 한 번 더 확인해 주세요.</p>
+        </article>
+
+        <nav class="tp-related" aria-label="다른 도구">
+            <div class="tp-related-head"><h2>다른 도구도 써 보세요</h2><a href="tools.html">전체 도구 보기 →</a></div>
+            <div class="th-grid">
+                <a class="th-card" href="fx.html"><span class="th-ic c8" aria-hidden="true">💱</span><span class="th-text"><b>환율 계산기</b><small>달러·엔·유로 ↔ 원화</small></span></a>
+                <a class="th-card" href="wage.html"><span class="th-ic c7" aria-hidden="true">💰</span><span class="th-text"><b>시급·주휴수당</b><small>알바 주급·월급 계산</small></span></a>
+                <a class="th-card" href="index.html#calculator"><span class="th-ic c5" aria-hidden="true">🧮</span><span class="th-text"><b>계산기</b><small>식을 보며 계산 (홈)</small></span></a>
+                <a class="th-card" href="loan.html"><span class="th-ic c6" aria-hidden="true">🏦</span><span class="th-text"><b>대출 이자 계산기</b><small>원리금균등·원금균등 비교</small></span></a>
+            </div>
+        </nav>
+    </main>
+
+    <footer class="bp-foot">
+        <a href="index.html">홈</a><a href="tools.html">생활 도구</a><a href="blog.html">블로그</a><a href="about.html">소개</a><a href="privacy.html">개인정보처리방침</a><a href="contact.html">연락 이메일</a>
+        <div>Copyright © 2026 WowEzBox. All rights reserved.</div>
+    </footer>
+
+    <script src="percent.js"></script>
+</body>
+</html>

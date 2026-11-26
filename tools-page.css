@@ -650,3 +650,37 @@ body.tool-page.theme-fx { --tp-emerald: #8a3c00; --tp-emerald2: #c25a00; --tp-em
     body.tool-page .bp-foot a[href^="about"],
     body.tool-page .bp-foot a[href^="contact"] { display: none; }
 }
+
+/* 2026-11-26: 퍼센트 계산기 (percent.html) — 체리 레드 + 살구 테마 (할인 딱지 느낌) */
+body.tool-page.theme-pct { --tp-emerald: #5a0f1c; --tp-emerald2: #8c1c2e; --tp-emerald3: #b8363f; --tp-gold: #ffc7a6; --tp-gold-deep: #c0392b; --tp-tint: #fcece9; --tp-tint2: #fae3df; }
+.tp-tabs a[href^="percent"].on { background: #8c1c2e; border-color: #8c1c2e; }
+.tp-tabs a[href^="percent"]:not(.on) { border-left: 4px solid #d6454f; }
+.th-ic.c9 { background: linear-gradient(160deg, #a8242f, #ef7a6a); }
+.theme-pct .tp-panel { border-color: #4a0c17; }
+.pc-chips { margin-bottom: 10px; }
+.pc-chips button { font-size: 0.84rem; padding: 6px 12px; }
+.pc-q { margin: 0 0 12px; font-size: 0.92rem; font-weight: 700; color: #fff1e6; }
+.pc-in { display: flex; align-items: stretch; height: 46px; border-radius: 9px; background: var(--tp-ivory); overflow: hidden; }
+.pc-in:focus-within { box-shadow: 0 0 0 3px rgba(255, 199, 166, 0.85); }
+.tp-panel .pc-in input { flex: 1 1 auto; min-width: 0; height: 100%; border: 0; border-radius: 0; background: transparent; font-size: 1.2rem; font-weight: 700; text-align: right; box-shadow: none; }
+.pc-in em { flex: none; display: grid; place-items: center; min-width: 38px; padding: 0 10px; background: #f3dccf; color: #6b2a22; font-style: normal; font-weight: 700; font-size: 0.95rem; }
+.pc-presets button { background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 199, 166, 0.5); color: #fff1e6; }
+.pc-presets button:hover { background: rgba(255, 199, 166, 0.25); }
+.theme-pct .tp-panel select { height: 42px; }
+.pc-big { background: linear-gradient(160deg, #fff6ef, #fde4d8); border-color: #f1c4b0; }
+.pc-big b { color: #8c1c2e; }
+.pc-big .ln-arrow { color: #a0452e; }
+.pc-formula { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 10px; margin: 0 0 10px; padding: 9px 12px; border-radius: 10px; background: #fbf5f2; border: 1px dashed #e8c3b6; font-size: 0.92rem; color: #4a3530; font-variant-numeric: tabular-nums; word-break: keep-all; }
+.pc-formula span { flex: none; padding: 1px 8px; border-radius: 999px; background: #8c1c2e; color: #fff1e6; font-size: 0.72rem; font-weight: 700; }
+.pc-formula b { color: #8c1c2e; }
+.pc-table-box { margin-bottom: 26px; }
+.pc-table-box .uc-table td:first-child, .pc-table-box .uc-table th:first-child { text-align: center; font-weight: 700; }
+.pc-table-box .uc-table td:nth-child(3) { color: #8c1c2e; font-weight: 700; }
+/* 도구가 9개 → PC 탭 한 줄 유지 */
+@media (min-width: 761px) {
+    .tp-tabs { gap: 5px; }
+    .tp-tabs a { padding: 6px 8px; font-size: 0.78rem; }
+    html[lang="en"] .tp-tabs a { padding: 6px 7px; font-size: 0.76rem; }
+}
+@media (max-width: 760px) { .pc-in input { font-size: 1.1rem; } }
+.tp-panel .pc-in input:focus { box-shadow: none; }
