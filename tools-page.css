@@ -591,13 +591,13 @@ body.tool-page.theme-loan { --tp-emerald: #3a1430; --tp-emerald2: #5c2248; --tp-
 
 /* 도구 탭: 각 탭도 그 도구의 색 (지금 페이지는 진하게) */
 .tp-tabs a[href^="tools"].on     { background: #36347a; border-color: #36347a; }
-.tp-tabs a[href^="units"].on     { background: #1b5245; border-color: #1b5245; }
+.tp-tabs a[href^="units"].on     { background: #1f5fae; border-color: #1f5fae; }   /* 2026-11-26 파랑 (예전 #1b5245) */
 .tp-tabs a[href^="age"].on       { background: #1d5f6b; border-color: #1d5f6b; }
 .tp-tabs a[href^="severance"].on { background: #5b3a1f; border-color: #5b3a1f; }
 .tp-tabs a[href^="charcount"].on { background: #213f78; border-color: #213f78; }
 .tp-tabs a[href^="loan"].on      { background: #5c2248; border-color: #5c2248; }
 .tp-tabs a[href^="tools"]:not(.on)     { border-left: 4px solid #6b68c4; }
-.tp-tabs a[href^="units"]:not(.on)     { border-left: 4px solid #286654; }
+.tp-tabs a[href^="units"]:not(.on)     { border-left: 4px solid #4f9ee0; }
 .tp-tabs a[href^="age"]:not(.on)       { border-left: 4px solid #2c7a7a; }
 .tp-tabs a[href^="severance"]:not(.on) { border-left: 4px solid #a8874b; }
 .tp-tabs a[href^="charcount"]:not(.on) { border-left: 4px solid #4a6aa8; }
@@ -684,3 +684,29 @@ body.tool-page.theme-pct { --tp-emerald: #5a0f1c; --tp-emerald2: #8c1c2e; --tp-e
 }
 @media (max-width: 760px) { .pc-in input { font-size: 1.1rem; } }
 .tp-panel .pc-in input:focus { box-shadow: none; }
+
+/* 2026-11-26: 단위 환산기 (units.html) — 파랑 → 하늘색 그라데이션 (예전 에메랄드 #10372f/#1b5245/#286654, 홈 단위 환산 칸은 그대로 에메랄드) */
+body.tool-page.theme-units { --tp-emerald: #0f3f8a; --tp-emerald2: #1f5fae; --tp-emerald3: #5aa9e6; --tp-gold: #cdeaff; --tp-gold-deep: #2f7bd0; --tp-tint: #eaf4fd; --tp-tint2: #e2effc; }
+.theme-units .tp-conv {
+    background:
+        radial-gradient(120% 70% at 100% 0%, rgba(205, 234, 255, 0.22), transparent 60%),
+        linear-gradient(160deg, #0f3f8a 0%, #1f5fae 45%, #4a9be0 80%, #7cc3f2 100%);
+    border-color: #0c3570;
+    box-shadow: inset 0 0 0 1px rgba(205, 234, 255, 0.3), 0 8px 24px rgba(15, 63, 138, 0.2);
+    color: #f2f8ff;
+}
+.theme-units .tp-conv .uc-title { color: #f2f8ff; }
+.theme-units .uc-chips button { border-color: rgba(205, 234, 255, 0.5); background: rgba(10, 40, 90, 0.22); color: #eaf5ff; }
+.theme-units .uc-chips button:hover { background: rgba(205, 234, 255, 0.22); }
+.theme-units .uc-chips button.on { background: #ffffff; border-color: #ffffff; color: #0f3f8a; }
+.theme-units .tp-conv .uc-in { background: #fbfdff; }
+.theme-units .tp-conv .uc-in input { color: #0d2b55; }
+.theme-units .tp-conv .uc-in:focus-within { box-shadow: 0 0 0 3px rgba(205, 234, 255, 0.95); }
+.theme-units .tp-conv .uc-unit { background: #d9ecfb; color: #1b4a85; }
+.theme-units .tp-conv .uc-link { color: #ffffff; }
+.theme-units .tp-conv .uc-link::before, .theme-units .tp-conv .uc-link::after { background: rgba(255, 255, 255, 0.4); }
+.theme-units .tp-conv .uc-hint { color: rgba(255, 255, 255, 0.95); text-shadow: 0 1px 2px rgba(10, 40, 90, 0.35); }
+.theme-units .tp-note { color: rgba(255, 255, 255, 0.85); text-shadow: 0 1px 2px rgba(10, 40, 90, 0.35); }
+.theme-units .bp-top { box-shadow: 0 2px 10px rgba(15, 63, 138, 0.3); }
+.theme-units .bp-brand { color: #f2f8ff; }
+.theme-units .uc-table tbody tr:hover td { background: #eef6fe; }
