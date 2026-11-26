@@ -5,7 +5,7 @@
     <script src="lang.js?v=3"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Road Trip – Dodge-the-Traffic Driving Game · WowEzBox</title>
-    <meta name="description" content="A free driving game seen from behind your car. Pick a car, drive past trees, shops, desert and forest from day into night, and dodge more and more traffic to reach the finish 12 km away.">
+    <meta name="description" content="A free driving game seen from behind your car. On a two-way road, pass slow cars by crossing into the oncoming lanes and dodge the cars coming at you, driving past trees, shops, desert and forest from day into night to the finish 12 km away.">
     <!-- 2026-11-26: 검색·공유용 정보 -->
     <link rel="canonical" href="https://wowezbox.com/road-en.html">
     <link rel="alternate" hreflang="ko" href="https://wowezbox.com/road.html">
@@ -15,13 +15,13 @@
     <meta property="og:site_name" content="WowEzBox">
     <meta property="og:locale" content="en_US">
     <meta property="og:title" content="Road Trip – Dodge-the-Traffic Driving Game · WowEzBox">
-    <meta property="og:description" content="A free driving game seen from behind your car. Pick a car, drive past trees, shops, desert and forest from day into night, and dodge more and more traffic to reach the finish 12 km away.">
+    <meta property="og:description" content="A free driving game seen from behind your car. On a two-way road, pass slow cars by crossing into the oncoming lanes and dodge the cars coming at you, driving past trees, shops, desert and forest from day into night to the finish 12 km away.">
     <meta property="og:url" content="https://wowezbox.com/road-en.html">
     <meta property="og:image" content="https://wowezbox.com/og-image.jpg">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta name="twitter:card" content="summary_large_image">
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Road Trip", "url": "https://wowezbox.com/road-en.html", "description": "A free driving game seen from behind your car. Pick a car, drive past trees, shops, desert and forest from day into night, and dodge more and more traffic to reach the finish 12 km away.", "applicationCategory": "GameApplication", "operatingSystem": "Any", "inLanguage": "en", "browserRequirements": "Requires JavaScript", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "KRW"}}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Road Trip", "url": "https://wowezbox.com/road-en.html", "description": "A free driving game seen from behind your car. On a two-way road, pass slow cars by crossing into the oncoming lanes and dodge the cars coming at you, driving past trees, shops, desert and forest from day into night to the finish 12 km away.", "applicationCategory": "GameApplication", "operatingSystem": "Any", "inLanguage": "en", "browserRequirements": "Requires JavaScript", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "KRW"}}</script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Noto+Sans+KR:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -30,7 +30,7 @@
 <body>
     <header class="g-top">
         <div class="g-top-in">
-            <h1 class="g-title">Road Trip <small>Dodge the traffic, reach the finish</small></h1>
+            <h1 class="g-title">Road Trip <small>Dodge oncoming cars, reach the finish</small></h1>
             <span class="g-brand">WowEzBox</span>
         </div>
     </header>
@@ -53,7 +53,7 @@
             <div class="r-over" id="rStart">
                 <div class="r-card">
                     <h2>Pick your car</h2>
-                    <p class="r-lead">Trees → shops → desert → forest → city. Drive 12 km from day into night and reach the finish. Traffic gets heavier as you go!</p>
+                    <p class="r-lead">Your lanes are on the right; past the yellow center line, traffic comes at you! To pass slow cars, cross into the oncoming lanes and dodge. Drive 12 km from day into night to the finish!</p>
                     <div class="r-cars" id="rCars" role="group" aria-label="Choose a car"></div>
                     <button type="button" class="r-go" id="rGo">GO!</button>
                     <p class="r-keys">Keys: <kbd>←</kbd> <kbd>→</kbd> steer · <kbd>↑</kbd> gas · <kbd>↓</kbd> brake · <kbd>P</kbd> pause</p>
@@ -98,11 +98,12 @@
                 <summary>How to play</summary>
                 <ul>
                     <li>Hold <b>gas</b> (↑ or Space on a PC, [Gas ▲] on a phone) to speed up; let go to coast. <b>Brake</b> (↓) slows you quickly.</li>
-                    <li>Use <b>← →</b> (arrow buttons on a phone) to change lanes and dodge cars. Curves push you to the outside.</li>
+                    <li>The road has <b>two lanes each way</b>. Right of the yellow center line is your direction; the two left lanes carry <b>oncoming traffic</b>.</li>
+                    <li>Use <b>← →</b> (arrow buttons on a phone) to change lanes. When slow cars block both of your lanes, <b>cross the center line</b> to pass, dodge the oncoming cars and get back. Curves push you to the outside.</li>
                     <li>Hitting a car costs a <b>life ♥</b>. Lose them all and it's game over. Driving off the road slows you down.</li>
-                    <li><b>Pass a car +20</b>, squeeze past very close for a <b>close call +50</b>. Distance adds to your score too.</li>
+                    <li><b>Pass a car +20</b>, dodge an oncoming car +10, squeeze past very close for a <b>close call +50</b>. Distance points are <b>doubled</b> while you drive in the oncoming lanes.</li>
                     <li>Reach the finish (12 km) for +1,000 per life left, plus a time bonus for a fast run.</li>
-                    <li>Traffic starts light and gets heavier, and some cars signal and change lanes. Watch for the blinking amber light!</li>
+                    <li>Traffic starts light; later there are more oncoming cars and slow cars side by side, and some cars signal and change lanes. Watch for the blinking amber light!</li>
                     <li>4 cars: sports car (fastest), sedan (balanced), jeep (nimble, less slowed off-road), pickup truck (sturdy, 4 lives).</li>
                 </ul>
             </details>
@@ -111,6 +112,6 @@
 
     <footer class="g-foot">Copyright © 2026 WowEzBox. All rights reserved.</footer>
 
-    <script src="road.js?v=1"></script>
+    <script src="road.js?v=2"></script>
 </body>
 </html>

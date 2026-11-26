@@ -5,7 +5,9 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
    - 내 차는 화면 아래. 가속할수록 풍경이 멀리서 다가옴
    - 구간: 가로수길 → 상점가 → 사막 → 숲길 → 도시(도착). 낮 → 노을 → 밤 → 새벽
    - 차 4종(스포츠카·세단·지프·픽업트럭), 엔진음(Web Audio, 녹음 파일 없음)
-   - 상대 차는 시간이 갈수록 많아지고 차선도 바꿈. 생명(♥)을 다 잃으면 끝, 목적지(12km)에 닿으면 도착
+   - 2026-11-26 19:1x: 왕복 4차선으로 바꿈. 오른쪽 2차선 = 가는 차선(느린 차, 뒷모습), 왼쪽 2차선 = 오는 차선(마주 오는 차, 앞모습)
+     느린 차가 두 차선을 막으면 중앙선을 넘어 오는 차선으로 추월 → 마주 오는 차를 피해야 함. 오는 차선에 있으면 점수 2배
+   - 차는 시간이 갈수록 많아지고 차선도 바꿈. 생명(♥)을 다 잃으면 끝, 목적지(12km)에 닿으면 도착
    - 그림은 모두 코드로 직접 그림 (다른 게임 그림·소리 안 씀)
    - 기기에 기억: 기록 roadRecord.v1, 고른 차 roadCar.v1, 소리 roadMuted.v1
    ========================================================= */
@@ -23,7 +25,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
     /* ---------------- 설정 ---------------- */
     var SEG = 200;              // 도로 조각 길이
     var RUMBLE = 3;             // 몇 조각마다 색 바꿈
-    var ROAD_W = 1600;          // 도로 반폭 (가운데~가장자리)
+    var ROAD_W = 2000;          // 도로 반폭 (가운데~가장자리), 왕복 4차선
     var CAM_H = 1500;           // 카메라 높이
     var CAM_DEPTH = 1 / Math.tan((100 / 2) * Math.PI / 180);
     var PLAYER_Z = CAM_H * CAM_DEPTH;
@@ -33,7 +35,8 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
     var STEP = 1 / 60;
     var BASE_MAX = SEG / STEP;  // 기준 최고 속도 (= 화면 260km/h)
     var CAR_W = 640;            // 차 폭 (세계 단위)
-    var LANES = [-2 / 3, 0, 2 / 3];
+    var LANES = [-0.75, -0.25, 0.25, 0.75];   // 0·1 = 오는 차선(왼쪽), 2·3 = 가는 차선(오른쪽)
+    var ONCOMING = [0, 1], GOING = [2, 3];
     var DRAW = 200;
 
     var CARS = [
@@ -145,11 +148,46 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         if (type === "bus") { g.fillStyle = "#fff"; g.font = "bold " + Math.round(H * 0.07) + "px sans-serif"; g.textAlign = "center"; g.fillText(EN ? "BUS" : "버스", W / 2, cabBot + (low - cabBot) * 0.2); }
     }
 
+    /* 차 앞모습 (마주 오는 차) */
+    function drawCarFront(g, W, H, type, color) {
+        var bodyTop = { sport: 0.42, sedan: 0.34, jeep: 0.2, truck: 0.26, van: 0.1, bus: 0.04, taxi: 0.34 }[type];
+        var roofW = { sport: 0.56, sedan: 0.62, jeep: 0.8, truck: 0.74, van: 0.86, bus: 0.94, taxi: 0.62 }[type];
+        var tireH = H * 0.16, low = H * 0.86;
+        g.fillStyle = "rgba(0,0,0,0.35)"; g.beginPath(); g.ellipse(W / 2, H * 0.95, W * 0.5, H * 0.06, 0, 0, Math.PI * 2); g.fill();
+        g.fillStyle = "#1a1a1a"; rrect(g, W * 0.06, H - tireH - H * 0.03, W * 0.16, tireH, 4); g.fill(); rrect(g, W * 0.78, H - tireH - H * 0.03, W * 0.16, tireH, 4); g.fill();
+        var cabTop = H * bodyTop, cabBot = H * (bodyTop + (type === "bus" ? 0.42 : type === "van" ? 0.32 : 0.26));
+        var rw = W * roofW;
+        g.fillStyle = shade(color, 0.85);
+        g.beginPath(); g.moveTo(W / 2 - rw / 2, cabTop); g.lineTo(W / 2 + rw / 2, cabTop); g.lineTo(W * 0.95, cabBot); g.lineTo(W * 0.05, cabBot); g.closePath(); g.fill();
+        // 앞유리 + 운전자 실루엣
+        var gl = g.createLinearGradient(0, cabTop, 0, cabBot); gl.addColorStop(0, "#c6def2"); gl.addColorStop(1, "#4a6a8c");
+        g.fillStyle = gl; var gi = W * 0.05;
+        g.beginPath(); g.moveTo(W / 2 - rw / 2 + gi, cabTop + H * 0.03); g.lineTo(W / 2 + rw / 2 - gi, cabTop + H * 0.03); g.lineTo(W * 0.9, cabBot - H * 0.02); g.lineTo(W * 0.1, cabBot - H * 0.02); g.closePath(); g.fill();
+        g.fillStyle = "rgba(30,40,60,0.55)"; g.beginPath(); g.arc(W * (type === "bus" ? 0.3 : 0.64), cabBot - (cabBot - cabTop) * 0.42, W * 0.06, 0, 7); g.fill();
+        g.fillRect(W * (type === "bus" ? 0.22 : 0.56), cabBot - (cabBot - cabTop) * 0.3, W * 0.16, (cabBot - cabTop) * 0.28);
+        // 몸통
+        var bg = g.createLinearGradient(0, cabBot, 0, low); bg.addColorStop(0, shade(color, 1.15)); bg.addColorStop(1, shade(color, 0.8));
+        g.fillStyle = bg; rrect(g, W * 0.02, cabBot - 2, W * 0.96, low - cabBot + 2, W * 0.05); g.fill();
+        // 그릴
+        var gy = cabBot + (low - cabBot) * 0.38, gh = (low - cabBot) * 0.3;
+        g.fillStyle = "#26292e"; rrect(g, W * 0.3, gy, W * 0.4, gh, 4); g.fill();
+        g.strokeStyle = "#555b63"; g.lineWidth = Math.max(1, W * 0.01);
+        for (var k = 1; k < 4; k++) { g.beginPath(); g.moveTo(W * 0.31, gy + gh * k / 4); g.lineTo(W * 0.69, gy + gh * k / 4); g.stroke(); }
+        // 헤드라이트
+        g.fillStyle = "#fffbe6"; rrect(g, W * 0.06, gy - gh * 0.1, W * 0.2, gh * 0.9, 4); g.fill(); rrect(g, W * 0.74, gy - gh * 0.1, W * 0.2, gh * 0.9, 4); g.fill();
+        g.fillStyle = "#ffd27a"; g.fillRect(W * 0.07, gy + gh * 0.55, W * 0.07, gh * 0.22); g.fillRect(W * 0.86, gy + gh * 0.55, W * 0.07, gh * 0.22);
+        // 번호판·범퍼
+        g.fillStyle = "#f4f4ee"; rrect(g, W * 0.39, low - H * 0.1, W * 0.22, H * 0.05, 2); g.fill();
+        g.fillStyle = "#2a2a2a"; rrect(g, W * 0.03, low - H * 0.05, W * 0.94, H * 0.07, 4); g.fill();
+        if (type === "taxi") { g.fillStyle = "#fff7d6"; rrect(g, W * 0.38, cabTop - H * 0.07, W * 0.24, H * 0.07, 3); g.fill(); g.fillStyle = "#333"; g.font = "bold " + Math.round(H * 0.055) + "px sans-serif"; g.textAlign = "center"; g.fillText("TAXI", W / 2, cabTop - H * 0.015); }
+        if (type === "bus") { g.fillStyle = "#222"; g.fillRect(W * 0.2, cabTop + H * 0.02, W * 0.6, H * 0.06); g.fillStyle = "#ffb020"; g.font = "bold " + Math.round(H * 0.045) + "px sans-serif"; g.textAlign = "center"; g.fillText(EN ? "CITY BUS" : "시내버스", W / 2, cabTop + H * 0.065); }
+    }
+
     var IMG = {};
     var CAR_IMG_W = 300;
-    function carImg(type, color) {
+    function carImg(type, color, front) {
         var aspect = { sport: 0.58, sedan: 0.66, jeep: 0.8, truck: 0.76, van: 0.9, bus: 1.05, taxi: 0.66 }[type];
-        return mk(CAR_IMG_W, Math.round(CAR_IMG_W * aspect), function (g, w, h) { drawCarRear(g, w, h, type, color); });
+        return mk(CAR_IMG_W, Math.round(CAR_IMG_W * aspect), function (g, w, h) { (front ? drawCarFront : drawCarRear)(g, w, h, type, color); });
     }
     function buildImages() {
         IMG.player = {};
@@ -157,7 +195,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         IMG.traffic = [
             ["sedan", "#c8ccd2"], ["sedan", "#2b2b2b"], ["sedan", "#7a1f2b"], ["sedan", "#f4f4f0"], ["taxi", "#f08a24"],
             ["van", "#e9e9e4"], ["van", "#3b5f8a"], ["jeep", "#5b6b3a"], ["truck", "#b0b4b8"], ["bus", "#2f9a62"], ["bus", "#2f6fbf"], ["sport", "#ffd23c"]
-        ].map(function (t) { var im = carImg(t[0], t[1]); im.kind = t[0]; return im; });
+        ].map(function (t) { var im = carImg(t[0], t[1]); im.kind = t[0]; var fr = carImg(t[0], t[1], true); fr.kind = t[0]; im.front = fr; return im; });
 
         // 가로수
         IMG.tree = mk(180, 260, function (g, w, h) {
@@ -278,7 +316,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         IMG.shops.forEach(function (c) { c.worldW = 2300; });
         IMG.towers.forEach(function (c) { c.worldW = 1900; });
         Object.keys(IMG.kmSign).forEach(function (k) { IMG.kmSign[k].worldW = 1100; });
-        IMG.startGate.worldW = IMG.finishGate.worldW = 4300;
+        IMG.startGate.worldW = IMG.finishGate.worldW = 5300;
     }
 
     /* =========================================================
@@ -428,75 +466,102 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
     function newRun() {
         var c = car();
         S = {
-            pos: 0, speed: 0, x: 0, lives: c.lives, maxLives: c.lives, score: 0, time: 0,
+            pos: 0, speed: 0, x: LANES[2], lives: c.lives, maxLives: c.lives, score: 0, time: 0,
             maxSpeed: BASE_MAX * c.max, accel: BASE_MAX * c.max / 4.2 * c.accel,
             traffic: [], touched: [], inv: 0, shake: 0, popups: [], skyOff: 0, hillOff: 0,
-            passes: 0, nearMiss: 0, crashes: 0, count: 3.5, ended: false, finished: false, offroad: 0, lastHud: 0
+            passes: 0, dodged: 0, nearMiss: 0, crashes: 0, wrongT: 0, wasWrong: false, count: 3.5, ended: false, finished: false, offroad: 0, lastHud: 0
         };
         // 처음 차들 (드문드문)
-        for (var i = 0; i < 5; i++) spawnCar(PLAYER_Z + 3500 + i * 4200);
+        for (var i = 0; i < 3; i++) spawnGoing(PLAYER_Z + 4000 + i * 6000, false);
+        for (var j = 0; j < 2; j++) spawnOncoming(PLAYER_Z + 14000 + j * 12000);
     }
 
-    /* ---------------- 상대 차 ---------------- */
-    function density(f) { return 4 + Math.round(f * 15); }     // 보이는 범위 안 차 수 목표
-    function spawnCar(z) {
+    /* ---------------- 상대 차 ----------------
+       가는 차(dir 1): 오른쪽 2차선, 나보다 느림 → 따라잡아 추월. 갈수록 두 차선을 나란히 막는 경우가 많아짐
+       오는 차(dir -1): 왼쪽 2차선, 마주 달려옴 → 중앙선을 넘어 추월할 때 피해야 함 */
+    function rr2(a, b) { return a + (b - a) * Math.random(); }
+    function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
+    function laneBusy(lane, z, gap) { return S.traffic.some(function (c) { return c.lane === lane && Math.abs(c.z - z) < gap; }); }
+    function makeCar(z, lane, dir, sp) {
+        var base = pick(IMG.traffic);
+        return { z: z, lane: lane, offset: LANES[lane], target: LANES[lane], dir: dir, speed: sp, img: dir < 0 ? base.front : base, kind: base.kind,
+                 prevDz: null, signal: 0, changeT: 2 + Math.random() * 6, passed: false };
+    }
+    function spawnGoing(z, convoy) {
         var f = z / (TOTAL * SEG);
-        var lane = Math.floor(Math.random() * 3);
-        // 같은 줄(가까운 거리)에 세 차선이 다 막히지 않게, 같은 차선 겹침 피하기
-        var near = S.traffic.filter(function (c) { return Math.abs(c.z - z) < 1500; });
-        var used = near.map(function (c) { return c.lane; });
-        if (used.indexOf(lane) >= 0) { var free = [0, 1, 2].filter(function (l) { return used.indexOf(l) < 0; }); if (free.length < 2) return false; lane = free[Math.floor(Math.random() * free.length)]; }
-        var img = IMG.traffic[Math.floor(Math.random() * IMG.traffic.length)];
-        var slow = img.kind === "bus" || img.kind === "truck" || img.kind === "van";
-        var sp = BASE_MAX * (slow ? rr2(0.22, 0.34) : rr2(0.28, 0.5)) * (1 + f * 0.25);
-        S.traffic.push({ z: z, lane: lane, offset: LANES[lane], target: LANES[lane], speed: sp, img: img, prevDz: null, signal: 0, changeT: 2 + Math.random() * 6, passed: false });
+        var lanes = convoy ? GOING.slice() : [pick(GOING)];
+        if (lanes.some(function (l) { return laneBusy(l, z, 2200); })) return false;
+        var sp = BASE_MAX * rr2(0.2, 0.36) * (1 + f * 0.2);
+        lanes.forEach(function (l, k) {
+            var c = makeCar(z + (convoy ? k * rr2(-150, 150) : 0), l, 1, convoy ? sp * rr2(0.97, 1.03) : sp);
+            if (!convoy && (c.kind === "bus" || c.kind === "truck" || c.kind === "van")) c.speed *= 0.85;
+            S.traffic.push(c);
+        });
         return true;
     }
-    function rr2(a, b) { return a + (b - a) * Math.random(); }
+    function spawnOncoming(z) {
+        var f = z / (TOTAL * SEG);
+        var lane = pick(ONCOMING);
+        if (laneBusy(lane, z, 2600)) { lane = lane === 0 ? 1 : 0; if (laneBusy(lane, z, 2600)) return false; }
+        // 두 오는 차선이 같은 곳에서 동시에 막히지 않게 (피할 틈 남기기)
+        var other = lane === 0 ? 1 : 0;
+        if (laneBusy(other, z, 900)) return false;
+        S.traffic.push(makeCar(z, lane, -1, -BASE_MAX * rr2(0.28, 0.48) * (1 + f * 0.3)));
+        return true;
+    }
     function updateTraffic(dt) {
         var pz = S.pos + PLAYER_Z, f = S.pos / (TOTAL * SEG);
-        var ahead = 0;
+        var going = 0, oncoming = 0;
         for (var i = S.traffic.length - 1; i >= 0; i--) {
             var c = S.traffic[i];
             c.z += c.speed * dt;
-            // 차선 바꾸기 (조금 지나서부터)
+            // 같은 방향 두 차선 안에서만 차선 바꾸기 (조금 지나서부터)
             if (f > 0.15) {
                 c.changeT -= dt;
                 if (c.changeT <= 0 && c.signal <= 0 && c.offset === c.target) {
                     c.changeT = rr2(3, 8) - f * 2;
-                    if (Math.random() < 0.25 + f * 0.5) {
-                        var nl = c.lane + (Math.random() < 0.5 ? -1 : 1);
-                        if (nl >= 0 && nl <= 2 && !S.traffic.some(function (o) { return o !== c && o.lane === nl && Math.abs(o.z - c.z) < 1400; })) { c.signal = 1.1; c.newLane = nl; }
+                    if (Math.random() < 0.2 + f * 0.45) {
+                        var pair = c.dir > 0 ? GOING : ONCOMING;
+                        var nl = c.lane === pair[0] ? pair[1] : pair[0];
+                        if (!laneBusy(nl, c.z, 1600)) { c.signal = 1.1; c.newLane = nl; }
                     }
                 }
                 if (c.signal > 0) { c.signal -= dt; if (c.signal <= 0) { c.lane = c.newLane; c.target = LANES[c.lane]; } }
             }
-            if (c.offset !== c.target) { var d = c.target - c.offset, st = dt * 0.55; c.offset = Math.abs(d) < st ? c.target : c.offset + Math.sign(d) * st; }
+            if (c.offset !== c.target) { var d = c.target - c.offset, st = dt * 0.45; c.offset = Math.abs(d) < st ? c.target : c.offset + Math.sign(d) * st; }
             var dz = c.z - pz;
-            // 추월·아슬아슬
+            // 지나감: 추월(가는 차) / 스쳐 지나감(오는 차)
             if (c.prevDz !== null && c.prevDz > 0 && dz <= 0 && !c.passed) {
-                c.passed = true; S.passes++;
-                var gap = Math.abs(S.x - c.offset);
-                if (gap < 0.62) { S.nearMiss++; addScore(50, T("아슬아슬! +50", "Close call! +50"), "#ffd23c"); sWhoosh(c.offset < S.x ? -0.6 : 0.6); }
-                else { addScore(20, T("추월 +20", "Pass +20"), "#9fe39f"); if (S.speed > BASE_MAX * 0.45) sWhoosh(c.offset < S.x ? -0.4 : 0.4); }
+                c.passed = true;
+                var gap = Math.abs(S.x - c.offset), side = c.offset < S.x ? -0.6 : 0.6;
+                if (c.dir > 0) {
+                    S.passes++;
+                    if (gap < 0.5) { S.nearMiss++; addScore(50, T("아슬아슬! +50", "Close call! +50"), "#ffd23c"); sWhoosh(side); }
+                    else { addScore(20, T("추월 +20", "Pass +20"), "#9fe39f"); if (S.speed > BASE_MAX * 0.45) sWhoosh(side * 0.6); }
+                } else {
+                    S.dodged++;
+                    sWhoosh(side);
+                    if (gap < 0.5) { S.nearMiss++; addScore(50, T("휙! 아슬아슬 +50", "Whoosh! Close +50"), "#ffd23c"); }
+                    else S.score += 10;
+                }
             }
             c.prevDz = dz;
             // 부딪힘
-            if (S.inv <= 0 && dz > -300 && dz < 260 && Math.abs(S.x - c.offset) < (CAR_W / ROAD_W) * 0.82) crash(c);
-            if (dz < -3000 || c.z > TOTAL * SEG) S.traffic.splice(i, 1);
-            else if (dz > 0) ahead++;
+            if (S.inv <= 0 && dz > -300 && dz < 300 && Math.abs(S.x - c.offset) < (CAR_W / ROAD_W) * 0.85) crash(c);
+            if (dz < -3000 || c.z > TOTAL * SEG || c.z < 0) S.traffic.splice(i, 1);
+            else if (dz > 0) { if (c.dir > 0) going++; else oncoming++; }
         }
-        var want = density(f);
-        if (S.pos / SEG < FINISH_SEG - 250 && ahead < want) {
-            var far = pz + DRAW * SEG * rr2(0.55, 0.95);
-            var last = S.traffic.reduce(function (m, c) { return Math.max(m, c.z); }, 0);
-            if (far - last > 1800 - f * 1100 || ahead < want * 0.5) spawnCar(Math.max(far, last + 900 - f * 500));
-        }
+        if (S.pos / SEG > FINISH_SEG - 250) return;
+        var far = pz + DRAW * SEG * rr2(0.6, 0.95);
+        // 가는 차: 2 → 7대, 나란히 막는 차 확률 10% → 45%
+        if (going < 2 + Math.round(f * 5)) spawnGoing(far, Math.random() < 0.1 + f * 0.35);
+        // 오는 차: 1 → 9대
+        if (oncoming < 1 + Math.round(f * 8)) spawnOncoming(far + rr2(0, 4000));
     }
     function crash(c) {
         S.lives--; S.crashes++; S.inv = 2.2; S.shake = 0.45;
-        S.speed = Math.min(S.speed, c.speed * 0.55);
-        c.z += 500; c.passed = true;
+        S.speed = c.dir > 0 ? Math.min(S.speed, c.speed * 0.55) : S.speed * 0.15;
+        c.z += c.dir > 0 ? 500 : -600; c.passed = true;
         sCrash();
         addPop(T("쾅! ♥ -1", "Crash! ♥ -1"), "#ff6b6b");
         if (navigator.vibrate) try { navigator.vibrate(160); } catch (e) {}
@@ -537,7 +602,11 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         S.pos += S.speed * dt;
         S.skyOff += 0.0012 * seg.curve * pct;
         S.hillOff += 0.0026 * seg.curve * pct;
-        S.score += S.speed * dt / SEG * 0.5;   // 달린 거리 점수
+        var wrong = S.x < -0.05 && Math.abs(S.x) <= 1;   // 오는 차선을 달리는 중
+        S.score += S.speed * dt / SEG * 0.5 * (wrong ? 2 : 1);   // 달린 거리 점수 (오는 차선이면 2배)
+        if (wrong && !S.wasWrong && pct > 0.2) addPop(T("반대 차선! 점수 ×2", "Wrong lane! Score ×2"), "#ff9ad5");
+        S.wasWrong = wrong;
+        if (wrong) S.wrongT += dt;
         if (S.inv > 0) S.inv -= dt;
         if (S.shake > 0) S.shake -= dt;
         S.popups.forEach(function (p) { p.t -= dt; });
@@ -677,9 +746,15 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
             stars.forEach(function (s) { var a = (dark - 0.3) * (0.6 + 0.4 * Math.sin(S.time * 2 + s[3])); if (a > 0 && s[1] * HZ < HZ * 0.85) { ctx.fillStyle = "rgba(255,255,240," + a + ")"; ctx.fillRect(s[0] * W, s[1] * HZ, s[2], s[2]); } });
             if (dark > 0.5) { var mx = W * 0.2, my = HZ * 0.22; ctx.fillStyle = "rgba(255,250,220," + (dark - 0.3) + ")"; ctx.beginPath(); ctx.arc(mx, my, W * 0.025, 0, 7); ctx.fill(); }
             drawHeadlights(dark);
+            ctx.globalCompositeOperation = "source-over";
+        }
+        if (lights.length) {
+            ctx.globalCompositeOperation = "lighter";
             lights.forEach(function (l) {
+                var al = l[4] != null ? l[4] : 0.85 * dark;
+                if (al < 0.02) return;
                 var g = ctx.createRadialGradient(l[0], l[1], 0, l[0], l[1], l[2] * 0.5);
-                g.addColorStop(0, "rgba(" + l[3] + "," + (0.85 * dark) + ")"); g.addColorStop(1, "rgba(" + l[3] + ",0)");
+                g.addColorStop(0, "rgba(" + l[3] + "," + al + ")"); g.addColorStop(1, "rgba(" + l[3] + ",0)");
                 ctx.fillStyle = g; ctx.fillRect(l[0] - l[2] / 2, l[1] - l[2] / 2, l[2], l[2]);
             });
             ctx.globalCompositeOperation = "source-over";
@@ -697,10 +772,14 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         poly(p1.x - p1.w - r1, p1.y, p1.x - p1.w, p1.y, p2.x - p2.w, p2.y, p2.x - p2.w - r2, p2.y, seg.light ? "#f2f2f2" : "#d23a32");
         poly(p1.x + p1.w + r1, p1.y, p1.x + p1.w, p1.y, p2.x + p2.w, p2.y, p2.x + p2.w + r2, p2.y, seg.light ? "#f2f2f2" : "#d23a32");
         poly(p1.x - p1.w, p1.y, p1.x + p1.w, p1.y, p2.x + p2.w, p2.y, p2.x - p2.w, p2.y, seg.light ? "#6e6e72" : "#68686c");
+        // 차선: 가운데 노란 겹선(항상) + 같은 방향 차선 사이 흰 점선
+        var y1w = p1.w / 70, y2w = p2.w / 70, gap1 = p1.w / 45, gap2 = p2.w / 45;
+        poly(p1.x - gap1 - y1w, p1.y, p1.x - gap1 + y1w, p1.y, p2.x - gap2 + y2w, p2.y, p2.x - gap2 - y2w, p2.y, "#f2c230");
+        poly(p1.x + gap1 - y1w, p1.y, p1.x + gap1 + y1w, p1.y, p2.x + gap2 + y2w, p2.y, p2.x + gap2 - y2w, p2.y, "#f2c230");
         if (seg.light) {
-            var l1 = p1.w / 40, l2 = p2.w / 40;
-            [-1 / 3, 1 / 3].forEach(function (k) {
-                var a = p1.x + p1.w * 2 * k, b = p2.x + p2.w * 2 * k;
+            var l1 = p1.w / 50, l2 = p2.w / 50;
+            [-0.5, 0.5].forEach(function (k) {
+                var a = p1.x + p1.w * k, b = p2.x + p2.w * k;
                 poly(a - l1, p1.y, a + l1, p1.y, b + l2, p2.y, b - l2, p2.y, "#f4f4ee");
             });
         }
@@ -723,11 +802,16 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         ctx.drawImage(img, 0, 0, img.width, img.height - img.height * clipH / h, dx, dy, w, h - clipH);
         // 방향 지시등
         if (c.signal > 0 && Math.floor(c.signal * 4) % 2 === 0) {
-            var left = LANES[c.newLane] < c.offset;
+            var left = LANES[c.newLane] < c.offset;   // 화면에서 왼쪽으로 가면 왼쪽 등
             ctx.fillStyle = "#ffb020"; ctx.beginPath(); ctx.arc(dx + w * (left ? 0.1 : 0.9), dy + h * 0.62, Math.max(2, w * 0.06), 0, 7); ctx.fill();
             lights.push([dx + w * (left ? 0.1 : 0.9), dy + h * 0.62, w * 0.5, "255,170,40"]);
         }
-        if (dark > 0.05 && clipH < h * 0.4) { lights.push([dx + w * 0.16, dy + h * 0.62, w * 0.45, "255,40,40"]); lights.push([dx + w * 0.84, dy + h * 0.62, w * 0.45, "255,40,40"]); }
+        if (c.dir < 0) {   // 마주 오는 차 헤드라이트 (밤에는 크게, 낮에도 살짝)
+            if (clipH < h * 0.5) {
+                var a = 0.25 + dark * 0.75, r = w * (0.5 + dark * 0.9);
+                lights.push([dx + w * 0.16, dy + h * 0.62, r, "255,250,220", a]); lights.push([dx + w * 0.84, dy + h * 0.62, r, "255,250,220", a]);
+            }
+        } else if (dark > 0.05 && clipH < h * 0.4) { lights.push([dx + w * 0.16, dy + h * 0.62, w * 0.45, "255,40,40"]); lights.push([dx + w * 0.84, dy + h * 0.62, w * 0.45, "255,40,40"]); }
     }
     function drawPlayer(dark) {
         var img = IMG.player[car().id];
@@ -878,7 +962,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
             lines.push(T("걸린 시간", "Time") + " <b>" + fmtTime(S.time) + "</b>");
             lines.push(T("남은 생명 보너스", "Lives bonus") + " +" + fmt(bonusLives) + " · " + T("시간 보너스", "Time bonus") + " +" + fmt(bonusTime));
         } else lines.push(T("달린 거리", "Distance") + " <b>" + (f * GOAL_KM).toFixed(1) + " km</b> / " + GOAL_KM + " km");
-        lines.push(T("추월", "Passed") + " " + S.passes + T("대", "") + " · " + T("아슬아슬", "Close calls") + " " + S.nearMiss + T("번", ""));
+        lines.push(T("추월", "Passed") + " " + S.passes + T("대", "") + " · " + T("마주 온 차 피함", "Dodged") + " " + S.dodged + T("대", "") + " · " + T("아슬아슬", "Close calls") + " " + S.nearMiss + T("번", ""));
         $("rEndSub").innerHTML = lines.join("<br>");
         show(endBox, true);
         renderRecord();
@@ -976,5 +1060,5 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
     } else boot();
 
     /* 시험용 (개발자 도구에서만 씀) */
-    window.__road = { put: function (dz, lane, sp) { S.traffic.push({ z: S.pos + PLAYER_Z + dz, lane: lane, offset: LANES[lane], target: LANES[lane], speed: sp || 0, img: IMG.traffic[0], prevDz: null, signal: 0, changeT: 99, passed: false }); }, state: function () { return S; }, mode: function () { return mode; }, keys: keys, jump: function (f) { S.pos = f * FINISH_SEG * SEG; }, start: startRun, end: endGame };
+    window.__road = { put: function (dz, lane, sp) { var c = makeCar(S.pos + PLAYER_Z + dz, lane, lane < 2 ? -1 : 1, sp || 0); c.changeT = 99; S.traffic.push(c); }, state: function () { return S; }, mode: function () { return mode; }, keys: keys, jump: function (f) { S.pos = f * FINISH_SEG * SEG; }, start: startRun, end: endGame };
 })();

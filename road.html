@@ -5,7 +5,7 @@
     <script src="lang.js?v=3"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>로드 트립 – 차 피하기 자동차 게임 · WowEzBox</title>
-    <meta name="description" content="차 뒤에서 보며 달리는 무료 자동차 게임. 차를 골라 가로수길·상점가·사막·숲길을 지나 낮과 밤을 달리며, 갈수록 많아지는 차들을 피해 12km 목적지까지 가요.">
+    <meta name="description" content="차 뒤에서 보며 달리는 무료 자동차 게임. 왕복 도로에서 느린 차를 추월하고 반대 차선에서 마주 오는 차를 피하며, 가로수길·상점가·사막·숲길을 지나 낮과 밤을 달려 12km 목적지까지 가요.">
     <!-- 2026-11-26: 검색·공유용 정보 -->
     <link rel="canonical" href="https://wowezbox.com/road.html">
     <link rel="alternate" hreflang="ko" href="https://wowezbox.com/road.html">
@@ -15,13 +15,13 @@
     <meta property="og:site_name" content="WowEzBox">
     <meta property="og:locale" content="ko_KR">
     <meta property="og:title" content="로드 트립 – 차 피하기 자동차 게임 · WowEzBox">
-    <meta property="og:description" content="차 뒤에서 보며 달리는 무료 자동차 게임. 차를 골라 가로수길·상점가·사막·숲길을 지나 낮과 밤을 달리며, 갈수록 많아지는 차들을 피해 12km 목적지까지 가요.">
+    <meta property="og:description" content="차 뒤에서 보며 달리는 무료 자동차 게임. 왕복 도로에서 느린 차를 추월하고 반대 차선에서 마주 오는 차를 피하며, 가로수길·상점가·사막·숲길을 지나 낮과 밤을 달려 12km 목적지까지 가요.">
     <meta property="og:url" content="https://wowezbox.com/road.html">
     <meta property="og:image" content="https://wowezbox.com/og-image.jpg">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
     <meta name="twitter:card" content="summary_large_image">
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "로드 트립", "url": "https://wowezbox.com/road.html", "description": "차 뒤에서 보며 달리는 무료 자동차 게임. 차를 골라 가로수길·상점가·사막·숲길을 지나 낮과 밤을 달리며, 갈수록 많아지는 차들을 피해 12km 목적지까지 가요.", "applicationCategory": "GameApplication", "operatingSystem": "Any", "inLanguage": "ko", "browserRequirements": "Requires JavaScript", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "KRW"}}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "로드 트립", "url": "https://wowezbox.com/road.html", "description": "차 뒤에서 보며 달리는 무료 자동차 게임. 왕복 도로에서 느린 차를 추월하고 반대 차선에서 마주 오는 차를 피하며, 가로수길·상점가·사막·숲길을 지나 낮과 밤을 달려 12km 목적지까지 가요.", "applicationCategory": "GameApplication", "operatingSystem": "Any", "inLanguage": "ko", "browserRequirements": "Requires JavaScript", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "KRW"}}</script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Noto+Sans+KR:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -30,7 +30,7 @@
 <body>
     <header class="g-top">
         <div class="g-top-in">
-            <h1 class="g-title">로드 트립 <small>차들을 피해 목적지까지</small></h1>
+            <h1 class="g-title">로드 트립 <small>마주 오는 차를 피해 목적지까지</small></h1>
             <span class="g-brand">WowEzBox</span>
         </div>
     </header>
@@ -53,7 +53,7 @@
             <div class="r-over" id="rStart">
                 <div class="r-card">
                     <h2>어떤 차로 달릴까요?</h2>
-                    <p class="r-lead">가로수길 → 상점가 → 사막 → 숲길 → 도시. 낮에서 밤까지 12km를 달려 목적지에 닿으면 성공! 갈수록 차가 많아져요.</p>
+                    <p class="r-lead">오른쪽은 가는 차선, 중앙선 너머 왼쪽은 마주 오는 차선! 느린 차를 추월하려면 반대 차선으로 넘어가 마주 오는 차를 피하세요. 낮에서 밤까지 12km를 달려 목적지에 닿으면 성공!</p>
                     <div class="r-cars" id="rCars" role="group" aria-label="차 고르기"></div>
                     <button type="button" class="r-go" id="rGo">출발!</button>
                     <p class="r-keys">조작: <kbd>←</kbd> <kbd>→</kbd> 차선 · <kbd>↑</kbd> 가속 · <kbd>↓</kbd> 브레이크 · <kbd>P</kbd> 일시정지</p>
@@ -98,11 +98,12 @@
                 <summary>어떻게 해요?</summary>
                 <ul>
                     <li><b>가속</b>(PC는 ↑ 또는 스페이스, 폰은 [가속 ▲])을 누르고 있으면 빨라지고, 떼면 천천히 느려져요. <b>브레이크</b>(↓)로 확 줄일 수 있어요.</li>
-                    <li><b>← →</b>(폰은 화살표 버튼)로 차선을 바꿔 앞차들을 피하세요. 굽은 길에서는 차가 바깥쪽으로 밀려요.</li>
+                    <li>도로는 <b>왕복 4차선</b>이에요. 노란 중앙선 오른쪽 두 차선은 나와 같은 방향으로 가는 차선, 왼쪽 두 차선은 <b>마주 오는 차선</b>이에요.</li>
+                    <li><b>← →</b>(폰은 화살표 버튼)로 차선을 바꿔요. 앞에 느린 차가 두 차선을 나란히 막고 있으면 <b>중앙선을 넘어 반대 차선</b>으로 추월하고, 마주 오는 차를 피해 다시 돌아오세요. 굽은 길에서는 차가 바깥쪽으로 밀려요.</li>
                     <li>차에 부딪히면 <b>생명 ♥</b>이 하나 줄어요. 다 잃으면 게임 오버! 길 밖(풀밭·모래)으로 나가면 느려져요.</li>
-                    <li>앞차를 <b>추월하면 +20</b>, 아주 가깝게 스치면 <b>아슬아슬 +50</b>. 멀리 달릴수록 점수가 쌓여요.</li>
+                    <li>앞차를 <b>추월하면 +20</b>, 마주 오는 차를 피하면 +10, 아주 가깝게 스치면 <b>아슬아슬 +50</b>. 반대 차선을 달리는 동안은 거리 점수가 <b>2배</b>예요.</li>
                     <li>목적지(12km)에 닿으면 남은 생명 하나에 +1,000, 빨리 도착할수록 시간 보너스도 있어요.</li>
-                    <li>처음엔 차가 드문드문 오지만 갈수록 많아지고, 깜빡이를 켜고 차선을 바꾸는 차도 생겨요. 노랗게 깜빡이면 조심!</li>
+                    <li>처음엔 차가 드문드문 오지만 갈수록 마주 오는 차와 나란히 막는 느린 차가 많아지고, 깜빡이를 켜고 차선을 바꾸는 차도 생겨요. 노랗게 깜빡이면 조심!</li>
                     <li>차 4종: 스포츠카(가장 빠름), 세단(무난), 지프(핸들이 잘 꺾이고 흙길에서 덜 느려짐), 픽업트럭(튼튼해서 생명 4개).</li>
                 </ul>
             </details>
@@ -111,6 +112,6 @@
 
     <footer class="g-foot">Copyright © 2026 WowEzBox. All rights reserved.</footer>
 
-    <script src="road.js?v=1"></script>
+    <script src="road.js?v=2"></script>
 </body>
 </html>
