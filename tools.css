@@ -478,3 +478,9 @@
     html body .fx-widget.has-more .fx-title { padding: 0 84px; }
     html body .fx-widget.has-more .fx-more { position: absolute; right: 0; top: 50%; transform: translateY(-50%); margin: 0; font-size: 0.8rem; padding: 3px 11px; }
 }
+
+/* 2026-11-26: 폰 홈 생활 도구 카드 — 퍼센트 계산기 (체리 레드) */
+@media (max-width: 760px) {
+    html body .tools-widget .tw-item[href^="percent"] { background: #fcebe8; border-color: #eab3ab; color: #5a0f1c; }
+    html body .tools-widget .tw-item[href^="percent"] small, html body .tools-widget .tw-item[href^="percent"] .gw-go { color: #b8363f; }
+}
