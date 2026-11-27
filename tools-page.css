@@ -936,3 +936,81 @@ body.tm-max .tm-top { padding-right: 150px; }
     html[lang="en"] .tp-tabs { gap: 3px; }
     html[lang="en"] .tp-tabs a { padding: 6px 5px; font-size: 0.69rem; }
 }
+
+/* ==========================================================
+   2026-11-27: 계산기 크게 보기 (calc.html) — 그래파이트 + 호박색 테마
+   ========================================================== */
+body.tool-page.theme-calc { --tp-emerald: #1c2027; --tp-emerald2: #2e3440; --tp-emerald3: #434c5e; --tp-gold: #ffc861; --tp-gold-deep: #c27c0e; --tp-tint: #f6f1e6; --tp-tint2: #f3ecdd; }
+.tp-tabs a[href^="calc"].on { background: #2e3440; border-color: #2e3440; }
+.tp-tabs a[href^="calc"]:not(.on) { border-left: 4px solid #e0a63a; }
+.th-ic.c11 { background: linear-gradient(160deg, #2e3440, #5b6478); }
+.cx-grid { grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); }
+.cx { padding: 14px 14px 16px; border-color: #15181e; }
+.cx-modes { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; }
+.cx-mode { flex: 0 0 auto; padding: 6px 14px; border-radius: 999px; border: 1px solid rgba(255, 200, 97, 0.45); background: rgba(0, 0, 0, 0.22); color: #f2e6cc; font: inherit; font-size: 0.85rem; font-weight: 700; cursor: pointer; }
+.cx-mode.on { background: #ffc861; border-color: #ffc861; color: #1c2027; }
+.cx-sound { margin-left: auto; width: 34px; height: 34px; padding: 0; display: grid; place-items: center; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.3); background: rgba(255, 255, 255, 0.08); cursor: pointer; }
+.cx-sound svg { width: 20px; height: 20px; overflow: visible; }
+.cx-sound .s-spk { fill: #f2e6cc; } .cx-sound .s-wave { fill: none; stroke: #f2e6cc; stroke-width: 1.9; stroke-linecap: round; } .cx-sound .s-slash { fill: none; stroke: #ff6b5a; stroke-width: 2.6; stroke-linecap: round; opacity: 0; }
+.cx-sound.muted .s-wave { opacity: 0.35; } .cx-sound.muted .s-slash { opacity: 1; }
+
+.cx-screen { position: relative; padding: 10px 14px 10px; border-radius: 14px; background: linear-gradient(180deg, #11141a, #1a1e26); box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 200, 97, 0.15); text-align: right; min-width: 0; }
+.cx-flags { position: absolute; top: 8px; left: 12px; display: flex; gap: 6px; }
+.cx-flag { padding: 0 6px; border-radius: 5px; background: rgba(255, 200, 97, 0.18); color: #ffc861; font-size: 0.7rem; font-weight: 800; line-height: 1.5; }
+.cx-flag[hidden] { display: none; }
+.cx-expr { min-height: 1.4em; font-size: 0.95rem; color: #b9c0cf; white-space: nowrap; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; font-variant-numeric: tabular-nums; text-align: right; }
+.cx-expr::-webkit-scrollbar { display: none; }
+.cx-main-wrap { overflow: hidden; text-align: right; }
+.cx-main { display: inline-block; font-size: 2.9rem; line-height: 1.15; font-weight: 800; color: #ffffff; white-space: nowrap; font-variant-numeric: tabular-nums; letter-spacing: 0.01em; }
+.cx-main.is-result { color: #ffc861; }
+.cx-words { min-height: 1.3em; font-size: 0.9rem; font-weight: 600; color: #e9c98a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cx-msg { position: absolute; left: 10px; right: 10px; bottom: 8px; margin: 0; padding: 4px 10px; border-radius: 8px; background: #ffc861; color: #1c2027; font-size: 0.82rem; font-weight: 700; text-align: center; }
+.cx.is-shake .cx-screen { animation: cxShake 0.3s; }
+@keyframes cxShake { 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+
+.cx button[data-k] { font-family: inherit; cursor: pointer; border-radius: 12px; transition: transform 0.06s, filter 0.12s; -webkit-tap-highlight-color: transparent; }
+.cx button[data-k]:active, .cx button[data-k].is-press { transform: scale(0.95); filter: brightness(1.15); }
+.cx-memrow { display: grid; grid-template-columns: repeat(4, 1fr) 1.4fr; gap: 6px; margin: 10px 0 8px; }
+.cx-memrow button { height: 34px; border: 1px solid rgba(255, 255, 255, 0.15); background: rgba(255, 255, 255, 0.06); color: #d8dde8; font-size: 0.82rem; font-weight: 700; }
+.cx-memrow .cx-copy { color: #ffc861; border-color: rgba(255, 200, 97, 0.4); }
+.cx-sci { display: none; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-bottom: 8px; }
+.cx.is-sci .cx-sci { display: grid; }
+.cx-sci button { height: 40px; border: 1px solid rgba(255, 255, 255, 0.14); background: #3b4252; color: #e6eaf2; font-size: 0.92rem; font-weight: 700; }
+.cx-sci .cx-degbtn { font-size: 0.72rem; color: #ffc861; }
+.cx-keys { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+.cx-keys button { height: 58px; border: 0; background: linear-gradient(180deg, #f7f3ea, #e9e2d2); color: #1c2027; font-size: 1.45rem; font-weight: 700; box-shadow: 0 3px 0 #b9ae95; }
+.cx-keys .k-fn { background: linear-gradient(180deg, #5b6478, #4a5264); color: #ffffff; font-size: 1.15rem; box-shadow: 0 3px 0 #2a303c; }
+.cx-keys .k-op { background: linear-gradient(180deg, #ffd27c, #ffb938); color: #1c2027; font-size: 1.6rem; box-shadow: 0 3px 0 #c27c0e; }
+.cx-keys .k-eq { grid-column: 1 / -1; height: 56px; background: linear-gradient(180deg, #ff9f43, #f07a1a); color: #fff; font-size: 1.7rem; box-shadow: 0 3px 0 #b3540a; }
+.cx.is-sci .cx-keys button { height: 50px; }
+
+/* 계산 기록 */
+.cx-side h2 small { font-size: 0.8rem; color: var(--tp-mute); font-weight: 600; }
+.cx-hist { list-style: none; margin: 0 0 10px; padding: 0; max-height: 420px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
+.cx-hist li { display: flex; align-items: stretch; border: 1px solid #ece3cf; border-radius: 10px; overflow: hidden; background: #fcfaf4; }
+.cx-hist li.cx-empty { display: block; padding: 14px; font-size: 0.86rem; color: var(--tp-mute); background: #fbf8f1; border-style: dashed; }
+.cx-h { flex: 1 1 auto; min-width: 0; display: grid; grid-template-columns: 1fr auto; column-gap: 8px; padding: 8px 10px; border: 0; background: none; text-align: right; font: inherit; color: inherit; cursor: pointer; }
+.cx-h:hover { background: #f6efdc; }
+.cx-h-e { grid-column: 1 / -1; font-size: 0.8rem; color: var(--tp-mute); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-variant-numeric: tabular-nums; }
+.cx-h b { grid-column: 1 / -1; font-size: 1.15rem; color: #1c2027; font-variant-numeric: tabular-nums; word-break: break-all; }
+.cx-h small { grid-column: 1 / -1; font-size: 0.7rem; color: #b0a48e; }
+.cx-h-x { flex: none; width: 34px; border: 0; border-left: 1px solid #ece3cf; background: none; color: #b0a48e; cursor: pointer; }
+.cx-h-x:hover { background: #fbe9e4; color: #c2410c; }
+.cx-hclear { margin-bottom: 4px; }
+.cx-quick { margin-top: 14px; padding-top: 12px; border-top: 1px dashed #e6dcc4; display: flex; flex-direction: column; gap: 6px; }
+.cx-quick h3 { margin: 0 0 4px; font-size: 0.88rem; color: var(--tp-emerald2); }
+.cx-quick a { padding: 8px 12px; border-radius: 10px; background: #fbf7ec; border: 1px solid #ece3cf; color: #3b2a1a; font-size: 0.88rem; font-weight: 600; text-decoration: none; }
+.cx-quick a:hover { background: #f6efdc; border-color: var(--tp-gold); }
+@media (max-width: 760px) {
+    .cx-grid { grid-template-columns: minmax(0, 1fr); }
+    .cx-main { font-size: 2.4rem; }
+    .cx-keys button { height: 56px; }
+    .cx-hist { max-height: 300px; }
+}
+/* 도구가 11개 → PC 탭 한 줄 유지 (2026-11-27) */
+@media (min-width: 761px) {
+    .tp-tabs { gap: 3px; }
+    .tp-tabs a { padding: 5px 6px; font-size: 0.72rem; }
+    html[lang="en"] .tp-tabs { gap: 3px; }
+    html[lang="en"] .tp-tabs a { padding: 5px 4px; font-size: 0.66rem; }
+}

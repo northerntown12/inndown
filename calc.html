@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <script src="lang.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>온라인 계산기 · 공학용 계산기 – 계산 기록·천 단위 쉼표 · WowEzBox</title>
+    <meta name="description" content="식을 보면서 계산하는 무료 온라인 계산기예요. 천 단위 쉼표와 한글 금액(1억 2,345만) 표시, 계산 기록, 메모리(M+), 공학용 모드(괄호·제곱·루트·sin·cos·log·팩토리얼)까지. 설치 없이 바로 쓰세요.">
+    <!-- 2026-11-27: 검색·공유용 정보 -->
+    <link rel="canonical" href="https://wowezbox.com/calc.html">
+    <link rel="alternate" hreflang="ko" href="https://wowezbox.com/calc.html">
+    <link rel="alternate" hreflang="en" href="https://wowezbox.com/calc-en.html">
+    <link rel="alternate" hreflang="x-default" href="https://wowezbox.com/calc.html">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="WowEzBox">
+    <meta property="og:locale" content="ko_KR">
+    <meta property="og:title" content="온라인 계산기 · 공학용 계산기 – 계산 기록·천 단위 쉼표 · WowEzBox">
+    <meta property="og:description" content="식을 보면서 계산하는 무료 온라인 계산기. 천 단위 쉼표, 한글 금액 표시, 계산 기록, 메모리, 공학용 모드까지.">
+    <meta property="og:url" content="https://wowezbox.com/calc.html">
+    <meta property="og:image" content="https://wowezbox.com/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
+    <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "온라인 계산기 · 공학용 계산기", "url": "https://wowezbox.com/calc.html", "description": "식을 보면서 계산하는 무료 온라인 계산기. 천 단위 쉼표와 한글 금액 표시, 계산 기록, 메모리, 공학용 모드(괄호·제곱·루트·삼각함수·로그·팩토리얼).", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "ko", "browserRequirements": "Requires JavaScript", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "KRW"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "홈", "item": "https://wowezbox.com/"}, {"@type": "ListItem", "position": 2, "name": "생활 도구", "item": "https://wowezbox.com/tools.html"}, {"@type": "ListItem", "position": 3, "name": "계산기", "item": "https://wowezbox.com/calc.html"}]}]}</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="blog.css">
+    <link rel="stylesheet" href="tools-page.css">
+</head>
+<body class="blog-page tool-page theme-calc">
+    <header class="bp-top">
+        <div class="bp-top-in">
+            <a class="bp-brand" href="index.html">WowEzBox<small>생활 도구</small></a>
+            <a class="bp-home" href="index.html">← 홈으로</a>
+        </div>
+    </header>
+
+    <main class="tp-main">
+        <nav class="tp-crumb" aria-label="현재 위치"><ol><li><a href="index.html">홈</a></li><li><a href="tools.html">생활 도구</a></li><li><span aria-current="page">계산기</span></li></ol></nav>
+        <!-- 도구 탭: 새 도구 페이지를 만들면 모든 도구 페이지에 한 칸씩 추가 -->
+        <nav class="tp-tabs" aria-label="생활 도구"><a href="tools.html">🧰 전체 도구</a><a href="calc.html" class="on" aria-current="page">🧮 계산기</a><a href="units.html">📏 단위 환산</a><a href="fx.html">💱 환율</a><a href="percent.html">🏷️ 퍼센트</a><a href="timer.html">⏱️ 타이머</a><a href="age.html">📅 만 나이 · D-day</a><a href="severance.html">💼 퇴직금</a><a href="wage.html">💰 시급·주휴수당</a><a href="charcount.html">✍️ 글자 수</a><a href="loan.html">🏦 대출 이자</a></nav>
+        <div class="tp-head">
+            <span class="tp-kicker">생활 도구</span>
+            <h1>온라인 계산기 · 공학용 계산기</h1>
+            <p>식을 보면서 계산하고, 큰 숫자는 천 단위 쉼표와 한글 금액(1억 2,345만)으로 읽기 쉽게 보여 드려요. 계산한 내용은 기록으로 남아서 다시 불러올 수 있어요.</p>
+        </div>
+
+        <div class="tp-grid cx-grid">
+            <section class="tp-panel cx" id="cx" aria-label="계산기">
+                <div class="cx-modes" role="tablist" aria-label="계산기 종류">
+                    <button type="button" class="cx-mode on" data-sci="0" role="tab" aria-selected="true">일반</button>
+                    <button type="button" class="cx-mode" data-sci="1" role="tab" aria-selected="false">공학용</button>
+                    <button type="button" class="cx-sound" id="cxSound" aria-label="버튼 소리 끄기">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path class="s-spk" d="M4 9.2h3.6L12.4 5v14l-4.8-4.2H4z"/><path class="s-wave" d="M15.3 9.2a4 4 0 0 1 0 5.6M17.8 6.8a7.4 7.4 0 0 1 0 10.4"/><path class="s-slash" d="M20.5 3.5 4 20"/></svg>
+                    </button>
+                </div>
+                <div class="cx-screen">
+                    <div class="cx-flags"><span id="cxMemFlag" class="cx-flag" hidden>M</span><span id="cxDeg" class="cx-flag" hidden>DEG</span></div>
+                    <div class="cx-expr" id="cxExpr">&nbsp;</div>
+                    <div class="cx-main-wrap"><output class="cx-main" id="cxMain" aria-live="polite">0</output></div>
+                    <div class="cx-words" id="cxWords">&nbsp;</div>
+                    <p class="cx-msg" id="cxMsg" hidden></p>
+                </div>
+                <div class="cx-memrow">
+                    <button type="button" data-k="mc" title="메모리 지우기">MC</button><button type="button" data-k="mr" title="메모리 불러오기">MR</button><button type="button" data-k="m+" title="메모리에 더하기">M+</button><button type="button" data-k="m-" title="메모리에서 빼기">M−</button><button type="button" data-k="copy" class="cx-copy" title="답 복사">📋 복사</button>
+                </div>
+                <div class="cx-sci" aria-label="공학용 버튼">
+                    <button type="button" data-k="(">(</button><button type="button" data-k=")">)</button><button type="button" data-k="²">x²</button><button type="button" data-k="^">xʸ</button><button type="button" data-k="√">√</button>
+                    <button type="button" data-k="sin">sin</button><button type="button" data-k="cos">cos</button><button type="button" data-k="tan">tan</button><button type="button" data-k="π">π</button><button type="button" data-k="e">e</button>
+                    <button type="button" data-k="ln">ln</button><button type="button" data-k="log">log</button><button type="button" data-k="!">n!</button><button type="button" data-k="1/x">1/x</button><button type="button" data-k="deg" class="cx-degbtn">DEG/RAD</button>
+                </div>
+                <div class="cx-keys">
+                    <button type="button" data-k="ac" class="k-fn">AC</button><button type="button" data-k="del" class="k-fn" aria-label="지우기">⌫</button><button type="button" data-k="±" class="k-fn">±</button><button type="button" data-k="%" class="k-fn">%</button>
+                    <button type="button" data-k="7">7</button><button type="button" data-k="8">8</button><button type="button" data-k="9">9</button><button type="button" data-k="÷" class="k-op">÷</button>
+                    <button type="button" data-k="4">4</button><button type="button" data-k="5">5</button><button type="button" data-k="6">6</button><button type="button" data-k="×" class="k-op">×</button>
+                    <button type="button" data-k="1">1</button><button type="button" data-k="2">2</button><button type="button" data-k="3">3</button><button type="button" data-k="−" class="k-op">−</button>
+                    <button type="button" data-k="00">00</button><button type="button" data-k="0">0</button><button type="button" data-k=".">.</button><button type="button" data-k="+" class="k-op">+</button>
+                    <button type="button" data-k="=" class="k-eq">=</button>
+                </div>
+            </section>
+
+            <section class="tp-card cx-side" aria-labelledby="cx-h-h">
+                <h2 id="cx-h-h">🧾 계산 기록 <small id="cxHistCount"></small></h2>
+                <ul class="cx-hist" id="cxHist"></ul>
+                <button type="button" class="tp-btn cx-hclear" id="cxHistClear" hidden>기록 지우기</button>
+                <p class="tp-small">기록을 누르면 그 답을 다시 불러와요. 기록은 이 기기(브라우저)에만 최근 100개까지 남아요.</p>
+                <div class="cx-quick">
+                    <h3>이런 계산은 전용 도구가 더 편해요</h3>
+                    <a href="percent.html">🏷️ 할인가 · 부가세 · 몇 %</a>
+                    <a href="fx.html">💱 환율 (달러·엔 → 원)</a>
+                    <a href="units.html">📏 평수 · 단위 환산</a>
+                    <a href="loan.html">🏦 대출 이자 · 월 상환액</a>
+                </div>
+            </section>
+        </div>
+
+        <article class="tp-article">
+            <h2>이렇게 쓰세요</h2>
+            <table>
+                <thead><tr><th>버튼</th><th>하는 일</th><th>예시</th></tr></thead>
+                <tbody>
+                    <tr><td>× ÷ 먼저</td><td>수학 규칙대로 곱하기·나누기를 먼저 계산해요</td><td>2 + 3 × 4 = 14</td></tr>
+                    <tr><td>%</td><td>더하기·빼기 뒤에 쓰면 앞 숫자의 몇 %를 더하거나 빼요</td><td>50,000 + 10% = 55,000</td></tr>
+                    <tr><td>±</td><td>지금 숫자의 부호를 바꿔요</td><td>12 → −12</td></tr>
+                    <tr><td>00</td><td>0을 두 개 한꺼번에 넣어요 (금액 입력이 빨라져요)</td><td>15 00 00 → 150,000</td></tr>
+                    <tr><td>MC · MR · M+ · M−</td><td>메모리: 따로 더해 두었다가 꺼내 써요</td><td>여러 물건 값 합계 모으기</td></tr>
+                    <tr><td>📋 복사</td><td>지금 답을 쉼표 없이 복사해요 (Ctrl+C도 돼요)</td><td>엑셀에 바로 붙여넣기</td></tr>
+                </tbody>
+            </table>
+
+            <h2>공학용 계산기</h2>
+            <p>[공학용]을 누르면 괄호, 제곱(x²), 거듭제곱(xʸ), 루트(√), 삼각함수(sin·cos·tan), 자연로그(ln), 상용로그(log), 원주율(π), 자연상수(e), 팩토리얼(n!), 역수(1/x) 버튼이 나와요. 각도는 <b>DEG(도)</b>와 <b>RAD(라디안)</b> 중에서 고를 수 있어요.</p>
+            <table>
+                <thead><tr><th>입력</th><th>답</th></tr></thead>
+                <tbody>
+                    <tr><td>(2 + 3) × 4</td><td>20</td></tr>
+                    <tr><td>2 xʸ 10</td><td>1,024</td></tr>
+                    <tr><td>√ 144</td><td>12</td></tr>
+                    <tr><td>sin 30 (DEG)</td><td>0.5</td></tr>
+                    <tr><td>5 n!</td><td>120</td></tr>
+                </tbody>
+            </table>
+            <p class="tp-tip">키보드로도 계산할 수 있어요. 숫자와 + − * / ^ ( ) . %를 치고 <b>Enter</b>로 답, <b>Backspace</b>로 한 칸 지우기, <b>Esc</b>로 모두 지우기예요.</p>
+
+            <h2>자주 묻는 질문</h2>
+            <div class="tp-faq">
+                <details><summary>계산 순서는 어떻게 되나요?</summary><p>괄호 → 거듭제곱 → 곱하기·나누기 → 더하기·빼기 순서로 계산해요. 그래서 2 + 3 × 4는 20이 아니라 14예요. 누른 순서대로 계산하는 옛날 계산기와 답이 다를 수 있어요.</p></details>
+                <details><summary>% 버튼은 어떻게 계산하나요?</summary><p>"200 + 10%"처럼 더하기·빼기 뒤에 쓰면 앞 숫자(200)의 10%인 20을 더해서 220이 돼요. 가게에서 쓰는 계산기와 같은 방식이에요. 그냥 "10%"만 쓰면 0.1이에요. 할인가·부가세는 <a href="percent.html">퍼센트 계산기</a>가 더 편해요.</p></details>
+                <details><summary>한글 금액은 어디까지 보여 주나요?</summary><p>1만 이상이면 "1억 2,345만 6,789"처럼 만·억·조·경 단위로 끊어서 보여 줘요. 소수점 아래는 빼고 보여 줘요.</p></details>
+                <details><summary>계산 기록은 어디에 저장되나요?</summary><p>지금 쓰는 브라우저 안에만 최근 100개까지 남아요. 서버로 보내지 않고, [기록 지우기]를 두 번 누르면 모두 지워져요.</p></details>
+                <details><summary>아주 큰 숫자도 계산되나요?</summary><p>15자리까지 입력할 수 있고, 답이 1,000조를 넘거나 아주 작으면 1.23e+18처럼 지수로 보여 드려요. 소수 계산은 14자리 정도까지 정확해요.</p></details>
+            </div>
+        </article>
+
+        <nav class="tp-related" aria-label="다른 도구">
+            <div class="tp-related-head"><h2>다른 도구도 써 보세요</h2><a href="tools.html">전체 도구 보기 →</a></div>
+            <div class="th-grid">
+                <a class="th-card" href="percent.html"><span class="th-ic c9" aria-hidden="true">🏷️</span><span class="th-text"><b>퍼센트 계산기</b><small>할인가·부가세·증감률</small></span></a>
+                <a class="th-card" href="fx.html"><span class="th-ic c8" aria-hidden="true">💱</span><span class="th-text"><b>환율 계산기</b><small>달러·엔·유로 ↔ 원화</small></span></a>
+                <a class="th-card" href="loan.html"><span class="th-ic c6" aria-hidden="true">🏦</span><span class="th-text"><b>대출 이자 계산기</b><small>원리금균등·원금균등 비교</small></span></a>
+                <a class="th-card" href="timer.html"><span class="th-ic c10" aria-hidden="true">⏱️</span><span class="th-text"><b>타이머 · 스톱워치</b><small>알람·뽀모도로·인터벌</small></span></a>
+            </div>
+        </nav>
+    </main>
+
+    <footer class="bp-foot">
+        <a href="index.html">홈</a><a href="tools.html">생활 도구</a><a href="blog.html">블로그</a><a href="about.html">소개</a><a href="privacy.html">개인정보처리방침</a><a href="contact.html">연락 이메일</a>
+        <div>Copyright © 2026 WowEzBox. All rights reserved.</div>
+    </footer>
+
+    <script src="calc.js"></script>
+</body>
+</html>

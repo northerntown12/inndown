@@ -523,3 +523,11 @@
     html body .tools-widget .tw-item[href^="timer"] { background: #f1ecf8; border-color: #d3c3ea; color: #2b1640; }
     html body .tools-widget .tw-item[href^="timer"] small, html body .tools-widget .tw-item[href^="timer"] .gw-go { color: #6a3fb0; }
 }
+/* 2026-11-27: 홈 계산기 "크게 ⤢" (계산기 페이지로) + 폰 홈 계산기 카드 */
+.calculator .calc-more { position: absolute; left: 6px; top: 4px; z-index: 3; border-color: rgba(255, 255, 255, 0.45); color: #ece8ff; background: rgba(0, 0, 0, 0.18); }
+.calculator .calc-more:hover, .calculator .calc-more:focus-visible { background: #ffc861; border-color: #ffc861; color: #1c2027; }
+.calculator .previous-operand { padding-left: 46px; }
+@media (max-width: 760px) {
+    html body .tools-widget .tw-item[href^="calc"] { background: #f3efe6; border-color: #d9cfb8; color: #1c2027; }
+    html body .tools-widget .tw-item[href^="calc"] small, html body .tools-widget .tw-item[href^="calc"] .gw-go { color: #a3650b; }
+}

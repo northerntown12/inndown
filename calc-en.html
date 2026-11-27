@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="lang.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Calculator &amp; Scientific Calculator – History, Thousands Separators · WowEzBox</title>
+    <meta name="description" content="A free online calculator that shows the whole expression as you type. Thousands separators, big numbers in words, calculation history, memory keys and a scientific mode with brackets, powers, roots, sin, cos, log and factorials. No install needed.">
+    <!-- 2026-11-27: 검색·공유용 정보 -->
+    <link rel="canonical" href="https://wowezbox.com/calc-en.html">
+    <link rel="alternate" hreflang="ko" href="https://wowezbox.com/calc.html">
+    <link rel="alternate" hreflang="en" href="https://wowezbox.com/calc-en.html">
+    <link rel="alternate" hreflang="x-default" href="https://wowezbox.com/calc.html">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="WowEzBox">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:title" content="Online Calculator &amp; Scientific Calculator · WowEzBox">
+    <meta property="og:description" content="See the whole expression as you type, with thousands separators, history, memory keys and a scientific mode.">
+    <meta property="og:url" content="https://wowezbox.com/calc-en.html">
+    <meta property="og:image" content="https://wowezbox.com/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
+    <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "Online Calculator & Scientific Calculator", "url": "https://wowezbox.com/calc-en.html", "description": "A free online calculator that shows the whole expression, with thousands separators, calculation history, memory keys and a scientific mode (brackets, powers, roots, trigonometry, logarithms, factorials).", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "en", "browserRequirements": "Requires JavaScript", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "KRW"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://wowezbox.com/index-en.html"}, {"@type": "ListItem", "position": 2, "name": "Everyday tools", "item": "https://wowezbox.com/tools-en.html"}, {"@type": "ListItem", "position": 3, "name": "Calculator", "item": "https://wowezbox.com/calc-en.html"}]}]}</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="blog.css">
+    <link rel="stylesheet" href="tools-page.css">
+</head>
+<body class="blog-page tool-page theme-calc">
+    <header class="bp-top">
+        <div class="bp-top-in">
+            <a class="bp-brand" href="index-en.html">WowEzBox<small>Everyday tools</small></a>
+            <a class="bp-home" href="index-en.html">← Home</a>
+        </div>
+    </header>
+
+    <main class="tp-main">
+        <nav class="tp-crumb" aria-label="Breadcrumb"><ol><li><a href="index-en.html">Home</a></li><li><a href="tools-en.html">Everyday tools</a></li><li><span aria-current="page">Calculator</span></li></ol></nav>
+        <nav class="tp-tabs" aria-label="Everyday tools"><a href="tools-en.html">🧰 All tools</a><a href="calc-en.html" class="on" aria-current="page">🧮 Calculator</a><a href="units-en.html">📏 Unit Converter</a><a href="fx-en.html">💱 Exchange</a><a href="percent-en.html">🏷️ Percent</a><a href="timer-en.html">⏱️ Timer</a><a href="age-en.html">📅 Age &amp; D-day</a><a href="severance-en.html">💼 Severance</a><a href="wage-en.html">💰 Hourly Wage</a><a href="charcount-en.html">✍️ Characters</a><a href="loan-en.html">🏦 Loan</a></nav>
+        <div class="tp-head">
+            <span class="tp-kicker">Everyday tools</span>
+            <h1>Online Calculator · Scientific Calculator</h1>
+            <p>See the whole expression as you type, with thousands separators and big numbers in words. Every calculation is saved to your history so you can reuse it.</p>
+        </div>
+
+        <div class="tp-grid cx-grid">
+            <section class="tp-panel cx" id="cx" aria-label="Calculator">
+                <div class="cx-modes" role="tablist" aria-label="Calculator type">
+                    <button type="button" class="cx-mode on" data-sci="0" role="tab" aria-selected="true">Basic</button>
+                    <button type="button" class="cx-mode" data-sci="1" role="tab" aria-selected="false">Scientific</button>
+                    <button type="button" class="cx-sound" id="cxSound" aria-label="Sound off">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path class="s-spk" d="M4 9.2h3.6L12.4 5v14l-4.8-4.2H4z"/><path class="s-wave" d="M15.3 9.2a4 4 0 0 1 0 5.6M17.8 6.8a7.4 7.4 0 0 1 0 10.4"/><path class="s-slash" d="M20.5 3.5 4 20"/></svg>
+                    </button>
+                </div>
+                <div class="cx-screen">
+                    <div class="cx-flags"><span id="cxMemFlag" class="cx-flag" hidden>M</span><span id="cxDeg" class="cx-flag" hidden>DEG</span></div>
+                    <div class="cx-expr" id="cxExpr">&nbsp;</div>
+                    <div class="cx-main-wrap"><output class="cx-main" id="cxMain" aria-live="polite">0</output></div>
+                    <div class="cx-words" id="cxWords">&nbsp;</div>
+                    <p class="cx-msg" id="cxMsg" hidden></p>
+                </div>
+                <div class="cx-memrow">
+                    <button type="button" data-k="mc" title="Memory clear">MC</button><button type="button" data-k="mr" title="Memory recall">MR</button><button type="button" data-k="m+" title="Memory add">M+</button><button type="button" data-k="m-" title="Memory subtract">M−</button><button type="button" data-k="copy" class="cx-copy" title="Copy answer">📋 Copy</button>
+                </div>
+                <div class="cx-sci" aria-label="Scientific keys">
+                    <button type="button" data-k="(">(</button><button type="button" data-k=")">)</button><button type="button" data-k="²">x²</button><button type="button" data-k="^">xʸ</button><button type="button" data-k="√">√</button>
+                    <button type="button" data-k="sin">sin</button><button type="button" data-k="cos">cos</button><button type="button" data-k="tan">tan</button><button type="button" data-k="π">π</button><button type="button" data-k="e">e</button>
+                    <button type="button" data-k="ln">ln</button><button type="button" data-k="log">log</button><button type="button" data-k="!">n!</button><button type="button" data-k="1/x">1/x</button><button type="button" data-k="deg" class="cx-degbtn">DEG/RAD</button>
+                </div>
+                <div class="cx-keys">
+                    <button type="button" data-k="ac" class="k-fn">AC</button><button type="button" data-k="del" class="k-fn" aria-label="Backspace">⌫</button><button type="button" data-k="±" class="k-fn">±</button><button type="button" data-k="%" class="k-fn">%</button>
+                    <button type="button" data-k="7">7</button><button type="button" data-k="8">8</button><button type="button" data-k="9">9</button><button type="button" data-k="÷" class="k-op">÷</button>
+                    <button type="button" data-k="4">4</button><button type="button" data-k="5">5</button><button type="button" data-k="6">6</button><button type="button" data-k="×" class="k-op">×</button>
+                    <button type="button" data-k="1">1</button><button type="button" data-k="2">2</button><button type="button" data-k="3">3</button><button type="button" data-k="−" class="k-op">−</button>
+                    <button type="button" data-k="00">00</button><button type="button" data-k="0">0</button><button type="button" data-k=".">.</button><button type="button" data-k="+" class="k-op">+</button>
+                    <button type="button" data-k="=" class="k-eq">=</button>
+                </div>
+            </section>
+
+            <section class="tp-card cx-side" aria-labelledby="cx-h-h">
+                <h2 id="cx-h-h">🧾 History <small id="cxHistCount"></small></h2>
+                <ul class="cx-hist" id="cxHist"></ul>
+                <button type="button" class="tp-btn cx-hclear" id="cxHistClear" hidden>Clear history</button>
+                <p class="tp-small">Tap an entry to reuse its answer. Your last 100 calculations are kept on this device (browser) only.</p>
+                <div class="cx-quick">
+                    <h3>Easier with a dedicated tool</h3>
+                    <a href="percent-en.html">🏷️ Discounts · VAT · percentages</a>
+                    <a href="fx-en.html">💱 Currency exchange</a>
+                    <a href="units-en.html">📏 Unit conversion</a>
+                    <a href="loan-en.html">🏦 Loan interest · monthly payment</a>
+                </div>
+            </section>
+        </div>
+
+        <article class="tp-article">
+            <h2>How to use it</h2>
+            <table>
+                <thead><tr><th>Key</th><th>What it does</th><th>Example</th></tr></thead>
+                <tbody>
+                    <tr><td>× ÷ first</td><td>Follows the order of operations — multiply and divide before adding</td><td>2 + 3 × 4 = 14</td></tr>
+                    <tr><td>%</td><td>After + or −, adds or subtracts that percent of the previous number</td><td>50,000 + 10% = 55,000</td></tr>
+                    <tr><td>±</td><td>Flips the sign of the current number</td><td>12 → −12</td></tr>
+                    <tr><td>00</td><td>Types two zeros at once — handy for amounts</td><td>15 00 00 → 150,000</td></tr>
+                    <tr><td>MC · MR · M+ · M−</td><td>Memory: keep a running total on the side</td><td>Adding up several prices</td></tr>
+                    <tr><td>📋 Copy</td><td>Copies the answer without separators (Ctrl+C works too)</td><td>Paste straight into a spreadsheet</td></tr>
+                </tbody>
+            </table>
+
+            <h2>Scientific calculator</h2>
+            <p>Switch to <b>Scientific</b> for brackets, x², xʸ, square roots, sin · cos · tan, ln, log, π, e, factorial (n!) and 1/x. Angles can be in <b>DEG</b> (degrees) or <b>RAD</b> (radians).</p>
+            <table>
+                <thead><tr><th>Input</th><th>Answer</th></tr></thead>
+                <tbody>
+                    <tr><td>(2 + 3) × 4</td><td>20</td></tr>
+                    <tr><td>2 xʸ 10</td><td>1,024</td></tr>
+                    <tr><td>√ 144</td><td>12</td></tr>
+                    <tr><td>sin 30 (DEG)</td><td>0.5</td></tr>
+                    <tr><td>5 n!</td><td>120</td></tr>
+                </tbody>
+            </table>
+            <p class="tp-tip">You can type on your keyboard too: digits and + − * / ^ ( ) . %, <b>Enter</b> for the answer, <b>Backspace</b> to delete one character and <b>Esc</b> to clear.</p>
+
+            <h2>FAQ</h2>
+            <div class="tp-faq">
+                <details><summary>In what order are things calculated?</summary><p>Brackets, then powers, then multiplication and division, then addition and subtraction. So 2 + 3 × 4 is 14, not 20 — old pocket calculators that work left to right may give a different answer.</p></details>
+                <details><summary>How does the % key work?</summary><p>After + or −, it uses a percentage of the previous number: "200 + 10%" adds 10% of 200, giving 220 — the same as a shop calculator. On its own, "10%" is 0.1. For discounts and VAT the <a href="percent-en.html">percent calculator</a> is easier.</p></details>
+                <details><summary>Where is my history saved?</summary><p>Only in your browser, up to the last 100 calculations. Nothing is sent to a server. Press "Clear history" twice to delete it all.</p></details>
+                <details><summary>Can it handle very large numbers?</summary><p>You can type up to 15 digits. Answers above a quadrillion, or very small ones, are shown in scientific notation such as 1.23e+18. Decimals are accurate to about 14 digits.</p></details>
+            </div>
+        </article>
+
+        <nav class="tp-related" aria-label="Other tools">
+            <div class="tp-related-head"><h2>Try other tools</h2><a href="tools-en.html">See all tools →</a></div>
+            <div class="th-grid">
+                <a class="th-card" href="percent-en.html"><span class="th-ic c9" aria-hidden="true">🏷️</span><span class="th-text"><b>Percent Calculator</b><small>Discounts, VAT, % change</small></span></a>
+                <a class="th-card" href="fx-en.html"><span class="th-ic c8" aria-hidden="true">💱</span><span class="th-text"><b>Exchange Calculator</b><small>Dollar, yen, euro ↔ won</small></span></a>
+                <a class="th-card" href="loan-en.html"><span class="th-ic c6" aria-hidden="true">🏦</span><span class="th-text"><b>Loan Calculator</b><small>Compare repayment types</small></span></a>
+                <a class="th-card" href="timer-en.html"><span class="th-ic c10" aria-hidden="true">⏱️</span><span class="th-text"><b>Timer &amp; Stopwatch</b><small>Alarms, Pomodoro, intervals</small></span></a>
+            </div>
+        </nav>
+    </main>
+
+    <footer class="bp-foot">
+        <a href="index-en.html">Home</a><a href="tools-en.html">Tools</a><a href="blog-en.html">Blog</a><a href="about-en.html">About</a><a href="privacy-en.html">Privacy Policy</a><a href="contact-en.html">Contact</a>
+        <div>Copyright © 2026 WowEzBox. All rights reserved.</div>
+    </footer>
+
+    <script src="calc.js"></script>
+</body>
+</html>
