@@ -140,9 +140,37 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         else if (kind === "fanfare") [523, 659, 784, 1047].forEach((f, i) => tone(f, t + i * 0.13, i === 3 ? 0.8 : 0.2, "triangle", 0.3));
     }
     function vibrate(p) { if (S.set.vibrate && navigator.vibrate) try { navigator.vibrate(p); } catch (e) {} }
-    function speak(text) {
-        if (!S.set.speak || !window.speechSynthesis || !text) return;
-        try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text); u.lang = EN ? "en-US" : "ko-KR"; u.rate = 1; speechSynthesis.speak(u); } catch (e) {}
+    /* 음성 안내 (2026-11-27 18:4x): 기본은 젊고 밝은 여성 목소리를 골라 씀
+       - 기기마다 들어 있는 목소리가 달라서, 이름으로 여성 목소리를 찾고(자연스러운 "Natural/Online" 우선) 남성은 피함
+       - 음높이를 조금 올리고(1.15) 살짝 빠르게(1.05) 해서 밝게. 사용자가 목록에서 직접 고를 수도 있음 (S.set.voice) */
+    const LANG = EN ? "en" : "ko";
+    const FEMALE = EN ? /samantha|ava|allison|zira|aria|jenny|michelle|emma|ana\b|libby|sonia|karen|moira|tessa|serena|susan|victoria|female|google us english/i
+                      : /sunhi|sun-hi|yuna|heami|sora|seoyeon|jimin|seohyeon|yujin|jiyoung|google 한국|female|여성|여자/i;
+    const MALE = /injoon|hyunsu|bongjin|gookmin|david|mark|guy|daniel|alex\b|fred|george|ryan|eric|christopher|male\b|남성|남자/i;
+    function voices() { try { return (speechSynthesis.getVoices() || []).filter(v => (v.lang || "").toLowerCase().indexOf(LANG) === 0); } catch (e) { return []; } }
+    function scoreVoice(v) {
+        let s = 0;
+        if (FEMALE.test(v.name)) s += 10;
+        if (MALE.test(v.name)) s -= 20;
+        if (/natural|online|neural|premium|enhanced/i.test(v.name)) s += 5;
+        if (/^ko-kr|^en-us/i.test(v.lang)) s += 2;
+        if (v.localService === false) s += 1;
+        return s;
+    }
+    function pickVoice() {
+        const list = voices(); if (!list.length) return null;
+        if (S.set.voice) { const own = list.find(v => v.name === S.set.voice); if (own) return own; }
+        return list.slice().sort((a, b) => scoreVoice(b) - scoreVoice(a))[0];
+    }
+    function speak(text, force) {
+        if ((!S.set.speak && !force) || !window.speechSynthesis || !text) return;
+        try {
+            speechSynthesis.cancel();
+            const u = new SpeechSynthesisUtterance(text), v = pickVoice();
+            u.lang = v ? v.lang : (EN ? "en-US" : "ko-KR"); if (v) u.voice = v;
+            u.pitch = 1.15; u.rate = 1.05; u.volume = 1;
+            speechSynthesis.speak(u);
+        } catch (e) {}
     }
 
     /* ---------------- 알람 (울리는 중) ---------------- */
@@ -268,7 +296,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         t.state = "done"; t.doneAt = t.end; save();
         if (late > 90000) return;          // 오래전에 끝난 것(창을 닫아 둔 동안)은 조용히 "끝남"으로만
         startRing({ key: t.id, title: "⏰ " + tTitle(t) + " " + T("끝!", "done!"), body: T("설정 ", "") + human(t.total) + T(" · ", " timer · ended ") + clockStr(t.end) + T("에 끝남", ""),
-            say: (t.label ? t.label + ", " : "") + T("시간이 다 됐어요", "Time is up"), again: true });
+            say: (t.label ? t.label + ", " : "") + T("시간이 다 됐어요!", "Time is up!"), again: true });
     }
     function untilClock(hhmm) {
         const m = /^(\d\d):(\d\d)$/.exec(hhmm || ""); if (!m) return 0;
@@ -762,6 +790,23 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
     volTxt();
     vol.addEventListener("input", () => { S.set.vol = vol.value / 100; if (master) master.gain.value = S.set.vol; volTxt(); save(); });
     vol.addEventListener("change", () => playSound(S.set.sound));
+    /* 안내 음성 고르기 */
+    const vSel = $("tm-voice");
+    function fillVoices() {
+        if (!vSel) return;
+        const list = voices();
+        const auto = pickVoice();
+        vSel.innerHTML = '<option value="">' + T("자동 (밝은 여성 목소리)", "Auto (bright female voice)") + (auto && !S.set.voice ? " · " + esc(auto.name.replace(/^Microsoft |^Google /, "").replace(/ - .*$/, "")) : "") + '</option>' +
+            list.slice().sort((a, b) => scoreVoice(b) - scoreVoice(a)).map(v => '<option value="' + esc(v.name) + '">' + esc(v.name) + (FEMALE.test(v.name) ? " ♀" : MALE.test(v.name) ? " ♂" : "") + '</option>').join("");
+        vSel.value = list.some(v => v.name === S.set.voice) ? S.set.voice : "";
+        vSel.closest("label").hidden = !window.speechSynthesis;
+    }
+    if (vSel) {
+        fillVoices();
+        try { speechSynthesis.addEventListener("voiceschanged", fillVoices); } catch (e) {}
+        vSel.addEventListener("change", () => { S.set.voice = vSel.value; save(); speak(T("시간이 다 됐어요!", "Time is up!"), true); });
+        $("tm-vtest").addEventListener("click", () => speak(T("라면, 시간이 다 됐어요!", "Pasta, time is up!"), true));
+    }
     const rf = $("tm-ringfor");
     rf.value = String(S.set.ringFor);
     rf.addEventListener("change", () => { S.set.ringFor = +rf.value; save(); });
