@@ -8,7 +8,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
    - 2026-11-26 19:1x: 왕복 4차선으로 바꿈. 오른쪽 2차선 = 가는 차선(느린 차, 뒷모습), 왼쪽 2차선 = 오는 차선(마주 오는 차, 앞모습)
      느린 차가 두 차선을 막으면 중앙선을 넘어 오는 차선으로 추월 → 마주 오는 차를 피해야 함. 오는 차선에 있으면 점수 2배
    - 차는 시간이 갈수록 많아지고 차선도 바꿈. 생명(♥)을 다 잃으면 끝, 목적지(12km)에 닿으면 도착
-   - 그림은 모두 코드로 직접 그림 (다른 게임 그림·소리 안 씀)
+   - 그림은 코드로 직접 그림 (다른 게임 그림·소리 안 씀). 2026-11-27: 내 차·가는 차는 사용자가 AI로 만든 사진(road-img 폴더)으로 시험 중
    - 기기에 기억: 기록 roadRecord.v1, 고른 차 roadCar.v1, 소리 roadMuted.v1
    ========================================================= */
 (function () {
@@ -189,6 +189,42 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         var aspect = { sport: 0.58, sedan: 0.66, jeep: 0.8, truck: 0.76, van: 0.9, bus: 1.05, taxi: 0.66 }[type];
         return mk(CAR_IMG_W, Math.round(CAR_IMG_W * aspect), function (g, w, h) { (front ? drawCarFront : drawCarRear)(g, w, h, type, color); });
     }
+    /* ---- 사진 차 그림 (2026-11-27 시험) ----
+       road-img 폴더의 사진(배경 투명 webp). 다 받기 전·못 받으면 코드로 그린 차를 그대로 씀
+       light = 미등 위치(그림 폭·높이 비율, 왼쪽 등 기준), scale = 크기 배율
+       마주 오는 차(앞모습)는 아직 사진이 없어 코드 그림 */
+    var PHOTO_V = "?v=1";
+    var PHOTO_PLAYER = {
+        sport: { src: "road-img/car-sport.webp", light: [0.13, 0.33], scale: 1.12 },
+        sedan: { src: "road-img/car-sedan.webp", light: [0.15, 0.40], scale: 1.12 },
+        jeep:  { src: "road-img/car-jeep.webp",  light: [0.10, 0.46], scale: 1.1 },
+        truck: { src: "road-img/car-pickup.webp", light: [0.05, 0.64], scale: 1.12 }
+    };
+    var PHOTO_TRAFFIC = [   // 가는 차선(뒷모습). kind는 속도·마주 오는 차 그림 고를 때 씀
+        { src: "road-img/traffic-van.webp",  kind: "van",   color: "#e9e9e4", light: [0.05, 0.60], scale: 1.08 },
+        { src: "road-img/traffic-semi.webp", kind: "truck", color: "#b0b4b8", light: [0.12, 0.80], scale: 1.2 },
+        { src: "road-img/traffic-bus.webp",  kind: "bus",   color: "#e8c21c", light: [0.06, 0.62], scale: 1.14 },
+        { src: "road-img/car-sedan.webp",    kind: "sedan", color: "#2f4f9e", light: [0.15, 0.40], scale: 1.12 },
+        { src: "road-img/car-jeep.webp",     kind: "jeep",  color: "#3f6f3a", light: [0.10, 0.46], scale: 1.1 },
+        { src: "road-img/car-pickup.webp",   kind: "truck", color: "#e07020", light: [0.05, 0.64], scale: 1.12 }
+    ];
+    function photo(p, done) {
+        var im = new Image();
+        im.onload = function () { im.photo = true; im.light = p.light; im.scale = p.scale; done(im); };
+        im.src = p.src + PHOTO_V;
+    }
+    function loadPhotos() {
+        IMG.photoTraffic = [];
+        Object.keys(PHOTO_PLAYER).forEach(function (id) {
+            photo(PHOTO_PLAYER[id], function (im) {
+                IMG.player[id] = im;
+                if (mode === "menu" && $("rCars")) buildCarPicker();
+            });
+        });
+        PHOTO_TRAFFIC.forEach(function (p) {
+            photo(p, function (im) { im.kind = p.kind; var fr = carImg(p.kind, p.color, true); fr.kind = p.kind; im.front = fr; IMG.photoTraffic.push(im); });
+        });
+    }
     function buildImages() {
         IMG.player = {};
         CARS.forEach(function (c) { IMG.player[c.id] = carImg(c.id, c.color); });
@@ -196,6 +232,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
             ["sedan", "#c8ccd2"], ["sedan", "#2b2b2b"], ["sedan", "#7a1f2b"], ["sedan", "#f4f4f0"], ["taxi", "#f08a24"],
             ["van", "#e9e9e4"], ["van", "#3b5f8a"], ["jeep", "#5b6b3a"], ["truck", "#b0b4b8"], ["bus", "#2f9a62"], ["bus", "#2f6fbf"], ["sport", "#ffd23c"]
         ].map(function (t) { var im = carImg(t[0], t[1]); im.kind = t[0]; var fr = carImg(t[0], t[1], true); fr.kind = t[0]; im.front = fr; return im; });
+        loadPhotos();
 
         // 가로수
         IMG.tree = mk(180, 260, function (g, w, h) {
@@ -483,7 +520,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
     function pick(a) { return a[Math.floor(Math.random() * a.length)]; }
     function laneBusy(lane, z, gap) { return S.traffic.some(function (c) { return c.lane === lane && Math.abs(c.z - z) < gap; }); }
     function makeCar(z, lane, dir, sp) {
-        var base = pick(IMG.traffic);
+        var base = pick(dir > 0 && IMG.photoTraffic && IMG.photoTraffic.length ? IMG.photoTraffic : IMG.traffic);
         return { z: z, lane: lane, offset: LANES[lane], target: LANES[lane], dir: dir, speed: sp, img: dir < 0 ? base.front : base, kind: base.kind,
                  prevDz: null, signal: 0, changeT: 2 + Math.random() * 6, passed: false };
     }
@@ -794,41 +831,61 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
     }
     function drawTrafficCar(c, scale, x, y, clipY, dark) {
         var img = c.img;
-        var w = scale * CAR_W * FX * (img.kind === "bus" ? 1.15 : img.kind === "van" ? 1.05 : 1);
+        var w = scale * CAR_W * FX * (img.photo ? img.scale : img.kind === "bus" ? 1.15 : img.kind === "van" ? 1.05 : 1);
         var h = w * img.height / img.width;
         var dx = x - w / 2, dy = y - h;
         var clipH = clipY ? Math.max(0, dy + h - clipY) : 0;
         if (clipH >= h || w < 1) return;
+        if (img.photo && clipH === 0) {   // 사진 차는 그림자가 없어서 바닥 그림자를 따로
+            ctx.fillStyle = "rgba(0,0,0,0.38)"; ctx.beginPath(); ctx.ellipse(x, y - h * 0.015, w * 0.52, Math.max(1, h * 0.05), 0, 0, 7); ctx.fill();
+        }
         ctx.drawImage(img, 0, 0, img.width, img.height - img.height * clipH / h, dx, dy, w, h - clipH);
+        var lx = img.photo ? img.light[0] : 0.16, ly = img.photo ? img.light[1] : 0.62;
         // 방향 지시등
         if (c.signal > 0 && Math.floor(c.signal * 4) % 2 === 0) {
             var left = LANES[c.newLane] < c.offset;   // 화면에서 왼쪽으로 가면 왼쪽 등
-            ctx.fillStyle = "#ffb020"; ctx.beginPath(); ctx.arc(dx + w * (left ? 0.1 : 0.9), dy + h * 0.62, Math.max(2, w * 0.06), 0, 7); ctx.fill();
-            lights.push([dx + w * (left ? 0.1 : 0.9), dy + h * 0.62, w * 0.5, "255,170,40"]);
+            ctx.fillStyle = "#ffb020"; ctx.beginPath(); ctx.arc(dx + w * (left ? lx : 1 - lx), dy + h * ly, Math.max(2, w * 0.06), 0, 7); ctx.fill();
+            lights.push([dx + w * (left ? lx : 1 - lx), dy + h * ly, w * 0.5, "255,170,40"]);
         }
         if (c.dir < 0) {   // 마주 오는 차 헤드라이트 (밤에는 크게, 낮에도 살짝)
             if (clipH < h * 0.5) {
                 var a = 0.25 + dark * 0.75, r = w * (0.5 + dark * 0.9);
                 lights.push([dx + w * 0.16, dy + h * 0.62, r, "255,250,220", a]); lights.push([dx + w * 0.84, dy + h * 0.62, r, "255,250,220", a]);
             }
-        } else if (dark > 0.05 && clipH < h * 0.4) { lights.push([dx + w * 0.16, dy + h * 0.62, w * 0.45, "255,40,40"]); lights.push([dx + w * 0.84, dy + h * 0.62, w * 0.45, "255,40,40"]); }
+        } else if (dark > 0.05 && clipH < h * 0.4) { lights.push([dx + w * lx, dy + h * ly, w * 0.45, "255,40,40"]); lights.push([dx + w * (1 - lx), dy + h * ly, w * 0.45, "255,40,40"]); }
     }
     function drawPlayer(dark) {
         var img = IMG.player[car().id];
-        var w = CAR_W / CAM_H * FX * 1.05, h = w * img.height / img.width;
+        var w = CAR_W / CAM_H * FX * 1.05 * (img.photo ? img.scale : 1), h = w * img.height / img.width;
         var pct = S.speed / BASE_MAX;
         var bounce = (Math.random() - 0.5) * pct * 2.2 * (Math.abs(S.x) > 1 ? 3 : 1);
-        var y = HZ + FY - h * 0.08 + bounce;
+        var y = HZ + FY - h * (img.photo ? 0.03 : 0.08) + bounce;
         var tilt = (keys.left ? -1 : keys.right ? 1 : 0) * Math.min(1, pct * 2);
         if (S.inv > 0 && Math.floor(S.inv * 10) % 2 === 0) return;   // 부딪힌 뒤 깜빡임
+        // 미등 위치 (가운데 기준, 오른쪽 등은 -lx)
+        var lx = img.photo ? (0.5 - img.light[0]) * w : w * 0.34, ly = img.photo ? h * (1 - img.light[1]) : h * 0.43;
         ctx.save();
         ctx.translate(W / 2, y);
+        if (img.photo) { ctx.fillStyle = "rgba(0,0,0,0.4)"; ctx.beginPath(); ctx.ellipse(0, -h * 0.01, w * 0.53, h * 0.05, 0, 0, 7); ctx.fill(); }
         ctx.transform(1, 0, tilt * 0.06, 1, 0, 0);
+        if (img.photo && tilt) {   // 사진 차: 꺾을 때 살짝 기울임
+            ctx.rotate(tilt * 0.025);
+        }
         ctx.drawImage(img, -w / 2, -h, w, h);
         // 브레이크 등
-        if (keys.down) { ctx.fillStyle = "rgba(255,60,60,0.85)"; ctx.fillRect(-w * 0.44, -h * 0.47, w * 0.2, h * 0.08); ctx.fillRect(w * 0.24, -h * 0.47, w * 0.2, h * 0.08); }
+        if (keys.down) {
+            if (img.photo) {
+                ctx.globalCompositeOperation = "lighter";
+                [-lx, lx].forEach(function (px) {
+                    var g = ctx.createRadialGradient(px, -ly, 0, px, -ly, w * 0.1);
+                    g.addColorStop(0, "rgba(255,70,60,0.95)"); g.addColorStop(1, "rgba(255,0,0,0)");
+                    ctx.fillStyle = g; ctx.fillRect(px - w * 0.1, -ly - w * 0.1, w * 0.2, w * 0.2);
+                });
+                ctx.globalCompositeOperation = "source-over";
+            } else { ctx.fillStyle = "rgba(255,60,60,0.85)"; ctx.fillRect(-w * 0.44, -h * 0.47, w * 0.2, h * 0.08); ctx.fillRect(w * 0.24, -h * 0.47, w * 0.2, h * 0.08); }
+        }
         ctx.restore();
-        if (dark > 0.05) { lights.push([W / 2 - w * 0.34, y - h * 0.43, w * (keys.down ? 0.7 : 0.4), "255,40,40"]); lights.push([W / 2 + w * 0.34, y - h * 0.43, w * (keys.down ? 0.7 : 0.4), "255,40,40"]); }
+        if (dark > 0.05) { lights.push([W / 2 - lx, y - ly, w * (keys.down ? 0.7 : 0.4), "255,40,40"]); lights.push([W / 2 + lx, y - ly, w * (keys.down ? 0.7 : 0.4), "255,40,40"]); }
         // 흙먼지 (길 밖)
         if (Math.abs(S.x) > 1 && pct > 0.05) {
             ctx.fillStyle = zoneAt(S.pos / (TOTAL * SEG))[1] === "desert" ? "rgba(225,190,130,0.55)" : "rgba(160,140,100,0.45)";
@@ -837,7 +894,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
     }
     function drawHeadlights(dark) {
         var img = IMG.player[car().id];
-        var w = CAR_W / CAM_H * FX * 1.05, h = w * img.height / img.width;
+        var w = CAR_W / CAM_H * FX * 1.05 * (img.photo ? img.scale : 1), h = w * img.height / img.width;
         var y = HZ + FY - h * 0.9, top = HZ + (FY) * 0.08;
         var g = ctx.createLinearGradient(0, y, 0, top);
         g.addColorStop(0, "rgba(255,245,200," + (0.32 * dark) + ")"); g.addColorStop(1, "rgba(255,245,200,0)");
@@ -910,7 +967,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
             var b = document.createElement("button");
             b.type = "button"; b.className = "r-car" + (i === carIdx ? " on" : "");
             b.setAttribute("aria-pressed", i === carIdx ? "true" : "false");
-            var im = document.createElement("img"); im.src = IMG.player[c.id].toDataURL(); im.alt = "";
+            var im = document.createElement("img"); im.src = IMG.player[c.id].photo ? IMG.player[c.id].src : IMG.player[c.id].toDataURL(); im.alt = "";
             var stats = "<span class='r-stat'><i>" + T("속도", "Speed") + "</i><s style='width:" + Math.round(c.max * 100) + "%'></s></span>" +
                         "<span class='r-stat'><i>" + T("가속", "Accel") + "</i><s style='width:" + Math.round(c.accel / 1.2 * 100) + "%'></s></span>" +
                         "<span class='r-stat'><i>" + T("핸들", "Grip") + "</i><s style='width:" + Math.round(c.grip / 1.2 * 100) + "%'></s></span>";
