@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="lang.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Online Timer, Stopwatch &amp; Pomodoro – Free with Alarm Sounds · WowEzBox</title>
+    <meta name="description" content="A free online timer that works right in your browser. Run several timers at once, time laps with a 1/100-second stopwatch, focus with a 25-minute Pomodoro timer, or train with an interval timer. Five alarm sounds, vibration, voice cues, browser notifications and full-screen view.">
+    <!-- 2026-11-27: 검색·공유용 정보 -->
+    <link rel="canonical" href="https://wowezbox.com/timer-en.html">
+    <link rel="alternate" hreflang="ko" href="https://wowezbox.com/timer.html">
+    <link rel="alternate" hreflang="en" href="https://wowezbox.com/timer-en.html">
+    <link rel="alternate" hreflang="x-default" href="https://wowezbox.com/timer.html">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="WowEzBox">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:title" content="Online Timer, Stopwatch &amp; Pomodoro – Free with Alarm Sounds · WowEzBox">
+    <meta property="og:description" content="Multiple timers at once, a 1/100-second stopwatch, a 25-minute Pomodoro timer and an interval workout timer. Alarm sounds, vibration, voice cues and browser notifications — free.">
+    <meta property="og:url" content="https://wowezbox.com/timer-en.html">
+    <meta property="og:image" content="https://wowezbox.com/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
+    <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebApplication", "name": "Online Timer, Stopwatch & Pomodoro", "url": "https://wowezbox.com/timer-en.html", "description": "Multiple timers at once, a 1/100-second stopwatch with laps, a 25-minute Pomodoro timer and an interval workout timer. Alarm sounds, vibration, voice cues, browser notifications and full-screen view.", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "inLanguage": "en", "browserRequirements": "Requires JavaScript", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "KRW"}}, {"@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://wowezbox.com/index-en.html"}, {"@type": "ListItem", "position": 2, "name": "Everyday tools", "item": "https://wowezbox.com/tools-en.html"}, {"@type": "ListItem", "position": 3, "name": "Timer & Stopwatch", "item": "https://wowezbox.com/timer-en.html"}]}]}</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="blog.css">
+    <link rel="stylesheet" href="tools-page.css">
+</head>
+<body class="blog-page tool-page theme-timer">
+    <header class="bp-top">
+        <div class="bp-top-in">
+            <a class="bp-brand" href="index-en.html">WowEzBox<small>Everyday tools</small></a>
+            <a class="bp-home" href="index-en.html">← Home</a>
+        </div>
+    </header>
+
+    <main class="tp-main">
+        <nav class="tp-crumb" aria-label="Breadcrumb"><ol><li><a href="index-en.html">Home</a></li><li><a href="tools-en.html">Everyday tools</a></li><li><span aria-current="page">Timer &amp; Stopwatch</span></li></ol></nav>
+        <nav class="tp-tabs" aria-label="Everyday tools"><a href="tools-en.html">🧰 All tools</a><a href="units-en.html">📏 Unit Converter</a><a href="fx-en.html">💱 Exchange</a><a href="percent-en.html">🏷️ Percent</a><a href="timer-en.html" class="on" aria-current="page">⏱️ Timer</a><a href="age-en.html">📅 Age &amp; D-day</a><a href="severance-en.html">💼 Severance</a><a href="wage-en.html">💰 Hourly Wage</a><a href="charcount-en.html">✍️ Characters</a><a href="loan-en.html">🏦 Loan</a></nav>
+        <div class="tp-head">
+            <span class="tp-kicker">Everyday tools</span>
+            <h1>Online Timer · Stopwatch · Pomodoro</h1>
+            <p>From a 3-minute noodle timer to 25-minute study sessions and workout intervals. Run several timers at once and get told when time's up — by sound, vibration, voice and browser notification. No install, no sign-up.</p>
+        </div>
+
+        <div class="tm-modes" role="tablist" aria-label="Mode">
+            <button type="button" class="tm-mode on" data-mode="timer" role="tab" aria-selected="true">⏲️ Timer</button>
+            <button type="button" class="tm-mode" data-mode="sw" role="tab" aria-selected="false">⏱️ Stopwatch</button>
+            <button type="button" class="tm-mode" data-mode="pomo" role="tab" aria-selected="false">🍅 Pomodoro</button>
+            <button type="button" class="tm-mode" data-mode="iv" role="tab" aria-selected="false">🏃 Interval</button>
+        </div>
+
+        <div class="tp-grid tm-grid">
+            <section class="tm-stage tp-panel" id="tm-stage" aria-label="Time display">
+                <div class="tm-top"><span class="tm-phase" id="tm-phase">Timer</span><span class="tm-sub" id="tm-sub"></span></div>
+                <div class="tm-dial">
+                    <svg viewBox="0 0 220 220" aria-hidden="true"><circle class="tm-track" cx="110" cy="110" r="100"/><circle class="tm-prog" id="tm-prog" cx="110" cy="110" r="100"/></svg>
+                    <div class="tm-read" aria-live="off"><b id="tm-time">05:00</b><span id="tm-cs" class="tm-cs"></span><small id="tm-under">Ready</small></div>
+                </div>
+                <div class="tm-ctrls" id="tm-ctrls"></div>
+
+                <div class="tm-editor" id="tm-editor" data-for="timer">
+                    <div class="tm-seg" role="group" aria-label="Set by"><button type="button" data-tmode="dur" class="on">Duration</button><button type="button" data-tmode="at">Ring at a time</button></div>
+                    <div id="tm-dur-box">
+                        <div class="tm-hms">
+                            <label><input type="number" id="tm-h" min="0" max="99" inputmode="numeric" aria-label="Hours"><span>h</span></label>
+                            <label><input type="number" id="tm-m" min="0" max="59" inputmode="numeric" aria-label="Minutes"><span>min</span></label>
+                            <label><input type="number" id="tm-s" min="0" max="59" inputmode="numeric" aria-label="Seconds"><span>s</span></label>
+                        </div>
+                        <div class="tm-chips tm-adds" id="tm-adds"></div>
+                        <div class="tm-chips" id="tm-presets" aria-label="Common times"></div>
+                        <div class="tm-chips tm-recent" id="tm-recent"></div>
+                    </div>
+                    <div id="tm-at-box" hidden>
+                        <label class="tm-at"><input type="time" id="tm-at" aria-label="Alarm time"><small id="tm-at-hint"></small></label>
+                    </div>
+                    <label class="tm-label"><span>Name (optional)</span><input type="text" id="tm-label" maxlength="30" placeholder="e.g. Pasta, Laundry, Meeting"></label>
+                    <p class="tm-lock" id="tm-lock-msg" hidden>You can't change the time while the timer is running. Reset it or press +1 min.</p>
+                </div>
+            </section>
+
+            <section class="tp-card tm-side" aria-labelledby="tm-side-h">
+                <h2 id="tm-side-h">My timers</h2>
+                <div id="tm-side-body"></div>
+            </section>
+        </div>
+
+        <section class="tp-card tm-set" aria-labelledby="tm-set-h">
+            <h2 id="tm-set-h">🔔 Alert settings</h2>
+            <div class="tm-set-grid">
+                <div class="tm-set-col">
+                    <div class="tp-fields">
+                        <label class="tp-field tp-wide"><span>Alarm sound</span><span class="tm-row"><select id="tm-sound"></select><button type="button" class="tp-btn" id="tm-test">▶ Preview</button></span></label>
+                    </div>
+                    <div class="tp-fields">
+                        <label class="tp-field"><span>Volume <b id="tm-vol-v"></b></span><input type="range" id="tm-vol" min="5" max="100" step="5"></label>
+                        <label class="tp-field"><span>Ring for</span><select id="tm-ringfor"><option value="10">10 seconds</option><option value="30">30 seconds</option><option value="60">1 minute</option><option value="0">Until stopped</option></select></label>
+                    </div>
+                </div>
+                <div class="tm-set-col">
+                    <label class="sv-check tm-check"><input type="checkbox" id="tm-vib"> Vibrate (phones)</label>
+                    <label class="sv-check tm-check"><input type="checkbox" id="tm-speak"> Voice announcements</label>
+                    <label class="sv-check tm-check"><input type="checkbox" id="tm-title"> Show time left in the tab title</label>
+                    <label class="sv-check tm-check"><input type="checkbox" id="tm-awake"> Keep the screen on while running</label>
+                </div>
+                <div class="tm-set-col">
+                    <button type="button" class="tp-btn solid tm-notify" id="tm-notify">🔔 Turn on notifications</button>
+                    <p class="tp-small" id="tm-notify-txt"></p>
+                    <p class="tp-small tm-keys">Shortcuts: <kbd>Space</kbd> start/stop · <kbd>R</kbd> reset · <kbd>L</kbd> lap · <kbd>F</kbd> full screen · <kbd>1</kbd>–<kbd>4</kbd> modes · <kbd>Esc</kbd> silence alarm</p>
+                </div>
+            </div>
+            <p class="tp-small">Settings and timers are remembered on this device (browser) only. Reload or close the page and your timers carry on where they left off.</p>
+        </section>
+
+        <article class="tp-article">
+            <h2>How to use it</h2>
+            <table>
+                <thead><tr><th>Mode</th><th>Great for</th><th>Features</th></tr></thead>
+                <tbody>
+                    <tr><td>⏲️ Timer</td><td>Cooking, laundry, meetings, kids' tooth-brushing</td><td>Several at once, names, ring at a set time, +1 min, recent times</td></tr>
+                    <tr><td>⏱️ Stopwatch</td><td>Running, rehearsing a talk, timing tasks</td><td>1/100 s, laps with best/slowest marked, copy or save as CSV</td></tr>
+                    <tr><td>🍅 Pomodoro</td><td>Studying, working from home, beating procrastination</td><td>Auto focus/break switching, ticking sound, today's count and 7-day chart</td></tr>
+                    <tr><td>🏃 Interval</td><td>Home workouts, jump rope, stretching</td><td>Get-ready, work, rest and rounds, 3-2-1 beeps, voice cues</td></tr>
+                </tbody>
+            </table>
+
+            <h2>What is the Pomodoro method?</h2>
+            <p>A time-management habit that started in the late 1980s, when an Italian university student timed his study sessions with a tomato-shaped kitchen timer. You <b>focus on one task for 25 minutes, then rest for 5</b>, and after four rounds take a longer 15–30 minute break. "Just 25 minutes" makes it easier to start, and planned breaks keep you fresh for longer.</p>
+            <p class="tp-tip">New to it? Start with 25 / 5. If you get into the zone easily, try 50 / 10. Spend breaks stretching or drinking water rather than scrolling.</p>
+
+            <h2>Interval workout timer</h2>
+            <p>Work hard for a short burst, rest briefly, and repeat for a set number of rounds. Popular sets are <b>20 s work / 10 s rest × 8 rounds (4 minutes)</b>, <b>40 / 20 × 8</b> and <b>30 / 30 × 10</b>. Beeps sound for the last 3 seconds of every part, and a sound plus a voice cue tells you when work and rest switch — no need to watch the screen. Adjust the intensity to how you feel.</p>
+
+            <h2>FAQ</h2>
+            <div class="tp-faq">
+                <details><summary>Will the alarm ring if I'm in another tab?</summary><p>Yes. Time is measured against the moment the timer should end, so it stays accurate in the background. Turn on browser notifications to get a pop-up even while you're in another window. Browsers only allow sound after you've pressed a button on this page once.</p></details>
+                <details><summary>What happens when my phone screen turns off?</summary><p>With "Keep the screen on while running" checked, the screen stays on while a timer runs (in supported browsers). If the screen turns off or you switch apps, the phone may pause the page, so the alarm can be late or ring when you come back. Keep the screen on for important alarms.</p></details>
+                <details><summary>Do timers disappear when I reload?</summary><p>No. Timers, the stopwatch, Pomodoro and interval sessions are all remembered on this device, so they continue after a reload or reopening the page. Timers that finished while the page was closed are shown as done.</p></details>
+                <details><summary>How many timers can I run?</summary><p>Up to 8 at the same time. Use "Add a timer", then tap one in the list to show it on the big dial. Give it a name and the alarm will tell you which one finished.</p></details>
+                <details><summary>Can it ring at a specific time?</summary><p>Yes. Choose "Ring at a time" and pick the time. If that time has already passed today, it rings at that time tomorrow.</p></details>
+                <details><summary>Is my data sent anywhere?</summary><p>No. Settings, timers and Pomodoro stats are stored only in your browser. Clearing the site data removes them.</p></details>
+            </div>
+            <p class="tp-small">All alarm sounds are generated by this page. If you hear nothing, check your phone's silent mode and volume.</p>
+        </article>
+
+        <nav class="tp-related" aria-label="Other tools">
+            <div class="tp-related-head"><h2>Try other tools</h2><a href="tools-en.html">See all tools →</a></div>
+            <div class="th-grid">
+                <a class="th-card" href="age-en.html"><span class="th-ic c2" aria-hidden="true">📅</span><span class="th-text"><b>Age &amp; D-day</b><small>Anniversaries and countdowns</small></span></a>
+                <a class="th-card" href="charcount-en.html"><span class="th-ic c3" aria-hidden="true">✍️</span><span class="th-text"><b>Character Counter</b><small>With or without spaces, bytes</small></span></a>
+                <a class="th-card" href="wage-en.html"><span class="th-ic c7" aria-hidden="true">💰</span><span class="th-text"><b>Hourly Wage</b><small>Weekly and monthly pay</small></span></a>
+                <a class="th-card" href="index-en.html#memo-widget"><span class="th-ic c6" aria-hidden="true">📝</span><span class="th-text"><b>To-do &amp; Memo</b><small>Saved on this device (home)</small></span></a>
+            </div>
+        </nav>
+    </main>
+
+    <footer class="bp-foot">
+        <a href="index-en.html">Home</a><a href="tools-en.html">Tools</a><a href="blog-en.html">Blog</a><a href="about-en.html">About</a><a href="privacy-en.html">Privacy Policy</a><a href="contact-en.html">Contact</a>
+        <div>Copyright © 2026 WowEzBox. All rights reserved.</div>
+    </footer>
+
+    <div class="tm-ring" id="tm-ring" role="alertdialog" aria-modal="true" aria-labelledby="tm-ring-h" hidden>
+        <div class="tm-ring-card">
+            <div class="tm-ring-bell" aria-hidden="true">⏰</div>
+            <h2 id="tm-ring-h">Time's up!</h2>
+            <ul id="tm-ring-list"></ul>
+            <button type="button" class="tm-ring-off" id="tm-ring-off">Stop alarm</button>
+            <p class="tm-ring-note">Esc or Space also stops it</p>
+        </div>
+    </div>
+    <button type="button" class="tm-exit" id="tm-exit" hidden>✕ Exit full screen</button>
+    <div class="tm-toast" id="tm-toast" role="status" hidden></div>
+
+    <script src="timer.js"></script>
+</body>
+</html>

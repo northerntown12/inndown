@@ -518,3 +518,8 @@
     html body .tools-widget .tw-item[href^="units"] { background: #e6f1fc; border-color: #b3d3f2; color: #0f3f8a; }
     html body .tools-widget .tw-item[href^="units"] small, html body .tools-widget .tw-item[href^="units"] .gw-go { color: #2f7bd0; }
 }
+/* 2026-11-27: 폰 홈 생활 도구 카드 — 타이머 (잉크 보라) */
+@media (max-width: 760px) {
+    html body .tools-widget .tw-item[href^="timer"] { background: #f1ecf8; border-color: #d3c3ea; color: #2b1640; }
+    html body .tools-widget .tw-item[href^="timer"] small, html body .tools-widget .tw-item[href^="timer"] .gw-go { color: #6a3fb0; }
+}
