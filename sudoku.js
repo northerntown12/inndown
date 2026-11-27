@@ -143,6 +143,9 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         nb.classList.toggle("on", noteMode); nb.setAttribute("aria-pressed", noteMode ? "true" : "false");
         $("sNoteState").textContent = noteMode ? "ON" : "OFF";
         $("sUndo").disabled = !history.length || G.done;
+        const fb = $("sFill"), on = G.notes.some((m, i) => m && !G.val[i]);
+        fb.textContent = on ? "🧹 " + T("후보 숫자 모두 비우기", "Clear all candidates") : "✏️ " + T("후보 숫자 모두 채우기", "Fill in all candidates");
+        fb.classList.toggle("is-clear", on);
         boardEl.classList.toggle("note-mode", noteMode);
     }
     function renderStatus() {
@@ -343,7 +346,16 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
     $("sUndo").addEventListener("click", () => { ac(); undo(); });
     $("sNote").addEventListener("click", () => { ac(); noteMode = !noteMode; snd("tap"); renderPad(); });
     $("sHint").addEventListener("click", () => { ac(); hint(); });
-    $("sFill").addEventListener("click", () => { ac(); fillAllNotes(); });
+    /* 2026-11-27: 메모가 하나라도 있으면 [모두 비우기], 없으면 [모두 채우기] (누를 때마다 바뀜) */
+    const hasNotes = () => G && G.notes.some((m, i) => m && !G.val[i]);
+    function clearAllNotes() {
+        if (!G || G.done || paused) return;
+        snapshot();
+        for (let i = 0; i < 81; i++) if (G.notes[i]) { G.notes[i] = 0; renderCell(i); }
+        snd("erase"); renderHighlight(); renderPad(); persist();
+        showMsg(T("메모를 모두 지웠어요. [되돌리기]로 되살릴 수 있어요.", "All notes cleared. Use Undo to bring them back."));
+    }
+    $("sFill").addEventListener("click", () => { ac(); if (hasNotes()) clearAllNotes(); else fillAllNotes(); });
     $("sPause").addEventListener("click", () => togglePause());
     $("sResume").addEventListener("click", () => togglePause(false));
     function togglePause(v) {
