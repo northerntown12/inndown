@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="lang.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Daily Sudoku – A New Free Puzzle Every Day · WowEzBox</title>
+    <meta name="description" content="Play a new daily sudoku every day (easy, medium, hard) plus unlimited practice puzzles up to expert. Pencil notes, hints that explain why, undo, mistake highlighting and daily streaks. Free, no install.">
+    <!-- 2026-11-27: 검색·공유용 정보 -->
+    <link rel="canonical" href="https://wowezbox.com/sudoku-en.html">
+    <link rel="alternate" hreflang="ko" href="https://wowezbox.com/sudoku.html">
+    <link rel="alternate" hreflang="en" href="https://wowezbox.com/sudoku-en.html">
+    <link rel="alternate" hreflang="x-default" href="https://wowezbox.com/sudoku.html">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="WowEzBox">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:title" content="Daily Sudoku – A New Free Puzzle Every Day · WowEzBox">
+    <meta property="og:description" content="A new daily sudoku plus unlimited practice puzzles. Notes, hints, undo and streaks — free.">
+    <meta property="og:url" content="https://wowezbox.com/sudoku-en.html">
+    <meta property="og:image" content="https://wowezbox.com/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "WebApplication", "name": "Daily Sudoku", "url": "https://wowezbox.com/sudoku-en.html", "description": "A new daily sudoku (easy, medium, hard) plus unlimited practice puzzles. Notes, hints, undo, mistake highlighting and daily streaks.", "applicationCategory": "GameApplication", "operatingSystem": "Any", "inLanguage": "en", "browserRequirements": "Requires JavaScript", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "KRW"}}</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Noto+Sans+KR:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="sudoku.css">
+</head>
+<body>
+    <header class="g-top">
+        <div class="g-top-in">
+            <h1 class="g-title">Daily Sudoku <small>Fill every row, column and box with 1–9</small></h1>
+            <span class="g-brand">WowEzBox</span>
+        </div>
+    </header>
+
+    <main class="g-main">
+        <section class="s-play">
+            <div class="s-modes" role="tablist" aria-label="Mode">
+                <button type="button" class="s-mode on" data-mode="daily" role="tab" aria-selected="true">📅 Daily</button>
+                <button type="button" class="s-mode" data-mode="practice" role="tab" aria-selected="false">🎲 Practice</button>
+            </div>
+            <div class="s-levels" aria-label="Difficulty">
+                <button type="button" class="s-level" data-lv="easy">Easy</button>
+                <button type="button" class="s-level on" data-lv="mid">Medium</button>
+                <button type="button" class="s-level" data-lv="hard">Hard</button>
+                <button type="button" class="s-level" data-lv="expert" hidden>Expert</button>
+            </div>
+            <div class="s-status">
+                <span class="s-label" id="sLabel"></span>
+                <span class="s-stat" title="Mistakes"><span aria-hidden="true">❌</span><b id="sMistakes">0</b></span>
+                <span class="s-stat" title="Hints"><span aria-hidden="true">💡</span><b id="sHints">0</b></span>
+                <span class="s-stat s-time" title="Time"><span aria-hidden="true">⏱</span><b id="sTime">0:00</b></span>
+                <button type="button" class="s-pause" id="sPause" aria-label="Pause">⏸</button>
+                <button type="button" class="g-mute" id="sSound" aria-label="Sound off" title="Sound off">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path class="g-spk" d="M4 9.2h3.6L12.4 5v14l-4.8-4.2H4z"/>
+                        <path class="g-wave" d="M15.3 9.2a4 4 0 0 1 0 5.6M17.8 6.8a7.4 7.4 0 0 1 0 10.4"/>
+                        <path class="g-slash" d="M20.5 3.5 4 20"/>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="s-board-wrap">
+                <div class="s-board" id="sBoard" role="grid" aria-label="Sudoku board"></div>
+                <div class="s-paused" id="sPaused" hidden>
+                    <p>⏸ Paused</p>
+                    <button type="button" class="g-btn g-primary" id="sResume">▶ Resume</button>
+                </div>
+                <div class="s-result" id="sResult" hidden>
+                    <div class="s-result-card">
+                        <p class="s-result-title" id="sResultTitle"></p>
+                        <p class="s-result-sub" id="sResultSub"></p>
+                        <div class="s-result-btns">
+                            <button type="button" class="g-btn" id="sLook">View board</button>
+                            <button type="button" class="g-btn g-primary" id="sNext">New puzzle</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="s-tools">
+                <button type="button" class="s-tool" id="sUndo"><span aria-hidden="true">↶</span>Undo</button>
+                <button type="button" class="s-tool" id="sErase"><span aria-hidden="true">⌫</span>Erase</button>
+                <button type="button" class="s-tool" id="sNote" aria-pressed="false"><span aria-hidden="true">✏️</span>Notes <em id="sNoteState">OFF</em></button>
+                <button type="button" class="s-tool" id="sHint"><span aria-hidden="true">💡</span>Hint</button>
+            </div>
+            <div class="s-pad" id="sPad" aria-label="Numbers">
+                <button type="button" class="s-num" data-d="1">1<small></small></button><button type="button" class="s-num" data-d="2">2<small></small></button><button type="button" class="s-num" data-d="3">3<small></small></button><button type="button" class="s-num" data-d="4">4<small></small></button><button type="button" class="s-num" data-d="5">5<small></small></button><button type="button" class="s-num" data-d="6">6<small></small></button><button type="button" class="s-num" data-d="7">7<small></small></button><button type="button" class="s-num" data-d="8">8<small></small></button><button type="button" class="s-num" data-d="9">9<small></small></button>
+            </div>
+            <p class="s-msg" id="sMsg" role="status"></p>
+        </section>
+
+        <aside class="g-panel">
+            <div class="g-actions">
+                <button type="button" class="g-btn g-primary" id="sNew">New puzzle</button>
+                <button type="button" class="g-btn g-exit" id="sExit" title="Close window">Exit</button>
+            </div>
+            <button type="button" class="g-btn s-fill" id="sFill">✏️ Fill in all candidates</button>
+            <div class="s-opts">
+                <label><input type="checkbox" id="oErrors"> Show mistakes in red</label>
+                <label><input type="checkbox" id="oSame"> Highlight matching numbers</label>
+                <label><input type="checkbox" id="oClean"> Auto-clear notes when placing</label>
+            </div>
+            <div class="g-record" id="sRecord"></div>
+            <details class="g-rules">
+                <summary>How to play</summary>
+                <ul>
+                    <li>Fill the empty cells with <b>1–9</b>. Each <b>row</b>, <b>column</b> and bold-outlined <b>3×3 box</b> must contain every number <b>exactly once</b>.</li>
+                    <li>Tap a cell, then a number below. On a computer you can also use <b>1–9</b>, the arrow keys and <b>Backspace</b>.</li>
+                    <li>Not sure? Turn on <b>✏️ Notes</b> and jot down the numbers that could fit. (Shortcut: N)</li>
+                    <li>💡 <b>Hint</b> fills the next solvable cell and <b>explains why</b>. If you have a wrong number, it points that out first. (Shortcut: H)</li>
+                    <li>The small number under each button shows <b>how many more</b> of that number are needed.</li>
+                    <li>The <b>Daily</b> puzzle changes every day and is the same for everyone. Solve it daily to build a 🔥 streak.</li>
+                    <li><b>Practice</b> gives you a fresh puzzle every time you press "New puzzle", including an <b>Expert</b> level.</li>
+                    <li>Every puzzle has <b>exactly one solution</b>. Your game is saved automatically.</li>
+                </ul>
+            </details>
+        </aside>
+    </main>
+
+    <footer class="g-foot">Copyright © 2026 WowEzBox. All rights reserved.</footer>
+
+    <script src="sudoku-engine.js"></script>
+    <script src="sudoku.js"></script>
+</body>
+</html>
