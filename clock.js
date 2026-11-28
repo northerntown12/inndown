@@ -23,19 +23,41 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
 
     var NOTE_PAPER = new URL("note-paper.webp?v=3", document.baseURI).href;   // 종이 칸 바탕 그림
 
+    /* 2026-11-28: 시계를 아날로그(동그란 시계)와 디지털(숫자 판) 두 조각으로 나눔
+       - 둘 사이에 틈(DC_GAP)을 두고, 디지털 숫자를 크게
+       - 각각 따로 끌어서 옮기기 / 브라우저 창 밖으로 끌면 따로 떠 있는 창으로 (다른 모니터까지)
+       - 둘 사이 틈의 작은 손잡이(⋯)를 끌면 둘이 같이 움직이고, 더블클릭하면 같이 떠요 */
+    var DIG_VB_H = 250;                      // 디지털 판 그림 기준 높이 (가로 VB_W = 618)
+    var ANA_VB = [29, 40, 560, 560];         // 아날로그: 시계 그림에서 동그란 부분만 (x, y, 가로, 세로)
+    var DC_GAP = 10, DC_GAP_MOBILE = 6;      // 아날로그와 디지털 사이 틈(px)
+
     /* ---------- 스타일 ---------- */
     var style = document.createElement("style");
     style.textContent = [
-        ".tree-panel { --dc-w: " + CLOCK_WIDTH + "px; --dc-h: calc(var(--dc-w) * " + (VB_H / VB_W) + "); }",
+        ".tree-panel { --dc-w: " + CLOCK_WIDTH + "px; --dc-h: calc(var(--dc-w) * " + (VB_H / VB_W) + "); --dc-gap: " + DC_GAP + "px; --dc-dig-h: calc(var(--dc-w) * " + (DIG_VB_H / VB_W) + "); }",
         /* 시계 줄이 위, 사진이 아래 */
         ".tree-panel img { top: calc(var(--dc-h) + 12px) !important; height: calc(100% - var(--dc-h) - 12px) !important; }",
         ".dc-home { position: absolute; top: 0; left: 0; right: 24px; height: var(--dc-h); display: flex; gap: 10px; }",
-        ".dc-slot { flex: none; width: var(--dc-w); height: var(--dc-h); }",
-        ".dc-wrap { width: 100%; cursor: pointer; user-select: none; -webkit-user-select: none; }",
+        ".dc-slot { flex: none; width: var(--dc-w); height: var(--dc-h); display: flex; flex-direction: column; align-items: center; }",
+        ".dc-box { position: relative; flex: none; display: flex; justify-content: center; }",
+        ".dc-box-ana { width: 100%; height: calc(var(--dc-h) - var(--dc-dig-h) - var(--dc-gap)); }",
+        ".dc-box-dig { width: 100%; height: var(--dc-dig-h); }",
+        ".dc-wrap { cursor: pointer; user-select: none; -webkit-user-select: none; touch-action: none; }",
+        ".dc-box-ana > .dc-ana { height: 100%; aspect-ratio: 1 / 1; }",
+        ".dc-box-dig > .dc-dig { width: 100%; }",
         ".dc-svg { display: block; width: 100%; height: auto; filter: drop-shadow(0 3px 6px rgba(0,0,0,.35)); }",
-        ".dc-wrap.dc-float { position: fixed; right: 16px; bottom: 16px; width: 170px; z-index: 2147483000; }",
-        ".dc-ph { display: none; padding: 6px 2px; font-size: 10px; line-height: 1.4; color: #888; cursor: pointer; }",
-        ".dc-home.dc-away .dc-ph { display: block; }",
+        ".dc-wrap.dc-float { position: fixed; z-index: 2147483000; }",
+        ".dc-wrap.dc-float.dc-ana:not(.dc-moved) { right: 16px; bottom: 140px; width: 150px; }",
+        ".dc-wrap.dc-float.dc-dig:not(.dc-moved) { right: 16px; bottom: 16px; width: 220px; }",
+        /* 둘 사이 손잡이: 끌면 같이 옮기기, 더블클릭하면 같이 띄우기 */
+        ".dc-grip { flex: none; width: 100%; height: var(--dc-gap); display: flex; align-items: center; justify-content: center; cursor: grab; touch-action: none; }",
+        ".dc-grip::before { content: ''; width: 34px; height: 4px; border-radius: 2px; background: rgba(120,120,120,.35); transition: background .2s, width .2s; }",
+        ".dc-slot:hover .dc-grip::before, .dc-grip:hover::before { background: rgba(90,87,181,.8); width: 46px; }",
+        ".dc-home.dc-split .dc-grip { visibility: hidden; }",
+        /* 떠나간 자리: 점선 칸 + 작은 안내 (누르면 돌아와요) */
+        ".dc-ph { display: none; position: absolute; inset: 0; box-sizing: border-box; border: 1px dashed #bbb; border-radius: 8px; padding: 4px; align-items: center; justify-content: center; text-align: center; font-size: 10px; line-height: 1.35; color: #888; cursor: pointer; overflow: hidden; }",
+        ".dc-box-ana .dc-ph { border-radius: 50%; padding: 14px; }",
+        ".dc-box.dc-away .dc-ph { display: flex; }",
         /* 2026-11-23: 마우스로 끌어서 옮기기 — 끄는 동안 주먹 커서, 글자 선택 막기 */
         "html.dc-dragging, html.dc-dragging * { cursor: grabbing !important; user-select: none !important; -webkit-user-select: none !important; }",
         /* 시계 옆 종이 칸: 낡은 종이(note-paper.webp, 원본 paper.webp) 위에 깃털 펜으로 쓰는 필기체 글씨 */
@@ -53,9 +75,10 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         ".dc-ink-drop.fall { animation: dcDrop .42s ease-in forwards; }",
         "@keyframes dcDrop { 0% { opacity: 1; transform: translateY(0) scaleY(1); } 80% { opacity: 1; transform: translateY(var(--fall, 12px)) scaleY(1.5); } 100% { opacity: 0; transform: translateY(var(--fall, 12px)) scaleY(1.5); } }",
         ".dc-dot.on { opacity: 1; }",
-        /* 폰: 제목(밑줄) 아래에 시계와 파란 칸을 작게 나란히 (다른 위젯에는 영향 없음) */
-        ".dc-mobile { --dc-w: " + MOBILE_CLOCK_WIDTH + "px; --dc-h: calc(var(--dc-w) * " + (VB_H / VB_W) + "); margin: 0 0 20px; position: relative; z-index: 1; }",
+        /* 폰: 제목(밑줄) 아래에 시계와 종이 칸을 작게 나란히 (다른 위젯에는 영향 없음) */
+        ".dc-mobile { --dc-w: " + MOBILE_CLOCK_WIDTH + "px; --dc-h: calc(var(--dc-w) * " + (VB_H / VB_W) + "); --dc-gap: " + DC_GAP_MOBILE + "px; --dc-dig-h: calc(var(--dc-w) * " + (DIG_VB_H / VB_W) + "); margin: 0 0 20px; position: relative; z-index: 1; }",
         ".dc-mobile .dc-home { position: relative; right: auto; width: 100%; gap: 8px; }",
+        ".dc-mobile .dc-grip { visibility: hidden; }",
         ".dc-mobile .dc-note-text { font-size: min(21px, 13cqw); padding: 8% 5px 0 12%; }"
     ].join("\n");
     document.head.appendChild(style);
@@ -72,51 +95,64 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         stops.forEach(function (s) { el("stop", { offset: s[0], "stop-color": s[1] }, g); });
         return g;
     }
+    function glowFilter(defs, id) {
+        var f = el("filter", { id: id, x: "-20%", y: "-20%", width: "140%", height: "140%" }, defs);
+        el("feGaussianBlur", { stdDeviation: "1.8", result: "b" }, f);
+        var m = el("feMerge", {}, f);
+        el("feMergeNode", { in: "b" }, m);
+        el("feMergeNode", { in: "SourceGraphic" }, m);
+    }
 
-    /* ---------- 시계 그리기 (watchsample 이미지 위에 바늘·숫자를 얹어요) ---------- */
+    /* ---------- 아날로그 시계 (clock-face.webp에서 동그란 다이얼만 오려 쓰고, 그 위에 바늘·날짜 창) ----------
+       각 SVG는 자기 안에 defs를 따로 가져요 (따로 떠 있는 창으로 옮겨 가도 그림이 깨지지 않게) */
     var FACE_URL = new URL("clock-face.webp", document.baseURI).href;
-    var svg = el("svg", { viewBox: "0 0 " + VB_W + " " + VB_H, class: "dc-svg", role: "img", "aria-label": T("시계", "Clock") });
-    var defs = el("defs", {}, svg);
-    grad(defs, "dcSilver", "linearGradient", [["0", "#ffffff"], ["0.5", "#cfd5dd"], ["1", "#8a93a0"]], { x1: "0", y1: "0", x2: "1", y2: "0" });
-    var glow = el("filter", { id: "dcGlow", x: "-20%", y: "-20%", width: "140%", height: "140%" }, defs);
-    el("feGaussianBlur", { stdDeviation: "1.8", result: "b" }, glow);
-    var merge = el("feMerge", {}, glow);
-    el("feMergeNode", { in: "b" }, merge);
-    el("feMergeNode", { in: "SourceGraphic" }, merge);
-    var hshadow = el("filter", { id: "dcHandShadow", x: "-30%", y: "-30%", width: "160%", height: "160%" }, defs);
-    el("feDropShadow", { dx: "2", dy: "3", stdDeviation: "2", "flood-opacity": "0.5" }, hshadow);
-
-    el("image", { href: FACE_URL, x: 0, y: 0, width: VB_W, height: VB_H }, svg);
-
     var CX = 309, CY = 320.07, HS = 1.05;   // 다이얼 중심, 바늘 배율
+    var anaSvg = el("svg", { viewBox: ANA_VB.join(" "), class: "dc-svg", role: "img", "aria-label": T("아날로그 시계", "Analog clock") });
+    var aDefs = el("defs", {}, anaSvg);
+    grad(aDefs, "dcSilver", "linearGradient", [["0", "#ffffff"], ["0.5", "#cfd5dd"], ["1", "#8a93a0"]], { x1: "0", y1: "0", x2: "1", y2: "0" });
+    var hshadow = el("filter", { id: "dcHandShadow", x: "-30%", y: "-30%", width: "160%", height: "160%" }, aDefs);
+    el("feDropShadow", { dx: "2", dy: "3", stdDeviation: "2", "flood-opacity": "0.5" }, hshadow);
+    var faceClip = el("clipPath", { id: "dcFaceClip" }, aDefs);
+    el("circle", { cx: CX, cy: CY, r: 277 }, faceClip);
+    el("image", { href: FACE_URL, x: 0, y: 0, width: VB_W, height: VB_H, "clip-path": "url(#dcFaceClip)" }, anaSvg);
 
-    // 날짜 창
     // 날짜 창: 남색 바탕 + 로즈골드 테두리 + 샴페인골드 숫자 (다이얼·테두리 색과 맞춤)
-    grad(defs, "dcDateBg", "linearGradient", [["0", "#06112b"], ["1", "#14295a"]], { x1: "0", y1: "0", x2: "0", y2: "1" });
-    grad(defs, "dcDateGold", "linearGradient", [["0", "#fbe7bf"], ["0.5", "#e2b87c"], ["1", "#b9834f"]], { x1: "0", y1: "0", x2: "0", y2: "1" });
-    grad(defs, "dcDateRim", "linearGradient", [["0", "#f4cdb0"], ["0.5", "#b9714f"], ["1", "#f0bf9c"]], { x1: "0", y1: "0", x2: "1", y2: "1" });
-    el("rect", { x: 417, y: 298.5, width: 58, height: 45, rx: 4, fill: "url(#dcDateBg)", stroke: "url(#dcDateRim)", "stroke-width": 3 }, svg);
-    el("rect", { x: 421, y: 302.5, width: 50, height: 37, rx: 2.5, fill: "none", stroke: "rgba(0,0,0,0.55)", "stroke-width": 1.5 }, svg);
-    var dateWin = el("text", { x: 446, y: 322.5, "font-size": 34, "font-weight": "bold", fill: "url(#dcDateGold)", "text-anchor": "middle", "dominant-baseline": "central", "font-family": "'Times New Roman', Georgia, serif", stroke: "rgba(0,0,0,0.35)", "stroke-width": 0.6 }, svg);
+    grad(aDefs, "dcDateBg", "linearGradient", [["0", "#06112b"], ["1", "#14295a"]], { x1: "0", y1: "0", x2: "0", y2: "1" });
+    grad(aDefs, "dcDateGold", "linearGradient", [["0", "#fbe7bf"], ["0.5", "#e2b87c"], ["1", "#b9834f"]], { x1: "0", y1: "0", x2: "0", y2: "1" });
+    grad(aDefs, "dcDateRim", "linearGradient", [["0", "#f4cdb0"], ["0.5", "#b9714f"], ["1", "#f0bf9c"]], { x1: "0", y1: "0", x2: "1", y2: "1" });
+    el("rect", { x: 417, y: 298.5, width: 58, height: 45, rx: 4, fill: "url(#dcDateBg)", stroke: "url(#dcDateRim)", "stroke-width": 3 }, anaSvg);
+    el("rect", { x: 421, y: 302.5, width: 50, height: 37, rx: 2.5, fill: "none", stroke: "rgba(0,0,0,0.55)", "stroke-width": 1.5 }, anaSvg);
+    var dateWin = el("text", { x: 446, y: 322.5, "font-size": 34, "font-weight": "bold", fill: "url(#dcDateGold)", "text-anchor": "middle", "dominant-baseline": "central", "font-family": "'Times New Roman', Georgia, serif", stroke: "rgba(0,0,0,0.35)", "stroke-width": 0.6 }, anaSvg);
 
     // 바늘
     function hand(points) {
-        var g = el("g", { filter: "url(#dcHandShadow)" }, svg);
+        var g = el("g", { filter: "url(#dcHandShadow)" }, anaSvg);
         el("polygon", { points: points, fill: "url(#dcSilver)", stroke: "#6c7582", "stroke-width": 1, transform: "translate(" + CX + " " + CY + ") scale(" + HS + ")" }, g);
         return g;
     }
     var hourHand = hand("0,-130 11,-26 6,28 -6,28 -11,-26");
     var minHand = hand("0,-190 9,-26 5,34 -5,34 -9,-26");
-    var secHand = el("g", { filter: "url(#dcHandShadow)" }, svg);
+    var secHand = el("g", { filter: "url(#dcHandShadow)" }, anaSvg);
     el("line", { x1: CX, y1: CY + 48, x2: CX, y2: CY - 193, stroke: "#2f7cf0", "stroke-width": 3.2, "stroke-linecap": "round" }, secHand);
     el("circle", { cx: CX, cy: CY + 36, r: 6.3, fill: "#2f7cf0" }, secHand);
-    el("circle", { cx: CX, cy: CY, r: 11.5, fill: "#2f7cf0", stroke: "#173f86", "stroke-width": 1.5 }, svg);
-    el("circle", { cx: CX, cy: CY, r: 4, fill: "#cfe0ff" }, svg);
+    el("circle", { cx: CX, cy: CY, r: 11.5, fill: "#2f7cf0", stroke: "#173f86", "stroke-width": 1.5 }, anaSvg);
+    el("circle", { cx: CX, cy: CY, r: 4, fill: "#cfe0ff" }, anaSvg);
+
+    /* ---------- 디지털 판 (따로 그린 판, 숫자는 예전보다 약 2배) ---------- */
+    var digSvg = el("svg", { viewBox: "0 0 " + VB_W + " " + DIG_VB_H, class: "dc-svg", role: "img", "aria-label": T("디지털 시계", "Digital clock") });
+    var dDefs = el("defs", {}, digSvg);
+    glowFilter(dDefs, "dcGlow");
+    grad(dDefs, "dcDigFrame", "linearGradient", [["0", "#3a3e46"], ["0.5", "#1f2227"], ["1", "#2c2f36"]], { x1: "0", y1: "0", x2: "0", y2: "1" });
+    grad(dDefs, "dcDigPlate", "linearGradient", [["0", "#3b2a24"], ["1", "#1f140e"]], { x1: "0", y1: "0", x2: "0", y2: "1" });
+    grad(dDefs, "dcDigRim", "linearGradient", [["0", "#f4cdb0"], ["0.5", "#b9714f"], ["1", "#f0bf9c"]], { x1: "0", y1: "0", x2: "1", y2: "1" });
+    el("rect", { x: 4, y: 4, width: VB_W - 8, height: DIG_VB_H - 8, rx: 28, fill: "url(#dcDigFrame)", stroke: "#5a5f69", "stroke-width": 3 }, digSvg);
+    el("rect", { x: 28, y: 22, width: VB_W - 56, height: DIG_VB_H - 52, rx: 14, fill: "url(#dcDigPlate)", stroke: "url(#dcDigRim)", "stroke-width": 3 }, digSvg);
 
     // 7-세그먼트 숫자
     var SEG = { 0: "abcdef", 1: "bc", 2: "abged", 3: "abgcd", 4: "fgbc", 5: "afgcd", 6: "afgedc", 7: "abc", 8: "abcdefg", 9: "abcdfg" };
-    var DW = 28, DH = 50, TH = 6, DY = 637;
-    var digitsG = el("g", { transform: "translate(" + (Math.tan(6 * Math.PI / 180) * (DY + DH / 2)).toFixed(2) + " 0) skewX(-6)", filter: "url(#dcGlow)" }, svg);
+    var DW = 52, DH = 92, TH = 11, DY = 42, DGAP = 8, CGAP = 18;
+    var DIG_TOTAL = 6 * DW + 5 * DGAP + 2 * CGAP + 78;   // 숫자 6개 + 콜론 2개 + AM/PM (2026-11-28 AM/PM 50% 크게 → 자리 52→78)
+    var digitsG = el("g", { transform: "translate(" + (Math.tan(6 * Math.PI / 180) * (DY + DH / 2)).toFixed(2) + " 0) skewX(-6)", filter: "url(#dcGlow)" }, digSvg);
     function hSeg(x0, x1, y) {
         var h = TH / 2;
         return [[x0, y], [x0 + h, y - h], [x1 - h, y - h], [x1, y], [x1 - h, y + h], [x0 + h, y + h]];
@@ -126,7 +162,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         return [[x, y0], [x + h, y0 + h], [x + h, y1 - h], [x, y1], [x - h, y1 - h], [x - h, y0 + h]];
     }
     function makeDigit(x) {
-        var g = 1.5, ht = TH / 2, xl = x + ht, xr = x + DW - ht, yt = DY + ht, ym = DY + DH / 2, yb = DY + DH - ht;
+        var g = 2.2, ht = TH / 2, xl = x + ht, xr = x + DW - ht, yt = DY + ht, ym = DY + DH / 2, yb = DY + DH - ht;
         var shapes = {
             a: hSeg(xl + g, xr - g, yt), g: hSeg(xl + g, xr - g, ym), d: hSeg(xl + g, xr - g, yb),
             f: vSeg(xl, yt + g, ym - g), b: vSeg(xr, yt + g, ym - g),
@@ -139,39 +175,59 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         return segs;
     }
     function colon(x) {
-        el("circle", { cx: x, cy: DY + 15, r: 3.2, fill: CYAN }, digitsG);
-        el("circle", { cx: x, cy: DY + 35, r: 3.2, fill: CYAN }, digitsG);
+        el("circle", { cx: x, cy: DY + DH * 0.3, r: 5.5, fill: CYAN }, digitsG);
+        el("circle", { cx: x, cy: DY + DH * 0.7, r: 5.5, fill: CYAN }, digitsG);
     }
-    var digits = [], x = 184;
+    var digits = [], x = Math.round((VB_W - DIG_TOTAL) / 2);
     for (var d = 0; d < 6; d++) {
         digits.push(makeDigit(x));
-        x += DW + 5;
-        if (d === 1 || d === 3) { colon(x + 3); x += 12; }
+        x += DW + DGAP;
+        if (d === 1 || d === 3) { colon(x + CGAP / 2 - DGAP / 2); x += CGAP; }
     }
-    var ampm = el("text", { x: x + 1, y: DY + DH - 1, "font-size": 20, "font-weight": "bold", fill: CYAN, "font-family": "Montserrat, Arial, sans-serif", filter: "url(#dcGlow)" }, svg);
-    var dateLine = el("text", { x: 309, y: 721, "font-size": 22, "font-weight": "bold", fill: CYAN, "text-anchor": "middle", "letter-spacing": 1.2, "font-family": "Montserrat, Arial, sans-serif", filter: "url(#dcGlow)" }, svg);
+    var ampm = el("text", { x: x + 2, y: DY + DH - 2, "font-size": 51, "font-weight": "bold", fill: CYAN, "font-family": "Montserrat, Arial, sans-serif", filter: "url(#dcGlow)" }, digSvg);   // AM/PM 34 → 51 (50% 크게)
+    var dateLine = el("text", { x: VB_W / 2, y: 182, "font-size": 30, "font-weight": "bold", fill: CYAN, "text-anchor": "middle", "letter-spacing": 1.5, "font-family": "Montserrat, Arial, sans-serif", filter: "url(#dcGlow)" }, digSvg);
 
-    // 아주 작은 안내 문구 (창 밖으로 끌어낼 수 있는 브라우저면 그렇게 알려 줘요)
-    var HINT_KO = ("documentPictureInPicture" in window) ? "끌어서 옮기기 · 창 밖으로 끌면 따로 떠요" : "끌어서 옮기기 · 더블클릭: 최소화";
-    var HINT_EN = ("documentPictureInPicture" in window) ? "Drag to move · drag outside to pop out" : "Drag to move · Double-click: minimize";
-    var hint = el("text", { x: 309, y: 762, "font-size": 12, fill: "rgba(255,255,255,0.5)", "text-anchor": "middle", "font-family": "'Malgun Gothic', sans-serif" }, svg);
-    hint.textContent = T(HINT_KO, HINT_EN);
+    // 아주 작은 안내 문구 (디지털 판 맨 아래)
+    var CAN_PIP = "documentPictureInPicture" in window;
+    var HINT_HOME = CAN_PIP ? T("끌어서 옮기기 · 창 밖으로 끌면 따로 떠요", "Drag to move · drag outside to pop out")
+                            : T("끌어서 옮기기 · 더블클릭: 따로 띄우기", "Drag to move · Double-click: pop out");
+    var HINT_AWAY = T("끌어서 옮기기 · 더블클릭: 원래대로", "Drag to move · Double-click: restore");
+    var HINT_WIN = T("더블클릭: 원래대로", "Double-click: restore");
+    var hint = el("text", { x: VB_W / 2, y: 236, "font-size": 15, fill: "rgba(255,255,255,0.5)", "text-anchor": "middle", "font-family": "'Malgun Gothic', sans-serif" }, digSvg);
+    hint.textContent = HINT_HOME;
 
     /* ---------- 화면에 넣기 ---------- */
     var home = document.createElement("div");
     home.className = "dc-home";
-    var wrap = document.createElement("div");
-    wrap.className = "dc-wrap";
-    wrap.title = T("더블클릭하면 시계만 작게 떠요", "Double-click to pop the clock out in a small window");
-    wrap.appendChild(svg);
-    var ph = document.createElement("div");
-    ph.className = "dc-ph";
-    var PH_TEXT = T("시계가 작은 창으로 떠 있어요. 여기를 클릭하면 돌아와요.", "The clock is in a small window. Click here to bring it back.");
-    ph.textContent = PH_TEXT;
     var slot = document.createElement("div");
     slot.className = "dc-slot";
-    slot.appendChild(wrap);
-    slot.appendChild(ph);
+    function makePiece(key, svgEl, title, phText) {
+        var box = document.createElement("div");
+        box.className = "dc-box dc-box-" + key;
+        var wrap = document.createElement("div");
+        wrap.className = "dc-wrap dc-" + key;
+        wrap.title = title;
+        wrap.appendChild(svgEl);
+        var ph = document.createElement("div");
+        ph.className = "dc-ph";
+        ph.textContent = phText;
+        box.appendChild(wrap);
+        box.appendChild(ph);
+        return { key: key, box: box, wrap: wrap, ph: ph, phText: phText, win: null };
+    }
+    var ANA = makePiece("ana", anaSvg,
+        T("끌어서 옮기기 · 더블클릭: 따로 띄우기", "Drag to move · Double-click: pop out"),
+        T("시계가 다른 곳에 있어요. 누르면 돌아와요", "The clock is elsewhere. Click to bring it back"));
+    var DIG = makePiece("dig", digSvg,
+        T("끌어서 옮기기 · 더블클릭: 따로 띄우기", "Drag to move · Double-click: pop out"),
+        T("숫자 시계가 다른 곳에 있어요. 누르면 돌아와요", "The digital clock is elsewhere. Click to bring it back"));
+    var PIECES = [ANA, DIG];
+    var grip = document.createElement("div");
+    grip.className = "dc-grip";
+    grip.title = T("끌면 둘 다 같이 옮겨요 · 더블클릭: 같이 띄우기", "Drag to move both · Double-click: pop out both");
+    slot.appendChild(ANA.box);
+    slot.appendChild(grip);
+    slot.appendChild(DIG.box);
     home.appendChild(slot);
 
     var note = document.createElement("div");
@@ -401,6 +457,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         Promise.race([ready, new Promise(function (r) { setTimeout(r, 2500); })]).then(function () { setTimeout(run, 400); });
     })();
 
+
     /* ---------- 시간 갱신 ---------- */
     var timerWin = window, timer = null;
     function setDigit(segs, n) {
@@ -432,152 +489,224 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         update();
         timer = timerWin.setTimeout(tick, 1000 - (Date.now() % 1000) + 5);
     }
-    function restartTimer(win) {
+    /* 따로 떠 있는 창이 있으면 그 창의 시계로 갱신해요 (홈 탭이 가려져도 멈추지 않게) */
+    function retime() {
         if (timer) { try { timerWin.clearTimeout(timer); } catch (e) {} }
-        timerWin = win;
+        timerWin = window;
+        PIECES.forEach(function (p) { if (p.win && !p.win.closed && timerWin === window) timerWin = p.win; });
         tick();
     }
     document.addEventListener("visibilitychange", update);
     tick();
 
-    /* ---------- 더블클릭: 작게 띄우기 ---------- */
-    var pipWin = null;
-
-    function backHome() {
-        wrap.classList.remove("dc-float", "dc-moved");
-        wrap.style.left = wrap.style.top = wrap.style.right = wrap.style.bottom = wrap.style.width = "";
-        ph.textContent = PH_TEXT;
-        if (wrap.parentNode !== slot) slot.insertBefore(wrap, ph);
-        home.classList.remove("dc-away");
-        hint.textContent = T(HINT_KO, HINT_EN);
-        pipWin = null;
-        restartTimer(window);
+    /* ---------- 2026-11-28: 조각마다 자리 옮기기 · 따로 띄우기 ----------
+       상태: 홈 자리 / 홈페이지 위에 떠 있음(dc-float) / 따로 떠 있는 창(p.win)
+       따로 떠 있는 창: 먼저 "항상 위" 작은 창(Document Picture-in-Picture, 크롬·엣지)을 쓰고,
+       그 창이 이미 다른 조각으로 쓰이고 있거나 안 되는 브라우저면 보통 작은 창(팝업)을 써요.
+       팝업은 마우스를 놓은 화면 자리에 떠요. 두 창 모두 다른 모니터로 옮길 수 있어요. */
+    function hintUpdate() {
+        if (DIG.win) hint.textContent = HINT_WIN;
+        else if (DIG.wrap.classList.contains("dc-float")) hint.textContent = HINT_AWAY;
+        else hint.textContent = HINT_HOME;
+        var split = PIECES.some(function (p) { return p.win || p.wrap.classList.contains("dc-float"); });
+        home.classList.toggle("dc-split", split);
+    }
+    function clearFloat(p) {
+        p.wrap.classList.remove("dc-float", "dc-moved");
+        p.wrap.style.left = p.wrap.style.top = p.wrap.style.right = p.wrap.style.bottom = p.wrap.style.width = "";
+    }
+    function backHome(p) {
+        var w = p.win;
+        p.win = null;
+        if (w && !w.closed) { try { w.close(); } catch (e) {} }
+        clearFloat(p);
+        if (p.wrap.parentNode !== p.box) p.box.insertBefore(p.wrap, p.ph);
+        p.box.classList.remove("dc-away");
+        p.ph.textContent = p.phText;
+        hintUpdate();
+        retime();
+    }
+    function sendAway(p) {
+        p.box.classList.add("dc-away");
     }
 
-    /* 떠 있는 창 크기를 바꾸면 시계 비율대로 가로·세로를 같이 맞춰요.
-       (브라우저가 막으면, 크기를 바꾼 뒤 시계를 한 번 클릭하면 맞춰져요) */
-    function keepRatio(w) {
-        var ratio = VB_W / VB_H, lastW = w.innerWidth, lastH = w.innerHeight, t = null;
-        function fit() {
-            var iw = w.innerWidth, ih = w.innerHeight;
-            if (Math.abs(iw / ih - ratio) < 0.02) { lastW = iw; lastH = ih; return; }
-            var tw, th;
-            if (Math.abs(ih - lastH) / lastH > Math.abs(iw - lastW) / lastW) { th = ih; tw = Math.round(ih * ratio); }
-            else { tw = iw; th = Math.round(iw / ratio); }
-            try { w.resizeTo(tw + (w.outerWidth - iw), th + (w.outerHeight - ih)); } catch (e) {}
-            lastW = tw; lastH = th;
+    // 따로 떠 있는 창 크기 (조각 하나 / 둘 같이)
+    function winSize(list) {
+        if (list.length === 2) return { w: 260, h: 390 };
+        return list[0] === ANA ? { w: 250, h: 250 } : { w: 340, h: 140 };
+    }
+    function windowCss(list) {
+        var both = list.length === 2;
+        return "html,body{margin:0;height:100%;background:#16181d;overflow:hidden}" +
+            "body{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}" +
+            ".dc-wrap{cursor:pointer;user-select:none;-webkit-user-select:none}" +
+            ".dc-svg{display:block;width:100%;height:auto}" +
+            (both
+                ? ".dc-dig{width:96vw}.dc-ana{width:min(96vw,calc(96vh - 96vw*" + (DIG_VB_H / VB_W).toFixed(4) + " - 8px))}"
+                : ".dc-ana{width:min(96vw,96vh)}.dc-dig{width:min(96vw,calc(96vh*" + (VB_W / DIG_VB_H).toFixed(4) + "))}");
+    }
+
+    /* 조각(하나 또는 둘)을 따로 떠 있는 창으로. 성공하면 true, 못 띄우면 false */
+    async function openWindow(list, sx, sy) {
+        var size = winSize(list), w = null, isPip = false;
+        var pip = CAN_PIP && !window.documentPictureInPicture.window;
+        if (pip) {
+            try { w = await window.documentPictureInPicture.requestWindow({ width: size.w, height: size.h }); isPip = true; }
+            catch (e) { w = null; }
         }
-        w.addEventListener("resize", function () { w.clearTimeout(t); t = w.setTimeout(fit, 250); });
-        w.document.addEventListener("click", fit);
-    }
-
-    async function popOut(fromDrag) {
-        if (pipWin) { pipWin.close(); return; }                       // 떠 있는 창 → 원래대로
-        if (!fromDrag && wrap.classList.contains("dc-float")) { backHome(); return; }
-
-        if ("documentPictureInPicture" in window) {
-            try {
-                var w = await window.documentPictureInPicture.requestWindow({ width: POPUP_W, height: POPUP_H });
-                var font = document.querySelector('link[href*="fonts.googleapis.com/css2"]');
-                if (font) w.document.head.appendChild(font.cloneNode());
-                var st = w.document.createElement("style");
-                st.textContent = "html,body{margin:0;height:100%;background:#16181d;overflow:hidden}" +
-                    "body{display:block}" +
-                    ".dc-wrap{width:100%;height:100%;cursor:pointer;user-select:none;-webkit-user-select:none}" +
-                    ".dc-svg{display:block;width:100%;height:100%}";
-                w.document.head.appendChild(st);
-                w.document.title = T("시계", "Clock");
-                wrap.classList.remove("dc-float", "dc-moved");   // 끌어서 옮기던 자리 정보는 지우고 창에 꽉 차게
-                wrap.style.left = wrap.style.top = wrap.style.right = wrap.style.bottom = wrap.style.width = "";
-                w.document.body.appendChild(wrap);
-                home.classList.add("dc-away");
-                hint.textContent = T("더블클릭: 원래대로", "Double-click: restore");
-                pipWin = w;
-                restartTimer(w);   // 떠 있는 창 기준으로 갱신 (탭이 가려져도 멈추지 않게)
-                w.addEventListener("pagehide", backHome);
-                keepRatio(w);
-                return;
-            } catch (e) { if (fromDrag) return false; /* 실패하면 아래 방식으로 */ }
+        if (!w) {
+            var feat = "popup=yes,width=" + size.w + ",height=" + size.h;
+            if (sx != null) feat += ",left=" + Math.round(sx - size.w / 2) + ",top=" + Math.round(sy - 20);
+            try { w = window.open("", "dcClock_" + list.map(function (p) { return p.key; }).join("_"), feat); } catch (e) { w = null; }
+            if (!w) return false;
+            try { w.document.body.innerHTML = ""; } catch (e) { return false; }   // 같은 이름의 예전 창이면 비우고 다시 써요
         }
-        if (fromDrag) return false;   // 끌던 중이면 그냥 화면 안에 그대로 둬요
-        // 지원하지 않는 브라우저: 홈페이지 화면 위에 떠 있게
-        document.body.appendChild(wrap);
-        wrap.classList.add("dc-float");
-        home.classList.add("dc-away");
-        hint.textContent = T("더블클릭: 원래대로", "Double-click: restore");
+        var doc = w.document;
+        var font = document.querySelector('link[href*="fonts.googleapis.com/css2"]');
+        if (font) doc.head.appendChild(font.cloneNode());
+        var st = doc.createElement("style");
+        st.textContent = windowCss(list);
+        doc.head.appendChild(st);
+        doc.title = T("시계", "Clock");
+        list.forEach(function (p) {
+            clearFloat(p);
+            p.win = w;
+            doc.body.appendChild(p.wrap);
+            sendAway(p);
+        });
+        var done = false;
+        function closed() {
+            if (done) return;
+            done = true;
+            list.forEach(function (p) { if (p.win === w) { p.win = null; backHome(p); } });
+        }
+        w.addEventListener("pagehide", closed);
+        w.addEventListener("beforeunload", closed);
+        if (!isPip) {   // 팝업은 닫혀도 pagehide가 안 오는 브라우저가 있어서 가끔 확인
+            var chk = setInterval(function () { if (w.closed) { clearInterval(chk); closed(); } }, 700);
+        }
+        hintUpdate();
+        retime();
+        return true;
     }
 
-    /* ---------- 2026-11-23: 마우스로 끌어서 옮기기 (PC만) ----------
-       시계를 누른 채 6px 넘게 움직이면 홈 칸에서 떨어져 나와 마우스를 따라오고, 놓은 자리에 머물러요.
-       옮겨 둔 시계도 다시 끌 수 있고, 더블클릭하면 원래 자리로 돌아와요.
-       홈 자리에서 그냥 더블클릭하면 예전처럼 작은 창(항상 위)으로 떠요. */
+    // 홈페이지 위에 떠 있게 (작은 창을 못 띄울 때)
+    function floatInPage(p) {
+        document.body.appendChild(p.wrap);
+        p.wrap.classList.add("dc-float");
+        sendAway(p);
+        hintUpdate();
+    }
+
+    // 더블클릭: 홈 자리 → 따로 띄우기, 떠 있으면 → 원래대로
+    async function toggle(list) {
+        var away = list.filter(function (p) { return p.win || p.wrap.classList.contains("dc-float"); });
+        if (away.length) { away.forEach(backHome); return; }
+        if (window.matchMedia(MOBILE_QUERY).matches) { list.forEach(floatInPage); return; }   // 폰: 작은 창 대신 화면 위에
+        var ok = await openWindow(list);
+        if (!ok) list.forEach(floatInPage);
+    }
+
+    /* ---------- 마우스로 끌어서 옮기기 (PC만) ----------
+       시계(또는 숫자 판)를 누른 채 6px 넘게 움직이면 홈 칸에서 떨어져 나와 마우스를 따라오고, 놓은 자리에 머물러요.
+       끌다가 마우스가 브라우저 창 밖으로 나가면 따로 떠 있는 창이 돼요 → 다른 모니터로 옮길 수 있어요.
+       둘 사이 손잡이를 끌면 두 조각이 같이 움직여요. */
     var drag = null;
-    var canLeave = "documentPictureInPicture" in window;   // 창 밖으로 끌어내기 가능한 브라우저(크롬·엣지 116+)
-    function canDrag(e) {
-        return e.button === 0 && e.pointerType === "mouse" && !pipWin &&
-            wrap.ownerDocument === document && window.innerWidth > 768;
+    function canDrag(e, list) {
+        return e.button === 0 && e.pointerType === "mouse" && window.innerWidth > 768 &&
+            list.every(function (p) { return !p.win && p.wrap.ownerDocument === document; });
     }
-    function placeAt(x, y) {
-        var r = wrap.getBoundingClientRect();
-        x = Math.max(0, Math.min(x, window.innerWidth - r.width));
-        y = Math.max(0, Math.min(y, window.innerHeight - r.height));
-        wrap.style.left = x + "px"; wrap.style.top = y + "px";
-        wrap.style.right = "auto"; wrap.style.bottom = "auto";
+    function startDrag(e, list, captureEl) {
+        if (!canDrag(e, list)) return;
+        drag = {
+            id: e.pointerId, x: e.clientX, y: e.clientY, moved: false, leaving: false, list: list, cap: captureEl,
+            parts: list.map(function (p) {
+                var r = p.wrap.getBoundingClientRect();
+                return { p: p, dx: e.clientX - r.left, dy: e.clientY - r.top, w: r.width, h: r.height };
+            })
+        };
+        try { captureEl.setPointerCapture(e.pointerId); } catch (err) {}   // 마우스가 브라우저 창 밖으로 나가도 계속 따라가게
     }
-    function detach(width) {
-        if (wrap.classList.contains("dc-moved")) return;
-        document.body.appendChild(wrap);
-        wrap.classList.add("dc-float", "dc-moved");
-        wrap.style.width = width + "px";
-        home.classList.add("dc-away");
-        ph.textContent = T("시계를 옮겨 두었어요. 여기를 클릭하거나 시계를 더블클릭하면 돌아와요.", "The clock has been moved. Click here or double-click it to bring it back.");
-        hint.textContent = T("끌어서 옮기기 · 더블클릭: 원래대로", "Drag to move · Double-click: restore");
+    function detach(part) {
+        var p = part.p;
+        if (p.wrap.classList.contains("dc-moved")) return;
+        document.body.appendChild(p.wrap);
+        p.wrap.classList.add("dc-float", "dc-moved");
+        p.wrap.style.width = part.w + "px";
+        sendAway(p);
     }
-    wrap.addEventListener("pointerdown", function (e) {
-        if (!canDrag(e)) return;
-        var r = wrap.getBoundingClientRect();
-        drag = { id: e.pointerId, x: e.clientX, y: e.clientY, dx: e.clientX - r.left, dy: e.clientY - r.top, w: r.width, moved: false };
-        try { wrap.setPointerCapture(e.pointerId); } catch (err) {}   // 마우스가 브라우저 창 밖으로 나가도 계속 따라가게
+    function placeAll(cx, cy) {
+        // 묶음 전체가 화면 안에 머물게 (같이 옮길 때 서로 자리가 어긋나지 않게)
+        var L = Infinity, Tp = Infinity, R = -Infinity, B = -Infinity;
+        drag.parts.forEach(function (q) {
+            var x = cx - q.dx, y = cy - q.dy;
+            L = Math.min(L, x); Tp = Math.min(Tp, y); R = Math.max(R, x + q.w); B = Math.max(B, y + q.h);
+        });
+        var sx = 0, sy = 0;
+        if (L < 0) sx = -L; else if (R > window.innerWidth) sx = window.innerWidth - R;
+        if (Tp < 0) sy = -Tp; else if (B > window.innerHeight) sy = window.innerHeight - B;
+        drag.parts.forEach(function (q) {
+            var w = q.p.wrap;
+            w.style.left = (cx - q.dx + sx) + "px"; w.style.top = (cy - q.dy + sy) + "px";
+            w.style.right = "auto"; w.style.bottom = "auto";
+        });
+    }
+    function endDrag() {
+        if (!drag) return;
+        try { drag.cap.releasePointerCapture(drag.id); } catch (err) {}
+        document.documentElement.classList.remove("dc-dragging");
+        drag = null;
+    }
+    ANA.wrap.addEventListener("pointerdown", function (e) { startDrag(e, [ANA], ANA.wrap); });
+    DIG.wrap.addEventListener("pointerdown", function (e) { startDrag(e, [DIG], DIG.wrap); });
+    grip.addEventListener("pointerdown", function (e) {
+        if (ANA.box.classList.contains("dc-away") || DIG.box.classList.contains("dc-away")) return;
+        startDrag(e, [ANA, DIG], grip);
     });
     document.addEventListener("pointermove", function (e) {
         if (!drag || e.pointerId !== drag.id) return;
         if (!drag.moved) {
             if (Math.abs(e.clientX - drag.x) + Math.abs(e.clientY - drag.y) < 6) return;
             drag.moved = true;
-            detach(drag.w);
+            drag.parts.forEach(detach);
+            hintUpdate();
             document.documentElement.classList.add("dc-dragging");
         }
         e.preventDefault();
-        /* 2026-11-28: 마우스가 브라우저 창 밖으로 나가면 시계를 "항상 위" 작은 창으로 띄워요.
-           그 창은 윗부분을 잡고 다른 모니터까지 옮길 수 있어요 (크롬·엣지. 지원 안 하면 화면 안에 그대로) */
-        if (canLeave && !drag.leaving &&
+        if (!drag.leaving &&
             (e.clientX <= 0 || e.clientY <= 0 || e.clientX >= window.innerWidth - 1 || e.clientY >= window.innerHeight - 1)) {
             drag.leaving = true;
-            var d = drag;
-            Promise.resolve(popOut(true)).then(function (ok) {
-                if (ok === false && drag === d) d.leaving = false;   // 못 띄우면(시간이 오래 지나 브라우저가 막는 등) 그냥 화면 안에서 계속
-                else if (ok !== false) endDrag();
+            var dd = drag;
+            openWindow(dd.list, e.screenX, e.screenY).then(function (ok) {
+                if (ok) { if (drag === dd) endDrag(); }
+                else if (drag === dd) dd.leaving = false;   // 못 띄우면(브라우저가 막는 등) 그냥 화면 안에서 계속
             });
         }
-        if (drag.leaving) return;   // 작은 창으로 옮기는 중에는 그대로
-        placeAt(e.clientX - drag.dx, e.clientY - drag.dy);
+        if (drag.leaving) return;   // 따로 떠 있는 창으로 옮기는 중에는 그대로
+        placeAll(e.clientX, e.clientY);
     });
-    function endDrag() {
-        if (!drag) return;
-        try { wrap.releasePointerCapture(drag.id); } catch (err) {}
-        document.documentElement.classList.remove("dc-dragging");
-        drag = null;
-    }
     document.addEventListener("pointerup", endDrag);
     document.addEventListener("pointercancel", endDrag);
     window.addEventListener("resize", function () {
-        if (!wrap.classList.contains("dc-moved")) return;
-        if (window.innerWidth <= 768) { backHome(); return; }
-        var r = wrap.getBoundingClientRect(); placeAt(r.left, r.top);
+        var moved = PIECES.filter(function (p) { return p.wrap.classList.contains("dc-moved"); });
+        if (!moved.length) return;
+        if (window.innerWidth <= 768) { moved.forEach(backHome); return; }
+        moved.forEach(function (p) {
+            var r = p.wrap.getBoundingClientRect();
+            var x = Math.max(0, Math.min(r.left, window.innerWidth - r.width));
+            var y = Math.max(0, Math.min(r.top, window.innerHeight - r.height));
+            p.wrap.style.left = x + "px"; p.wrap.style.top = y + "px";
+        });
+    });
+    // 홈페이지를 닫거나 다른 곳으로 가면 따로 떠 있는 창도 닫아요
+    window.addEventListener("pagehide", function () {
+        PIECES.forEach(function (p) { if (p.win && !p.win.closed) { try { p.win.close(); } catch (e) {} } });
     });
 
-    wrap.addEventListener("dblclick", function (e) { e.preventDefault(); popOut(); });
-    ph.addEventListener("click", function () {
-        if (pipWin) pipWin.close(); else backHome();
-    });
+    ANA.wrap.addEventListener("dblclick", function (e) { e.preventDefault(); toggle(ANA.win && ANA.win === DIG.win ? [ANA, DIG] : [ANA]); });
+    DIG.wrap.addEventListener("dblclick", function (e) { e.preventDefault(); toggle(ANA.win && ANA.win === DIG.win ? [ANA, DIG] : [DIG]); });
+    grip.addEventListener("dblclick", function (e) { e.preventDefault(); toggle([ANA, DIG]); });
+    ANA.ph.addEventListener("click", function () { backHome(ANA); });
+    DIG.ph.addEventListener("click", function () { backHome(DIG); });
+    hintUpdate();
 })();
