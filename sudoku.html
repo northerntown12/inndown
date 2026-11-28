@@ -26,6 +26,22 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Noto+Sans+KR:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="sudoku.css">
+    <style>
+        /* 2026-11-28: 판 아래 설명 글 (검색엔진·처음 오신 분용) */
+        .g-guide { max-width: 1180px; margin: 14px auto 0; padding: 0 16px; }
+        .g-guide-in { background: #fffdf6; border: 1px solid #e6d8bb; border-radius: 14px; padding: 22px 26px 18px; color: #3a3024; font-size: 0.95rem; line-height: 1.8; }
+        .g-guide h2 { margin: 0 0 8px; font-size: 1.22rem; color: #36347a; }
+        .g-guide h3 { margin: 22px 0 6px; padding-left: 10px; border-left: 4px solid #b3b1f2; font-size: 1.02rem; color: #36347a; }
+        .g-guide p { margin: 6px 0; }
+        .g-guide ul, .g-guide ol { margin: 6px 0; padding-left: 1.3em; }
+        .g-guide li { margin: 3px 0; }
+        .g-guide dt { margin-top: 10px; font-weight: 700; color: #36347a; }
+        .g-guide dd { margin: 2px 0 0; }
+        @media (max-width: 640px) {
+            .g-guide { padding: 0 8px; }
+            .g-guide-in { padding: 16px 16px 12px; font-size: 0.93rem; }
+        }
+    </style>
 </head>
 <body>
     <header class="g-top">
@@ -119,6 +135,42 @@
             </details>
         </aside>
     </main>
+
+    <!-- 2026-11-28: 설명 글 / guide text -->
+    <section class="g-guide" aria-labelledby="gGuideTitle">
+        <div class="g-guide-in">
+            <h2 id="gGuideTitle">스도쿠, 이렇게 즐겨요</h2>
+            <p>스도쿠는 9×9 판의 빈칸에 1부터 9까지 숫자를 채우는 퍼즐이에요. 계산은 전혀 필요 없고, 논리만으로 풀 수 있어요. WowEzBox의 <b>오늘의 스도쿠</b>는 날마다 새 문제가 나오고 그날은 누구나 같은 문제를 풀어요. <b>연습</b>에서는 원하는 난이도로 몇 문제든 풀 수 있어요.</p>
+
+            <h3>처음 푸는 분을 위한 순서</h3>
+            <ol>
+                <li>숫자가 많이 채워진 줄이나 상자부터 보세요. 빈칸이 적을수록 답이 빨리 보여요.</li>
+                <li>숫자 하나를 정해(예: 1) 판 전체에서 그 숫자가 들어갈 수 있는 자리를 찾아요. 1부터 9까지 차례로 해 보세요.</li>
+                <li>막히면 <b>✏️ 메모</b>를 켜고 칸마다 들어갈 수 있는 숫자를 작게 적어 두세요. [후보 숫자 모두 채우기]를 누르면 한 번에 적어 줘요.</li>
+                <li>그래도 막히면 💡 <b>힌트</b>를 눌러 보세요. 다음 칸과 함께 왜 그 숫자인지 설명해 줘요.</li>
+            </ol>
+
+            <h3>기본 풀이 기술</h3>
+            <ul>
+                <li><b>하나만 남은 칸</b>: 한 칸에 들어갈 수 있는 숫자가 하나뿐이면 그 숫자예요.</li>
+                <li><b>하나만 남은 자리</b>: 한 줄이나 상자에서 어떤 숫자가 들어갈 수 있는 칸이 하나뿐이면 그 칸이에요.</li>
+                <li><b>줄과 상자 겹치기</b>: 한 상자 안에서 어떤 숫자의 후보가 한 줄에만 있으면, 그 줄의 다른 상자에서는 그 숫자를 지울 수 있어요.</li>
+                <li><b>짝 숫자</b>: 같은 줄에서 두 칸의 후보가 똑같이 두 숫자뿐이면, 두 숫자는 그 두 칸에 들어가요. 그 줄의 다른 칸에서는 두 숫자를 지울 수 있어요.</li>
+                <li><b>X-윙</b>: 어려운 문제에서 쓰는 기술이에요. 두 가로줄에서 어떤 숫자의 후보가 똑같은 두 세로줄에만 있으면, 그 두 세로줄의 다른 칸에서 그 숫자를 지울 수 있어요.</li>
+            </ul>
+            <p>난이도는 문제를 푸는 데 필요한 기술로 정해요. 쉬움은 앞의 두 가지만으로 풀리고, 단계가 올라갈수록 뒤쪽 기술이 필요해요.</p>
+
+            <h3>자주 묻는 질문</h3>
+            <dl>
+                <dt>찍어서 넣어야 할 때도 있나요?</dt>
+                <dd>아니요. 모든 문제는 답이 딱 하나라서 추측 없이 논리만으로 풀 수 있어요.</dd>
+                <dt>시간 제한이 있나요?</dt>
+                <dd>없어요. 걸린 시간은 기록으로만 남아요. 쉬고 싶을 땐 ⏸ 일시정지를 누르세요.</dd>
+                <dt>오늘의 문제는 언제 바뀌나요?</dt>
+                <dd>날짜가 바뀌면 새 문제가 나와요. 매일 풀면 🔥 연속 기록이 쌓여요.</dd>
+            </dl>
+        </div>
+    </section>
 
     <footer class="g-foot">Copyright © 2026 WowEzBox. All rights reserved.</footer>
 

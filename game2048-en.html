@@ -26,6 +26,22 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="game2048.css?v=6">
+    <style>
+        /* 2026-11-28: 판 아래 설명 글 (검색엔진·처음 오신 분용) */
+        .g-guide { max-width: 860px; margin: 14px auto 0; padding: 0 16px; }
+        .g-guide-in { background: #fffdf6; border: 1px solid #e6d8bb; border-radius: 14px; padding: 22px 26px 18px; color: #3a3024; font-size: 0.95rem; line-height: 1.8; }
+        .g-guide h2 { margin: 0 0 8px; font-size: 1.22rem; color: #36347a; }
+        .g-guide h3 { margin: 22px 0 6px; padding-left: 10px; border-left: 4px solid #b3b1f2; font-size: 1.02rem; color: #36347a; }
+        .g-guide p { margin: 6px 0; }
+        .g-guide ul, .g-guide ol { margin: 6px 0; padding-left: 1.3em; }
+        .g-guide li { margin: 3px 0; }
+        .g-guide dt { margin-top: 10px; font-weight: 700; color: #36347a; }
+        .g-guide dd { margin: 2px 0 0; }
+        @media (max-width: 640px) {
+            .g-guide { padding: 0 8px; }
+            .g-guide-in { padding: 16px 16px 12px; font-size: 0.93rem; }
+        }
+    </style>
 </head>
 <body>
     <header class="g-top">
@@ -99,6 +115,37 @@
             </details>
         </aside>
     </main>
+
+    <!-- 2026-11-28: 설명 글 / guide text -->
+    <section class="g-guide" aria-labelledby="gGuideTitle">
+        <div class="g-guide-in">
+            <h2 id="gGuideTitle">How to enjoy 2048</h2>
+            <p>2048 is a number puzzle on a 4×4 board: slide the tiles so that matching numbers merge, and try to make a <b>2048</b> tile. A game takes just a few minutes, so it is perfect for a short break, and with no time limit you can think each move through. It works on computers and phones with no sign-up.</p>
+
+            <h3>How does scoring work?</h3>
+            <p>When two tiles merge, you score the value of the new tile: two 8s make 16 points, two 256s make 512. So the bigger the tiles you build, the faster your score grows. New tiles are usually 2s, with a 4 about one time in ten.</p>
+
+            <h3>Tips for a higher score</h3>
+            <ul>
+                <li><b>Keep your biggest tile in a corner.</b> Pick one, say bottom-left, and never let the biggest tile leave it.</li>
+                <li><b>Use only two or three directions.</b> With a bottom-left corner, slide mostly ← and ↓, and use → only when stuck. Avoid ↑, which tends to pull the big tile out of its corner.</li>
+                <li><b>Build in order.</b> Lining tiles up from the corner in decreasing order (512, 256, 128…) lets them merge in a chain.</li>
+                <li><b>Keep space free.</b> With few empty cells, new tiles land in awkward places. Merge small tiles early.</li>
+                <li><b>Take your time.</b> There is no clock, so look at where the gaps will open before each slide.</li>
+                <li><b>Save Undo for slips.</b> It only takes back the last move.</li>
+            </ul>
+
+            <h3>FAQ</h3>
+            <dl>
+                <dt>Does the game end at 2048?</dt>
+                <dd>No. Press [Keep going] to aim for 4096, 8192 and beyond.</dd>
+                <dt>Where are my records kept?</dt>
+                <dd>Your best score and biggest tile are saved only in this device's browser, so each device keeps its own records.</dd>
+                <dt>How do I play on a phone?</dt>
+                <dd>Swipe up, down, left or right on the board.</dd>
+            </dl>
+        </div>
+    </section>
 
     <footer class="g-foot">Copyright © 2026 WowEzBox. All rights reserved.</footer>
 

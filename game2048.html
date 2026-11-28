@@ -26,6 +26,22 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="game2048.css?v=6">
+    <style>
+        /* 2026-11-28: 판 아래 설명 글 (검색엔진·처음 오신 분용) */
+        .g-guide { max-width: 860px; margin: 14px auto 0; padding: 0 16px; }
+        .g-guide-in { background: #fffdf6; border: 1px solid #e6d8bb; border-radius: 14px; padding: 22px 26px 18px; color: #3a3024; font-size: 0.95rem; line-height: 1.8; }
+        .g-guide h2 { margin: 0 0 8px; font-size: 1.22rem; color: #36347a; }
+        .g-guide h3 { margin: 22px 0 6px; padding-left: 10px; border-left: 4px solid #b3b1f2; font-size: 1.02rem; color: #36347a; }
+        .g-guide p { margin: 6px 0; }
+        .g-guide ul, .g-guide ol { margin: 6px 0; padding-left: 1.3em; }
+        .g-guide li { margin: 3px 0; }
+        .g-guide dt { margin-top: 10px; font-weight: 700; color: #36347a; }
+        .g-guide dd { margin: 2px 0 0; }
+        @media (max-width: 640px) {
+            .g-guide { padding: 0 8px; }
+            .g-guide-in { padding: 16px 16px 12px; font-size: 0.93rem; }
+        }
+    </style>
 </head>
 <body>
     <header class="g-top">
@@ -103,6 +119,37 @@
             </details>
         </aside>
     </main>
+
+    <!-- 2026-11-28: 설명 글 / guide text -->
+    <section class="g-guide" aria-labelledby="gGuideTitle">
+        <div class="g-guide-in">
+            <h2 id="gGuideTitle">2048, 이렇게 즐겨요</h2>
+            <p>2048은 4×4 판에서 같은 숫자 타일을 밀어 합쳐 <b>2048</b>을 만드는 숫자 퍼즐이에요. 한 판이 몇 분이면 끝나서 잠깐 쉴 때 하기 좋고, 시간 제한이 없어 천천히 생각하며 둘 수 있어요. 회원가입 없이 PC와 폰에서 바로 할 수 있어요.</p>
+
+            <h3>점수는 어떻게 오르나요?</h3>
+            <p>두 타일이 합쳐질 때 새로 생긴 숫자만큼 점수가 올라요. 8과 8이 합쳐지면 16점, 256과 256이 합쳐지면 512점이에요. 그래서 큰 숫자를 만들수록 점수가 빨리 올라요. 새로 나오는 타일은 대부분 2이고, 열 번에 한 번쯤 4가 나와요.</p>
+
+            <h3>높은 점수를 위한 요령</h3>
+            <ul>
+                <li><b>가장 큰 타일은 한 구석에.</b> 예를 들어 왼쪽 아래 구석을 정하고, 가장 큰 타일이 그 구석을 떠나지 않게 해요.</li>
+                <li><b>두세 방향만 쓰세요.</b> 구석이 왼쪽 아래라면 ←와 ↓를 주로 쓰고, 막힐 때만 →를 써요. ↑는 되도록 쓰지 않아요. 큰 타일이 구석에서 빠져나오기 쉬워요.</li>
+                <li><b>크기 순서로 쌓으세요.</b> 구석부터 512, 256, 128…처럼 차례로 작아지게 놓으면 한 번에 연달아 합쳐져요.</li>
+                <li><b>빈칸을 넉넉히.</b> 빈칸이 적으면 새 타일이 엉뚱한 곳에 생겨 막혀요. 작은 타일은 미리미리 합쳐 두세요.</li>
+                <li><b>서두르지 마세요.</b> 시간 제한이 없으니, 밀기 전에 어디에 빈칸이 생기는지 한 번 더 보세요.</li>
+                <li><b>되돌리기는 아껴서.</b> 바로 전 한 번만 돼요. 손이 미끄러졌을 때를 위해 남겨 두세요.</li>
+            </ul>
+
+            <h3>자주 묻는 질문</h3>
+            <dl>
+                <dt>2048을 만들면 끝인가요?</dt>
+                <dd>아니요. [계속하기]를 누르면 4096, 8192처럼 더 큰 숫자에 계속 도전할 수 있어요.</dd>
+                <dt>기록은 어디에 남나요?</dt>
+                <dd>최고 점수와 가장 큰 타일 같은 기록은 이 기기의 브라우저에만 저장돼요. 다른 기기에서는 따로 쌓여요.</dd>
+                <dt>폰에서는 어떻게 하나요?</dt>
+                <dd>판 위에서 손가락으로 위·아래·왼쪽·오른쪽으로 밀면 돼요.</dd>
+            </dl>
+        </div>
+    </section>
 
     <footer class="g-foot">Copyright © 2026 WowEzBox. All rights reserved.</footer>
 

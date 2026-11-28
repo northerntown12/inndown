@@ -26,6 +26,22 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Noto+Sans+KR:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="sudoku.css">
+    <style>
+        /* 2026-11-28: 판 아래 설명 글 (검색엔진·처음 오신 분용) */
+        .g-guide { max-width: 1180px; margin: 14px auto 0; padding: 0 16px; }
+        .g-guide-in { background: #fffdf6; border: 1px solid #e6d8bb; border-radius: 14px; padding: 22px 26px 18px; color: #3a3024; font-size: 0.95rem; line-height: 1.8; }
+        .g-guide h2 { margin: 0 0 8px; font-size: 1.22rem; color: #36347a; }
+        .g-guide h3 { margin: 22px 0 6px; padding-left: 10px; border-left: 4px solid #b3b1f2; font-size: 1.02rem; color: #36347a; }
+        .g-guide p { margin: 6px 0; }
+        .g-guide ul, .g-guide ol { margin: 6px 0; padding-left: 1.3em; }
+        .g-guide li { margin: 3px 0; }
+        .g-guide dt { margin-top: 10px; font-weight: 700; color: #36347a; }
+        .g-guide dd { margin: 2px 0 0; }
+        @media (max-width: 640px) {
+            .g-guide { padding: 0 8px; }
+            .g-guide-in { padding: 16px 16px 12px; font-size: 0.93rem; }
+        }
+    </style>
 </head>
 <body>
     <header class="g-top">
@@ -119,6 +135,42 @@
             </details>
         </aside>
     </main>
+
+    <!-- 2026-11-28: 설명 글 / guide text -->
+    <section class="g-guide" aria-labelledby="gGuideTitle">
+        <div class="g-guide-in">
+            <h2 id="gGuideTitle">How to enjoy Sudoku</h2>
+            <p>Sudoku is a puzzle where you fill the empty cells of a 9×9 grid with the numbers 1 to 9. No arithmetic is needed; it is pure logic. On WowEzBox, <b>Daily</b> gives you a new puzzle every day, the same for everyone that day, and <b>Practice</b> lets you solve as many puzzles as you like at the level you choose.</p>
+
+            <h3>Where to start</h3>
+            <ol>
+                <li>Look first at rows and boxes that are nearly full; the fewer empty cells, the sooner the answer shows.</li>
+                <li>Pick one number (say 1) and look for where it can go across the whole grid. Work through 1 to 9.</li>
+                <li>When stuck, turn on <b>✏️ Notes</b> and jot the possible numbers in each cell. [Fill in all candidates] does it in one go.</li>
+                <li>Still stuck? Press 💡 <b>Hint</b>. It shows the next cell and explains why that number goes there.</li>
+            </ol>
+
+            <h3>Basic techniques</h3>
+            <ul>
+                <li><b>Naked single</b>: if only one number can go in a cell, that's the answer.</li>
+                <li><b>Hidden single</b>: if a number fits in only one cell of a row, column or box, it goes there.</li>
+                <li><b>Box-line interaction</b>: if, inside a box, a number's candidates all lie on one line, you can remove that number from the same line in the other boxes.</li>
+                <li><b>Naked pair</b>: if two cells in a row have the same two candidates and nothing else, those two numbers belong to those cells, so remove them from the rest of the row.</li>
+                <li><b>X-Wing</b>: for harder puzzles. If in two rows a number's candidates sit in the same two columns only, you can remove that number from the other cells of those columns.</li>
+            </ul>
+            <p>Levels are set by the techniques a puzzle needs: Easy can be solved with the first two, and higher levels need the later ones.</p>
+
+            <h3>FAQ</h3>
+            <dl>
+                <dt>Will I ever have to guess?</dt>
+                <dd>No. Every puzzle has exactly one solution, so it can be solved by logic alone.</dd>
+                <dt>Is there a time limit?</dt>
+                <dd>No. The time is only recorded. Press ⏸ to pause whenever you need a break.</dd>
+                <dt>When does the daily puzzle change?</dt>
+                <dd>A new puzzle appears when the date changes. Solve it every day to build your 🔥 streak.</dd>
+            </dl>
+        </div>
+    </section>
 
     <footer class="g-foot">Copyright © 2026 WowEzBox. All rights reserved.</footer>
 

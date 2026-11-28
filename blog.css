@@ -800,3 +800,18 @@ body.info-page.pg-contact { --accent: #f07a52; --accent-soft: #ffe3d8; }
 .info-bar .ib-pop6::after { content: ""; position: absolute; left: 0; top: -4px; width: 100%; height: 4px; }
 .info-bar .ib-game:hover .ib-pop6 { transition-delay: 0.6s; clip-path: inset(-4px 0 0 -4px round 5px); }
 .info-bar .ib-game:is(:focus-visible, :has(:focus-visible)) .ib-pop6 { transition-delay: 0.6s; clip-path: inset(-4px 0 0 -4px round 5px); }
+
+/* 2026-11-28: "생활 도구" 막대 펼침 5칸 → 7칸
+   단위 환산 · 만 나이 · 퇴직금 · 시급 · 계산기(그래파이트) · 타이머(잉크 보라) · 전체 도구(분홍)
+   색은 각 도구 페이지 테마와 맞춤. 0.12초씩 늦게 차례로 펼쳐짐 */
+.info-bar .ib-pop7 { top: calc(6 * (100% + 3px)); }
+.info-bar :is(.ib-pop3, .ib-pop4, .ib-pop5, .ib-pop7)::after {   /* 위 막대와의 3px 틈에서도 마우스가 끊기지 않게 */
+    content: ""; position: absolute; left: 0; top: -4px; width: 100%; height: 4px;
+}
+.info-bar .ib-tools .ib-pop5 { background: linear-gradient(90deg, #434c5e, #8a93a6); color: #fff; text-shadow: 0 1px 1px rgba(0, 0, 0, 0.25); }  /* 계산기: 그래파이트 */
+.info-bar .ib-tools .ib-pop6 { background: linear-gradient(90deg, #4b2370, #9a6cc8); color: #fff; text-shadow: 0 1px 1px rgba(0, 0, 0, 0.25); }  /* 타이머: 잉크 보라 */
+.info-bar .ib-tools .ib-pop7 { background: linear-gradient(90deg, #f3a6c8, #fde0ec); color: #7a2450; text-shadow: none; }                         /* 전체 도구: 분홍 */
+.info-bar .ib-tools:hover .ib-pop6 { transition-delay: 0.6s; clip-path: inset(-4px 0 0 -4px round 5px); }
+.info-bar .ib-tools:is(:focus-visible, :has(:focus-visible)) .ib-pop6 { transition-delay: 0.6s; clip-path: inset(-4px 0 0 -4px round 5px); }
+.info-bar .ib-tools:hover .ib-pop7 { transition-delay: 0.72s; clip-path: inset(-4px 0 0 -4px round 5px); }
+.info-bar .ib-tools:is(:focus-visible, :has(:focus-visible)) .ib-pop7 { transition-delay: 0.72s; clip-path: inset(-4px 0 0 -4px round 5px); }
