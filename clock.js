@@ -151,9 +151,11 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
     var ampm = el("text", { x: x + 1, y: DY + DH - 1, "font-size": 20, "font-weight": "bold", fill: CYAN, "font-family": "Montserrat, Arial, sans-serif", filter: "url(#dcGlow)" }, svg);
     var dateLine = el("text", { x: 309, y: 721, "font-size": 22, "font-weight": "bold", fill: CYAN, "text-anchor": "middle", "letter-spacing": 1.2, "font-family": "Montserrat, Arial, sans-serif", filter: "url(#dcGlow)" }, svg);
 
-    // 아주 작은 안내 문구
+    // 아주 작은 안내 문구 (창 밖으로 끌어낼 수 있는 브라우저면 그렇게 알려 줘요)
+    var HINT_KO = ("documentPictureInPicture" in window) ? "끌어서 옮기기 · 창 밖으로 끌면 따로 떠요" : "끌어서 옮기기 · 더블클릭: 최소화";
+    var HINT_EN = ("documentPictureInPicture" in window) ? "Drag to move · drag outside to pop out" : "Drag to move · Double-click: minimize";
     var hint = el("text", { x: 309, y: 762, "font-size": 12, fill: "rgba(255,255,255,0.5)", "text-anchor": "middle", "font-family": "'Malgun Gothic', sans-serif" }, svg);
-    hint.textContent = T("끌어서 옮기기 · 더블클릭: 최소화", "Drag to move · Double-click: minimize");
+    hint.textContent = T(HINT_KO, HINT_EN);
 
     /* ---------- 화면에 넣기 ---------- */
     var home = document.createElement("div");
@@ -447,7 +449,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         ph.textContent = PH_TEXT;
         if (wrap.parentNode !== slot) slot.insertBefore(wrap, ph);
         home.classList.remove("dc-away");
-        hint.textContent = T("끌어서 옮기기 · 더블클릭: 최소화", "Drag to move · Double-click: minimize");
+        hint.textContent = T(HINT_KO, HINT_EN);
         pipWin = null;
         restartTimer(window);
     }
@@ -469,9 +471,9 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         w.document.addEventListener("click", fit);
     }
 
-    async function popOut() {
+    async function popOut(fromDrag) {
         if (pipWin) { pipWin.close(); return; }                       // 떠 있는 창 → 원래대로
-        if (wrap.classList.contains("dc-float")) { backHome(); return; }
+        if (!fromDrag && wrap.classList.contains("dc-float")) { backHome(); return; }
 
         if ("documentPictureInPicture" in window) {
             try {
@@ -485,6 +487,8 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
                     ".dc-svg{display:block;width:100%;height:100%}";
                 w.document.head.appendChild(st);
                 w.document.title = T("시계", "Clock");
+                wrap.classList.remove("dc-float", "dc-moved");   // 끌어서 옮기던 자리 정보는 지우고 창에 꽉 차게
+                wrap.style.left = wrap.style.top = wrap.style.right = wrap.style.bottom = wrap.style.width = "";
                 w.document.body.appendChild(wrap);
                 home.classList.add("dc-away");
                 hint.textContent = T("더블클릭: 원래대로", "Double-click: restore");
@@ -493,8 +497,9 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
                 w.addEventListener("pagehide", backHome);
                 keepRatio(w);
                 return;
-            } catch (e) { /* 실패하면 아래 방식으로 */ }
+            } catch (e) { if (fromDrag) return false; /* 실패하면 아래 방식으로 */ }
         }
+        if (fromDrag) return false;   // 끌던 중이면 그냥 화면 안에 그대로 둬요
         // 지원하지 않는 브라우저: 홈페이지 화면 위에 떠 있게
         document.body.appendChild(wrap);
         wrap.classList.add("dc-float");
@@ -507,6 +512,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
        옮겨 둔 시계도 다시 끌 수 있고, 더블클릭하면 원래 자리로 돌아와요.
        홈 자리에서 그냥 더블클릭하면 예전처럼 작은 창(항상 위)으로 떠요. */
     var drag = null;
+    var canLeave = "documentPictureInPicture" in window;   // 창 밖으로 끌어내기 가능한 브라우저(크롬·엣지 116+)
     function canDrag(e) {
         return e.button === 0 && e.pointerType === "mouse" && !pipWin &&
             wrap.ownerDocument === document && window.innerWidth > 768;
@@ -531,6 +537,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         if (!canDrag(e)) return;
         var r = wrap.getBoundingClientRect();
         drag = { id: e.pointerId, x: e.clientX, y: e.clientY, dx: e.clientX - r.left, dy: e.clientY - r.top, w: r.width, moved: false };
+        try { wrap.setPointerCapture(e.pointerId); } catch (err) {}   // 마우스가 브라우저 창 밖으로 나가도 계속 따라가게
     });
     document.addEventListener("pointermove", function (e) {
         if (!drag || e.pointerId !== drag.id) return;
@@ -541,10 +548,23 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
             document.documentElement.classList.add("dc-dragging");
         }
         e.preventDefault();
+        /* 2026-11-28: 마우스가 브라우저 창 밖으로 나가면 시계를 "항상 위" 작은 창으로 띄워요.
+           그 창은 윗부분을 잡고 다른 모니터까지 옮길 수 있어요 (크롬·엣지. 지원 안 하면 화면 안에 그대로) */
+        if (canLeave && !drag.leaving &&
+            (e.clientX <= 0 || e.clientY <= 0 || e.clientX >= window.innerWidth - 1 || e.clientY >= window.innerHeight - 1)) {
+            drag.leaving = true;
+            var d = drag;
+            Promise.resolve(popOut(true)).then(function (ok) {
+                if (ok === false && drag === d) d.leaving = false;   // 못 띄우면(시간이 오래 지나 브라우저가 막는 등) 그냥 화면 안에서 계속
+                else if (ok !== false) endDrag();
+            });
+        }
+        if (drag.leaving) return;   // 작은 창으로 옮기는 중에는 그대로
         placeAt(e.clientX - drag.dx, e.clientY - drag.dy);
     });
     function endDrag() {
         if (!drag) return;
+        try { wrap.releasePointerCapture(drag.id); } catch (err) {}
         document.documentElement.classList.remove("dc-dragging");
         drag = null;
     }
