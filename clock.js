@@ -6,9 +6,9 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
     var panel = document.querySelector(".tree-panel");
     if (!panel) return;
 
-    var MOBILE_CLOCK_WIDTH = 104;   // 폰에서 시계 너비(px)
+    var MOBILE_CLOCK_WIDTH = 91;    // 폰에서 시계 너비(px) — 2026-11-28 밤 104→91 (붙인 시계 높이를 예전과 같게)
     var MOBILE_QUERY = "screen and (max-width: 768px), screen and (hover: none) and (pointer: coarse) and (max-width: 1000px)";
-    var CLOCK_WIDTH = 150;          // 홈페이지 안 시계 너비(px)
+    var CLOCK_WIDTH = 132;          // 홈페이지 안 시계 너비(px) — 2026-11-28 밤 150→132: 아날로그·디지털을 붙인 뒤에도 전체 높이가 예전(약 194px)과 같게. 크게 하려면 150
     var POPUP_W = 240, POPUP_H = 311; // 떠 있는 창 크기(px) - 시계 비율과 같게
     var VB_W = 618, VB_H = 801;      // 시계 그림 기준 크기 (비율 유지용)
 
@@ -28,34 +28,43 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
        - 각각 따로 끌어서 옮기기 / 브라우저 창 밖으로 끌면 따로 떠 있는 창으로 (다른 모니터까지)
        - 둘 사이 틈의 작은 손잡이(⋯)를 끌면 둘이 같이 움직이고, 더블클릭하면 같이 떠요 */
     var DIG_VB_H = 250;                      // 디지털 판 그림 기준 높이 (가로 VB_W = 618)
-    var DC_GAP = 10, DC_GAP_MOBILE = 6;      // 아날로그와 디지털 사이 틈(px)
+    var DC_GAP = 0, DC_GAP_MOBILE = 0;       // 아날로그와 디지털 사이 틈(px) — 2026-11-28 밤: 붙임(대신 테두리 선으로 구분)
+    var ANA_VW = 608, ANA_VH = 653;          // 아날로그 그림에서 보이는 부분(투명 가장자리 뺌) — 디지털과 가로를 딱 맞추려고
+    var CLOCK_H_RATIO = ANA_VH / ANA_VW + DIG_VB_H / VB_W;   // 시계 전체 높이 ÷ 가로
 
     /* ---------- 스타일 ---------- */
     var style = document.createElement("style");
     style.textContent = [
-        ".tree-panel { --dc-w: " + CLOCK_WIDTH + "px; --dc-h: calc(var(--dc-w) * " + (VB_H / VB_W) + "); --dc-gap: " + DC_GAP + "px; --dc-dig-h: calc(var(--dc-w) * " + (DIG_VB_H / VB_W) + "); }",
+        ".tree-panel { --dc-w: " + CLOCK_WIDTH + "px; --dc-h: calc(var(--dc-w) * " + CLOCK_H_RATIO + "); --dc-gap: " + DC_GAP + "px; --dc-dig-h: calc(var(--dc-w) * " + (DIG_VB_H / VB_W) + "); }",
         /* 시계 줄이 위, 사진이 아래 */
         ".tree-panel img { top: calc(var(--dc-h) + 12px) !important; height: calc(100% - var(--dc-h) - 12px) !important; }",
         ".dc-home { position: absolute; top: 0; left: 0; right: 24px; height: var(--dc-h); display: flex; gap: 10px; }",
-        ".dc-slot { flex: none; width: var(--dc-w); height: var(--dc-h); display: flex; flex-direction: column; align-items: center; }",
+        ".dc-slot { position: relative; flex: none; width: var(--dc-w); height: var(--dc-h); display: flex; flex-direction: column; align-items: center; }",
         ".dc-box { position: relative; flex: none; display: flex; justify-content: center; }",
         ".dc-box-ana { width: 100%; height: calc(var(--dc-h) - var(--dc-dig-h) - var(--dc-gap)); }",
         ".dc-box-dig { width: 100%; height: var(--dc-dig-h); }",
         ".dc-wrap { cursor: pointer; user-select: none; -webkit-user-select: none; touch-action: none; }",
-        ".dc-box-ana > .dc-ana { height: 100%; aspect-ratio: " + VB_W + " / 661; }",
+        ".dc-box-ana > .dc-ana { width: 100%; }",
+        /* 두 판의 테두리: 은색 선이 잘 보이게 (붙어 있어도 두 판으로 나뉘어 보이게) */
+        ".dc-ana { border-radius: 5px; }",
+        ".dc-dig { border-radius: 7px; }",
+        ".dc-ana, .dc-dig { box-shadow: 0 0 0 1.5px #dfe3ea, 0 0 0 2.5px rgba(0,0,0,.45); }",
         ".dc-box-dig > .dc-dig { width: 100%; }",
-        ".dc-svg { display: block; width: 100%; height: auto; filter: drop-shadow(0 3px 6px rgba(0,0,0,.35)); }",
+        ".dc-svg { display: block; width: 100%; height: auto; }",
+        ".dc-slot { filter: drop-shadow(0 3px 6px rgba(0,0,0,.35)); }",
+        ".dc-wrap.dc-float { filter: drop-shadow(0 3px 6px rgba(0,0,0,.35)); }",
         ".dc-wrap.dc-float { position: fixed; z-index: 2147483000; }",
         ".dc-wrap.dc-float.dc-ana:not(.dc-moved) { right: 16px; bottom: 140px; width: 150px; }",
         ".dc-wrap.dc-float.dc-dig:not(.dc-moved) { right: 16px; bottom: 16px; width: 220px; }",
         /* 둘 사이 손잡이: 끌면 같이 옮기기, 더블클릭하면 같이 띄우기 */
-        ".dc-grip { flex: none; width: 100%; height: var(--dc-gap); display: flex; align-items: center; justify-content: center; cursor: grab; touch-action: none; }",
-        ".dc-grip::before { content: ''; width: 34px; height: 4px; border-radius: 2px; background: rgba(120,120,120,.35); transition: background .2s, width .2s; }",
-        ".dc-slot:hover .dc-grip::before, .dc-grip:hover::before { background: rgba(90,87,181,.8); width: 46px; }",
+        /* 두 판이 붙은 줄 위에 얹힌 작은 손잡이 (마우스를 대면 보여요) */
+        ".dc-grip { position: absolute; left: 25%; width: 50%; height: 12px; top: calc(var(--dc-h) - var(--dc-dig-h) - 6px); z-index: 2; display: flex; align-items: center; justify-content: center; cursor: grab; touch-action: none; }",
+        ".dc-grip::before { content: ''; width: 34px; height: 6px; border-radius: 3px; background: #dfe3ea; box-shadow: 0 0 0 1px rgba(0,0,0,.5); opacity: 0; transition: opacity .2s, background .2s, width .2s; }",
+        ".dc-slot:hover .dc-grip::before { opacity: .9; }",
+        ".dc-grip:hover::before { opacity: 1; background: #b9b6ff; width: 46px; }",
         ".dc-home.dc-split .dc-grip { visibility: hidden; }",
         /* 떠나간 자리: 점선 칸 + 작은 안내 (누르면 돌아와요) */
         ".dc-ph { display: none; position: absolute; inset: 0; box-sizing: border-box; border: 1px dashed #bbb; border-radius: 8px; padding: 4px; align-items: center; justify-content: center; text-align: center; font-size: 10px; line-height: 1.35; color: #888; cursor: pointer; overflow: hidden; }",
-        ".dc-box-ana .dc-ph { left: 50%; right: auto; width: calc(var(--dc-h) - var(--dc-dig-h) - var(--dc-gap)); transform: translateX(-50%); }",
         ".dc-box.dc-away .dc-ph { display: flex; }",
         /* 2026-11-23: 마우스로 끌어서 옮기기 — 끄는 동안 주먹 커서, 글자 선택 막기 */
         "html.dc-dragging, html.dc-dragging * { cursor: grabbing !important; user-select: none !important; -webkit-user-select: none !important; }",
@@ -75,7 +84,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         "@keyframes dcDrop { 0% { opacity: 1; transform: translateY(0) scaleY(1); } 80% { opacity: 1; transform: translateY(var(--fall, 12px)) scaleY(1.5); } 100% { opacity: 0; transform: translateY(var(--fall, 12px)) scaleY(1.5); } }",
         ".dc-dot.on { opacity: 1; }",
         /* 폰: 제목(밑줄) 아래에 시계와 종이 칸을 작게 나란히 (다른 위젯에는 영향 없음) */
-        ".dc-mobile { --dc-w: " + MOBILE_CLOCK_WIDTH + "px; --dc-h: calc(var(--dc-w) * " + (VB_H / VB_W) + "); --dc-gap: " + DC_GAP_MOBILE + "px; --dc-dig-h: calc(var(--dc-w) * " + (DIG_VB_H / VB_W) + "); margin: 0 0 20px; position: relative; z-index: 1; }",
+        ".dc-mobile { --dc-w: " + MOBILE_CLOCK_WIDTH + "px; --dc-h: calc(var(--dc-w) * " + CLOCK_H_RATIO + "); --dc-gap: " + DC_GAP_MOBILE + "px; --dc-dig-h: calc(var(--dc-w) * " + (DIG_VB_H / VB_W) + "); margin: 0 0 20px; position: relative; z-index: 1; }",
         ".dc-mobile .dc-home { position: relative; right: auto; width: 100%; gap: 8px; }",
         ".dc-mobile .dc-grip { visibility: hidden; }",
         ".dc-mobile .dc-note-text { font-size: min(21px, 13cqw); padding: 8% 5px 0 12%; }"
@@ -110,7 +119,8 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
     var CX = 309, CY = 320.07, HS = 1.05;   // 다이얼 중심, 바늘 배율
     var ANA_CUT = 612, ANA_BOT = 752;       // 위쪽 그림을 자르는 줄, 이어 붙일 아래 테두리 시작 줄
     var ANA_H = ANA_CUT + (VB_H - ANA_BOT);  // = 661
-    var anaSvg = el("svg", { viewBox: "0 0 " + VB_W + " " + ANA_H, class: "dc-svg", role: "img", "aria-label": T("아날로그 시계", "Analog clock") });
+    // 보이는 판만 (그림 둘레의 투명한 몇 px는 빼서, 아래 디지털 판과 가로 끝이 딱 맞게)
+    var anaSvg = el("svg", { viewBox: "5 4 " + ANA_VW + " " + ANA_VH, class: "dc-svg", role: "img", "aria-label": T("아날로그 시계", "Analog clock") });
     var aDefs = el("defs", {}, anaSvg);
     grad(aDefs, "dcSilver", "linearGradient", [["0", "#ffffff"], ["0.5", "#cfd5dd"], ["1", "#8a93a0"]], { x1: "0", y1: "0", x2: "1", y2: "0" });
     var hshadow = el("filter", { id: "dcHandShadow", x: "-30%", y: "-30%", width: "160%", height: "160%" }, aDefs);
@@ -151,7 +161,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
     grad(dDefs, "dcDigFrame", "linearGradient", [["0", "#3a3e46"], ["0.5", "#1f2227"], ["1", "#2c2f36"]], { x1: "0", y1: "0", x2: "0", y2: "1" });
     grad(dDefs, "dcDigPlate", "linearGradient", [["0", "#3b2a24"], ["1", "#1f140e"]], { x1: "0", y1: "0", x2: "0", y2: "1" });
     grad(dDefs, "dcDigRim", "linearGradient", [["0", "#f4cdb0"], ["0.5", "#b9714f"], ["1", "#f0bf9c"]], { x1: "0", y1: "0", x2: "1", y2: "1" });
-    el("rect", { x: 4, y: 4, width: VB_W - 8, height: DIG_VB_H - 8, rx: 28, fill: "url(#dcDigFrame)", stroke: "#5a5f69", "stroke-width": 3 }, digSvg);
+    el("rect", { x: 1.5, y: 1.5, width: VB_W - 3, height: DIG_VB_H - 3, rx: 27, fill: "url(#dcDigFrame)", stroke: "#5a5f69", "stroke-width": 3 }, digSvg);
     el("rect", { x: 28, y: 22, width: VB_W - 56, height: DIG_VB_H - 52, rx: 14, fill: "url(#dcDigPlate)", stroke: "url(#dcDigRim)", "stroke-width": 3 }, digSvg);
 
     // 7-세그먼트 숫자
@@ -535,20 +545,21 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
     function sendAway(p) { p.box.classList.add("dc-away"); }
 
     // 따로 떠 있는 창 크기(안쪽) — 조각 하나 / 둘 같이
-    var ANA_RATIO = VB_W / 661, DIG_RATIO = VB_W / DIG_VB_H;
+    var ANA_RATIO = ANA_VW / ANA_VH, DIG_RATIO = VB_W / DIG_VB_H;
     function winSize(list) {
-        if (list.length === 2) return { w: 240, h: Math.round(240 / ANA_RATIO + 8 + 240 / DIG_RATIO) };
+        if (list.length === 2) return { w: 240, h: Math.round(240 / ANA_RATIO + 240 / DIG_RATIO) };
         return list[0] === ANA ? { w: 240, h: Math.round(240 / ANA_RATIO) } : { w: 340, h: Math.round(340 / DIG_RATIO) };
     }
     function windowCss(list) {
         var both = list.length === 2;
         return "html,body{margin:0;height:100%;background:#16181d;overflow:hidden}" +
-            "body{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}" +
+            "body{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0}" +
+            ".dc-ana{border-radius:5px}.dc-dig{border-radius:7px}.dc-ana,.dc-dig{box-shadow:0 0 0 1.5px #dfe3ea,0 0 0 2.5px rgba(0,0,0,.45)}" +
             ".dc-wrap{cursor:grab;user-select:none;-webkit-user-select:none;touch-action:none}" +
             ".dc-svg{display:block;width:100%;height:auto}" +
             (both
-                ? ".dc-dig{width:100vw}.dc-ana{width:min(100vw,calc((100vh - 100vw/" + DIG_RATIO.toFixed(4) + " - 8px)*" + ANA_RATIO.toFixed(4) + "))}"
-                : ".dc-ana{width:min(100vw,calc(100vh*" + ANA_RATIO.toFixed(4) + "))}.dc-dig{width:min(100vw,calc(100vh*" + DIG_RATIO.toFixed(4) + "))}");
+                ? ".dc-ana,.dc-dig{width:min(calc(100vw - 6px),calc((100vh - 6px)/" + (1 / ANA_RATIO + 1 / DIG_RATIO).toFixed(4) + "))}"
+                : ".dc-ana{width:min(calc(100vw - 6px),calc((100vh - 6px)*" + ANA_RATIO.toFixed(4) + "))}.dc-dig{width:min(calc(100vw - 6px),calc((100vh - 6px)*" + DIG_RATIO.toFixed(4) + "))}");
     }
 
     // 창의 테두리·제목줄 두께 (창 바깥 좌표 ↔ 안쪽 좌표)
