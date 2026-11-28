@@ -515,12 +515,17 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
     document.addEventListener("visibilitychange", update);
     tick();
 
-    /* ---------- 2026-11-28: 조각마다 자리 옮기기 · 따로 띄우기 ----------
-       상태: 홈 자리 / 홈페이지 위에 떠 있음(dc-float) / 따로 떠 있는 창(p.win)
-       · 끌어서 브라우저 창 밖으로 내보내면: 그 자리에서 바로 작은 창(팝업)이 되고, 마우스를 계속 따라 움직여요.
-         (멈칫하지 않게 "항상 위" 창 대신 팝업을 씀 — 팝업은 페이지가 직접 옮길 수 있어서)
-         다른 모니터로 넘어가려면 크롬이 처음 한 번 "창 관리" 허락을 물어요(허용하면 그다음부터 쭉).
-       · 더블클릭으로 띄우면: "항상 위" 작은 창(Document Picture-in-Picture, 크롬·엣지) 먼저, 안 되면 팝업 */
+    /* ---------- 2026-11-28 밤: 따로 띄운 시계는 "항상 위" 창 하나에 ----------
+       사용자 요청: 디지털·아날로그 모두 언제나 다른 창 위에 보이게, 옆 모니터로 확실히 넘어가게.
+       · "항상 위"로 뜨는 창은 브라우저에서 Document Picture-in-Picture(크롬·엣지 116+) 하나뿐이고,
+         한 페이지에 한 번에 하나만 열 수 있어요. → 아날로그·디지털을 따로 띄우면 같은 "항상 위" 창에 같이 들어가요.
+       · 이 창은 윗부분(제목줄)을 잡고 끌면 옆 모니터로 항상 넘어가요(운영체제가 옮겨 줌). 크기를 바꾸면 시계도 같이 커지고,
+         가로로 넓히면 아날로그·디지털이 옆으로 나란히, 세로로 길게 하면 위아래로 놓여요.
+       · 창 안에서 조각을 더블클릭하면 그 조각만 홈으로 돌아와요. 창을 닫으면 모두 돌아와요.
+       · "항상 위" 창을 못 쓰는 브라우저(파이어폭스·사파리 등)는 보통 작은 창(팝업)으로 띄워요(항상 위는 아님). */
+    var floatWin = null;          // 지금 열려 있는 따로 떠 있는 창 (하나)
+    var floatIsPip = false;
+
     function hintUpdate() {
         if (DIG.win) hint.textContent = HINT_WIN;
         else if (DIG.wrap.classList.contains("dc-float")) hint.textContent = HINT_AWAY;
@@ -532,119 +537,112 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         p.wrap.classList.remove("dc-float", "dc-moved");
         p.wrap.style.left = p.wrap.style.top = p.wrap.style.right = p.wrap.style.bottom = p.wrap.style.width = "";
     }
+    function inWin(w) { return PIECES.filter(function (p) { return p.win === w; }); }
+
+    // 조각을 홈 자리로 (창에 다른 조각이 남아 있으면 창은 그대로, 비면 창을 닫아요)
     function backHome(p) {
         var w = p.win;
         p.win = null;
-        if (w && !w.closed) { try { w.close(); } catch (e) {} }
         clearFloat(p);
         if (p.wrap.parentNode !== p.box) p.box.insertBefore(p.wrap, p.ph);
         p.box.classList.remove("dc-away");
+        if (w) {
+            if (!inWin(w).length) { if (w === floatWin) floatWin = null; if (!w.closed) { try { w.close(); } catch (e) {} } }
+            else layoutWin(w, false);
+        }
         hintUpdate();
         retime();
     }
     function sendAway(p) { p.box.classList.add("dc-away"); }
 
-    // 따로 떠 있는 창 크기(안쪽) — 조각 하나 / 둘 같이
+    // 창 크기(안쪽) — 조각 하나 / 둘 같이(위아래)
     var ANA_RATIO = ANA_VW / ANA_VH, DIG_RATIO = VB_W / DIG_VB_H;
     function winSize(list) {
-        if (list.length === 2) return { w: 240, h: Math.round(240 / ANA_RATIO + 240 / DIG_RATIO) };
-        return list[0] === ANA ? { w: 240, h: Math.round(240 / ANA_RATIO) } : { w: 340, h: Math.round(340 / DIG_RATIO) };
+        if (list.length === 2) return { w: 240, h: Math.round(240 / ANA_RATIO + 240 / DIG_RATIO) + 6 };
+        return list[0] === ANA ? { w: 240, h: Math.round(240 / ANA_RATIO) + 6 } : { w: 340, h: Math.round(340 / DIG_RATIO) + 6 };
     }
-    function windowCss(list) {
-        var both = list.length === 2;
-        return "html,body{margin:0;height:100%;background:#16181d;overflow:hidden}" +
-            "body{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0}" +
-            ".dc-ana{border-radius:5px}.dc-dig{border-radius:7px}.dc-ana,.dc-dig{box-shadow:0 0 0 1.5px #dfe3ea,0 0 0 2.5px rgba(0,0,0,.45)}" +
-            ".dc-wrap{cursor:grab;user-select:none;-webkit-user-select:none;touch-action:none}" +
-            ".dc-svg{display:block;width:100%;height:auto}" +
-            (both
-                ? ".dc-ana,.dc-dig{width:min(calc(100vw - 6px),calc((100vh - 6px)/" + (1 / ANA_RATIO + 1 / DIG_RATIO).toFixed(4) + "))}"
-                : ".dc-ana{width:min(calc(100vw - 6px),calc((100vh - 6px)*" + ANA_RATIO.toFixed(4) + "))}.dc-dig{width:min(calc(100vw - 6px),calc((100vh - 6px)*" + DIG_RATIO.toFixed(4) + "))}");
+    // 창 안 모양: 조각 수(body.n1/n2)와 창 모양(가로로 넓으면 나란히)에 맞춰 크기가 저절로 맞춰져요
+    var WIN_CSS =
+        "html,body{margin:0;height:100%;background:#16181d;overflow:hidden}" +
+        "body{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0}" +
+        ".dc-wrap{cursor:pointer;user-select:none;-webkit-user-select:none}" +
+        ".dc-svg{display:block;width:100%;height:auto}" +
+        ".dc-ana{border-radius:5px}.dc-dig{border-radius:7px}" +
+        ".dc-ana,.dc-dig{box-shadow:0 0 0 1.5px #dfe3ea,0 0 0 2.5px rgba(0,0,0,.45)}" +
+        // 하나만
+        "body.n1 .dc-ana{width:min(calc(100vw - 6px),calc((100vh - 6px)*" + ANA_RATIO.toFixed(4) + "))}" +
+        "body.n1 .dc-dig{width:min(calc(100vw - 6px),calc((100vh - 6px)*" + DIG_RATIO.toFixed(4) + "))}" +
+        // 둘: 위아래(기본)
+        "body.n2 .dc-ana,body.n2 .dc-dig{width:min(calc(100vw - 6px),calc((100vh - 6px)/" + (1 / ANA_RATIO + 1 / DIG_RATIO).toFixed(4) + "))}" +
+        // 둘: 창이 가로로 넓으면 옆으로 나란히 (높이를 맞춰서)
+        "@media (min-aspect-ratio: 7/4){body.n2{flex-direction:row}" +
+        "body.n2 .dc-ana{width:auto;height:min(calc(100vh - 6px),calc((100vw - 6px)/" + (ANA_RATIO + DIG_RATIO).toFixed(4) + "))}" +
+        "body.n2 .dc-dig{width:auto;height:min(calc(100vh - 6px),calc((100vw - 6px)/" + (ANA_RATIO + DIG_RATIO).toFixed(4) + "))}" +
+        "body.n2 .dc-wrap .dc-svg{width:auto;height:100%}}";
+
+    // 창 안 조각 순서(아날로그 먼저)·모양 갱신, 필요하면 창 크기도 맞춰요
+    function layoutWin(w, resize) {
+        var list = inWin(w), doc = w.document;
+        list.sort(function (a, b) { return a === ANA ? -1 : b === ANA ? 1 : 0; });
+        list.forEach(function (p) { doc.body.appendChild(p.wrap); });
+        doc.body.className = "n" + list.length;
+        if (resize && list.length) {
+            var s = winSize(list);
+            try { w.resizeTo(s.w + (w.outerWidth - w.innerWidth), s.h + (w.outerHeight - w.innerHeight)); } catch (e) {}
+        }
     }
 
-    // 창의 테두리·제목줄 두께 (창 바깥 좌표 ↔ 안쪽 좌표)
-    function chrome(w) {
-        var cl = Math.max(0, Math.round((w.outerWidth - w.innerWidth) / 2));
-        var ct = Math.max(0, w.outerHeight - w.innerHeight - cl);
-        if (!w.outerWidth) { cl = 8; ct = 62; }   // 아직 크기를 모르면 어림값
-        return { l: cl, t: ct };
-    }
-
-    // 창 안에 조각을 넣고, 닫히면 돌아오게
-    function setupWindow(w, list, isPip) {
+    // 창 준비(한 번만): 모양, 제목, 닫힐 때 돌려보내기
+    function setupWindow(w, isPip) {
         var doc = w.document;
         var font = document.querySelector('link[href*="fonts.googleapis.com/css2"]');
         if (font) doc.head.appendChild(font.cloneNode());
         var st = doc.createElement("style");
-        st.textContent = windowCss(list);
+        st.textContent = WIN_CSS;
         doc.head.appendChild(st);
         doc.title = T("시계", "Clock");
-        list.forEach(function (p) {
-            clearFloat(p);
-            p.win = w;
-            doc.body.appendChild(p.wrap);
-            sendAway(p);
-        });
         var done = false;
         function closed() {
             if (done) return;
             done = true;
-            list.forEach(function (p) { if (p.win === w) { p.win = null; backHome(p); } });
+            if (floatWin === w) floatWin = null;
+            inWin(w).forEach(function (p) { p.win = null; backHome(p); });
         }
         w.addEventListener("pagehide", closed);
         w.addEventListener("beforeunload", closed);
-        if (!isPip) {
-            var chk = setInterval(function () { if (w.closed) { clearInterval(chk); closed(); } }, 700);
-            // 팝업 안에서 시계를 잡고 끌면 창이 통째로 따라와요 (창 제목줄을 안 잡아도 됨)
-            doc.addEventListener("pointerdown", function (e) {
-                if (e.button !== 0) return;
-                drag = { id: e.pointerId, win: w, ax: e.clientX, ay: e.clientY, sx: e.screenX, sy: e.screenY, moved: false, inWin: true, cap: e.target };
-                try { e.target.setPointerCapture(e.pointerId); } catch (err) {}
-            });
-            doc.addEventListener("pointermove", onWinMove);
-            doc.addEventListener("pointerup", endDrag);
-            doc.addEventListener("pointercancel", endDrag);
+        if (!isPip) { var chk = setInterval(function () { if (w.closed) { clearInterval(chk); closed(); } }, 700); }
+        floatWin = w;
+        floatIsPip = isPip;
+    }
+
+    // 조각들을 따로 떠 있는 창으로 (이미 창이 있으면 그 창에 더해요). 성공하면 true
+    async function openFloating(list, sx, sy) {
+        var w = floatWin && !floatWin.closed ? floatWin : null;
+        if (!w) {
+            var size = winSize(list);
+            if (CAN_PIP) {
+                try {
+                    w = await window.documentPictureInPicture.requestWindow({ width: size.w, height: size.h });
+                    setupWindow(w, true);
+                } catch (e) { w = null; }
+            }
+            if (!w) {   // "항상 위" 창을 못 쓰면 보통 작은 창
+                var feat = "popup=yes,width=" + size.w + ",height=" + size.h;
+                if (sx != null) feat += ",left=" + Math.round(sx - size.w / 2) + ",top=" + Math.round(sy - 30);
+                try { w = window.open("", "dcClockWin", feat); } catch (e) { w = null; }
+                if (!w) return false;
+                try { w.document.body.innerHTML = ""; } catch (e) { return false; }
+                setupWindow(w, false);
+            }
+            list.forEach(function (p) { clearFloat(p); p.win = w; sendAway(p); });
+            layoutWin(w, false);
+        } else {
+            list.forEach(function (p) { clearFloat(p); p.win = w; sendAway(p); });
+            layoutWin(w, true);   // 둘이 되면 창을 두 개 들어갈 크기로
         }
         hintUpdate();
         retime();
-    }
-
-    // 팝업 열기 (left/top: 창 바깥 기준 화면 좌표). 성공하면 창, 아니면 null
-    function openPopup(list, left, top) {
-        var size = winSize(list);
-        var feat = "popup=yes,width=" + size.w + ",height=" + size.h;
-        if (left != null) feat += ",left=" + Math.round(left) + ",top=" + Math.round(top);
-        var w = null;
-        try { w = window.open("", "dcClock_" + list.map(function (p) { return p.key; }).join("_"), feat); } catch (e) { w = null; }
-        if (!w) return null;
-        try { w.document.body.innerHTML = ""; } catch (e) { return null; }   // 같은 이름의 예전 창이면 비우고 다시 써요
-        setupWindow(w, list, false);
-        return w;
-    }
-
-    // 더블클릭용: "항상 위" 작은 창 먼저, 안 되면 팝업
-    async function openWindow(list) {
-        if (CAN_PIP && !window.documentPictureInPicture.window) {
-            var size = winSize(list);
-            try {
-                var w = await window.documentPictureInPicture.requestWindow({ width: size.w, height: size.h });
-                setupWindow(w, list, true);
-                return true;
-            } catch (e) {}
-        }
-        return !!openPopup(list);
-    }
-
-    // 다른 모니터까지 창을 옮기려면 크롬의 "창 관리" 허락이 필요해요 → 처음 한 번만 물어봐요
-    var askedScreens = false;
-    function askScreens() {
-        if (askedScreens || !("getScreenDetails" in window)) return;
-        askedScreens = true;
-        try {
-            navigator.permissions.query({ name: "window-management" }).then(function (s) {
-                if (s.state === "prompt") window.getScreenDetails().catch(function () {});
-            }).catch(function () {});
-        } catch (e) {}
+        return true;
     }
 
     // 홈페이지 위에 떠 있게 (창을 못 띄울 때)
@@ -660,16 +658,16 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         var away = list.filter(function (p) { return p.win || p.wrap.classList.contains("dc-float"); });
         if (away.length) { away.forEach(backHome); return; }
         if (window.matchMedia(MOBILE_QUERY).matches) { list.forEach(floatInPage); return; }   // 폰: 작은 창 대신 화면 위에
-        var ok = await openWindow(list);
+        var ok = await openFloating(list);
         if (!ok) list.forEach(floatInPage);
     }
 
     /* ---------- 마우스로 끌어서 옮기기 (PC만) ----------
        시계(또는 숫자 판)를 누른 채 움직이면 홈 칸에서 떨어져 나와 마우스를 따라오고, 놓은 자리에 머물러요.
-       끌다가 시계가 브라우저 창 가장자리를 3분의 1쯤 넘으면 → 바로 그 자리에서 작은 창이 되어 마우스를 계속 따라가요.
+       끌다가 시계가 브라우저 창 가장자리를 3분의 1쯤 넘으면 → "항상 위" 창으로 옮겨 가요.
        둘 사이 손잡이를 끌면 두 조각이 같이 움직여요. */
     var drag = null;
-    var OUT_AT = 0.33;   // 시계가 창 밖으로 이만큼(3분의 1) 넘어가면 작은 창으로
+    var OUT_AT = 0.33;   // 시계가 창 밖으로 이만큼(3분의 1) 넘어가면 따로 떠 있는 창으로
     function canDrag(e, list) {
         return e.button === 0 && e.pointerType === "mouse" && window.innerWidth > 768 &&
             list.every(function (p) { return !p.win && p.wrap.ownerDocument === document; });
@@ -677,13 +675,13 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
     function startDrag(e, list, captureEl) {
         if (!canDrag(e, list)) return;
         drag = {
-            id: e.pointerId, x: e.clientX, y: e.clientY, moved: false, win: null, list: list, cap: captureEl,
+            id: e.pointerId, x: e.clientX, y: e.clientY, moved: false, leaving: false, list: list, cap: captureEl,
             parts: list.map(function (p) {
                 var r = p.wrap.getBoundingClientRect();
                 return { p: p, dx: e.clientX - r.left, dy: e.clientY - r.top, w: r.width, h: r.height };
             })
         };
-        try { captureEl.setPointerCapture(e.pointerId); } catch (err) {}   // 마우스가 브라우저 창 밖으로 나가도 계속 따라가게
+        try { captureEl.setPointerCapture(e.pointerId); } catch (err) {}
     }
     function detach(part) {
         var p = part.p;
@@ -693,7 +691,6 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         p.wrap.style.width = part.w + "px";
         sendAway(p);
     }
-    // 묶음(조각 하나 또는 둘)이 놓일 자리
     function groupRect(cx, cy) {
         var L = Infinity, Tp = Infinity, R = -Infinity, B = -Infinity;
         drag.parts.forEach(function (q) {
@@ -709,44 +706,10 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
             w.style.right = "auto"; w.style.bottom = "auto";
         });
     }
-    // 창 밖으로 넘어간 비율 (가로·세로 중 큰 쪽)
     function outRatio(g) {
         var ox = Math.max(0, -g.l, g.r - window.innerWidth) / g.w;
         var oy = Math.max(0, -g.t, g.b - window.innerHeight) / g.h;
         return Math.max(ox, oy);
-    }
-    // 작은 창으로 바꾸기: 마우스가 잡고 있던 시계의 같은 점이 계속 마우스 밑에 오게
-    function popOutAt(e, g) {
-        var size = winSize(drag.list);
-        drag.ax = (e.clientX - g.l) / g.w * size.w;
-        drag.ay = (e.clientY - g.t) / g.h * size.h;
-        var w = openPopup(drag.list, e.screenX - 8 - drag.ax, e.screenY - 62 - drag.ay);
-        if (!w) return false;
-        drag.win = w;
-        askScreens();
-        moveWin(e.screenX, e.screenY);
-        // 새 창은 화면에 막 나타나는 동안 옮기기를 무시할 때가 있어서, 잠깐 몇 번 더 맞춰 줘요
-        var d = drag;
-        [40, 120, 250, 450, 700, 1000].forEach(function (ms) {
-            setTimeout(function () { if (drag === d && d.lastSX != null) moveWin(d.lastSX, d.lastSY); }, ms);
-        });
-        return true;
-    }
-    // 끄는 동안 작은 창 옮기기 (화면 좌표)
-    function moveWin(sx, sy) {
-        var w = drag && drag.win;
-        if (!w || w.closed) return;
-        drag.lastSX = sx; drag.lastSY = sy;
-        var c = chrome(w);
-        try { w.moveTo(Math.round(sx - c.l - drag.ax), Math.round(sy - c.t - drag.ay)); } catch (e) {}
-    }
-    function onWinMove(e) {
-        if (!drag || !drag.win || !(e.buttons & 1)) return;
-        if (drag.inWin && !drag.moved) {
-            if (Math.abs(e.screenX - drag.sx) + Math.abs(e.screenY - drag.sy) < 4) return;
-            drag.moved = true;
-        }
-        moveWin(e.screenX, e.screenY);
     }
     function endDrag() {
         if (!drag) return;
@@ -754,8 +717,8 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         drag = null;
         try { d.cap.releasePointerCapture(d.id); } catch (err) {}
         document.documentElement.classList.remove("dc-dragging");
-        // 창 안에서 놓았는데 시계가 가장자리 밖으로 조금 걸쳐 있으면 안으로 들여요
-        if (!d.win && d.moved) {
+        // 창 안에서 놓았는데 시계가 가장자리 밖으로 걸쳐 있으면 안으로 들여요
+        if (d.moved && !d.list.some(function (p) { return p.win; })) {
             d.parts.forEach(function (q) {
                 var w = q.p.wrap, r = w.getBoundingClientRect();
                 var x = Math.max(0, Math.min(r.left, window.innerWidth - r.width));
@@ -771,9 +734,7 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
         startDrag(e, [ANA, DIG], grip);
     });
     document.addEventListener("pointermove", function (e) {
-        if (!drag || drag.inWin) return;
-        if (e.pointerId !== drag.id) return;
-        if (drag.win) { if (e.buttons & 1) moveWin(e.screenX, e.screenY); return; }   // 이미 작은 창이 됐으면 창을 따라 옮겨요 (버튼을 누른 채일 때만)
+        if (!drag || e.pointerId !== drag.id) return;
         if (!drag.moved) {
             if (Math.abs(e.clientX - drag.x) + Math.abs(e.clientY - drag.y) < 6) return;
             drag.moved = true;
@@ -782,21 +743,26 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
             document.documentElement.classList.add("dc-dragging");
         }
         e.preventDefault();
+        if (drag.leaving) return;
         var g = groupRect(e.clientX, e.clientY);
-        if (!drag.noPopup && outRatio(g) >= OUT_AT) {
-            if (popOutAt(e, g)) return;
-            drag.noPopup = true;   // 팝업이 막혔으면 다시 시도하지 않고 화면 안에서만
+        if (!drag.noWin && outRatio(g) >= OUT_AT) {
+            drag.leaving = true;
+            var d = drag;
+            openFloating(d.list, e.screenX, e.screenY).then(function (ok) {
+                if (ok) { if (drag === d) endDrag(); }
+                else if (drag === d) { d.leaving = false; d.noWin = true; }   // 못 띄우면 화면 안에서만
+            });
+            return;
         }
-        // 아직 창 안: 가장자리 밖으로 3분의 1까지는 그대로 걸쳐 보이게(창을 못 띄우는 브라우저는 안쪽으로 막아요)
         var sx = 0, sy = 0;
-        if (drag.noPopup) {
+        if (drag.noWin) {
             if (g.l < 0) sx = -g.l; else if (g.r > window.innerWidth) sx = window.innerWidth - g.r;
             if (g.t < 0) sy = -g.t; else if (g.b > window.innerHeight) sy = window.innerHeight - g.b;
         }
         placeAll(e.clientX, e.clientY, sx, sy);
     });
     document.addEventListener("pointerup", endDrag);
-    document.addEventListener("pointercancel", function () { if (drag && !drag.win) endDrag(); });
+    document.addEventListener("pointercancel", endDrag);
     window.addEventListener("resize", function () {
         var moved = PIECES.filter(function (p) { return p.wrap.classList.contains("dc-moved"); });
         if (!moved.length) return;
@@ -810,11 +776,12 @@ window.T = window.T || function (ko) { return ko; };   /* lang.js가 없어도 �
     });
     // 홈페이지를 닫거나 다른 곳으로 가면 따로 떠 있는 창도 닫아요
     window.addEventListener("pagehide", function () {
-        PIECES.forEach(function (p) { if (p.win && !p.win.closed) { try { p.win.close(); } catch (e) {} } });
+        if (floatWin && !floatWin.closed) { try { floatWin.close(); } catch (e) {} }
     });
 
-    ANA.wrap.addEventListener("dblclick", function (e) { e.preventDefault(); toggle(ANA.win && ANA.win === DIG.win ? [ANA, DIG] : [ANA]); });
-    DIG.wrap.addEventListener("dblclick", function (e) { e.preventDefault(); toggle(ANA.win && ANA.win === DIG.win ? [ANA, DIG] : [DIG]); });
+    // 더블클릭: 창 안에서는 그 조각만 홈으로, 홈에서는 따로 띄우기
+    ANA.wrap.addEventListener("dblclick", function (e) { e.preventDefault(); toggle([ANA]); });
+    DIG.wrap.addEventListener("dblclick", function (e) { e.preventDefault(); toggle([DIG]); });
     grip.addEventListener("dblclick", function (e) { e.preventDefault(); toggle([ANA, DIG]); });
     ANA.ph.addEventListener("click", function () { backHome(ANA); });
     DIG.ph.addEventListener("click", function () { backHome(DIG); });
