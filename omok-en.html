@@ -26,6 +26,25 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="omok.css?v=5">
+    <style>
+        /* 2026-11-28: 판 아래 설명 글 (검색엔진·처음 오신 분용) */
+        .om-guide { max-width: 980px; margin: 14px auto 0; padding: 0 16px; }
+        .om-guide-in { background: #fffdf6; border: 1px solid #e6d8bb; border-radius: 14px; padding: 22px 26px 18px; color: #3a3024; font-size: 0.95rem; line-height: 1.8; }
+        .om-guide h2 { margin: 0 0 8px; font-size: 1.22rem; color: #1e2942; }
+        .om-guide h3 { margin: 22px 0 6px; padding-left: 10px; border-left: 4px solid #c9a27e; font-size: 1.02rem; color: #1e2942; }
+        .om-guide p { margin: 6px 0; }
+        .om-guide ul, .om-guide ol { margin: 6px 0; padding-left: 1.3em; }
+        .om-guide li { margin: 3px 0; }
+        .om-guide table { border-collapse: collapse; margin: 8px 0; font-size: 0.9rem; }
+        .om-guide th, .om-guide td { border: 1px solid #e6d8bb; padding: 5px 12px; text-align: center; }
+        .om-guide th { background: #f4ecdd; }
+        .om-guide dt { margin-top: 10px; font-weight: 700; color: #1e2942; }
+        .om-guide dd { margin: 2px 0 0; }
+        @media (max-width: 640px) {
+            .om-guide { padding: 0 8px; }
+            .om-guide-in { padding: 16px 16px 12px; font-size: 0.93rem; }
+        }
+    </style>
 </head>
 <body>
     <header class="om-top">
@@ -140,6 +159,55 @@
             </details>
         </aside>
     </main>
+
+    <!-- 2026-11-28: guide text -->
+    <section class="om-guide" aria-labelledby="omGuideTitle">
+        <div class="om-guide-in">
+            <h2 id="omGuideTitle">How to enjoy Omok (Gomoku)</h2>
+            <p>Omok, also known as Gomoku or Five in a Row, is a game where Black and White take turns placing stones, and <b>the first to make five in a row</b> horizontally, vertically or diagonally wins. The rules are simple, but reading ahead makes it surprisingly deep. On WowEzBox you play on a 15×15 board with <b>Renju rules</b>, against the computer (easy, normal, hard) or online opponents. There is no sign-up.</p>
+
+            <h3>Getting started</h3>
+            <ol>
+                <li>Choose <b>your stone</b> on the right (below the board on phones): Black moves first, White second. Then choose a <b>level</b>.</li>
+                <li>Press [Start] and tap a point on the board to place a stone.</li>
+                <li>On phones, the first tap shows a preview and a second tap on the same point places the stone, so you don't misplace a move by accident.</li>
+                <li>You have <b>15 seconds</b> per move against the computer and <b>20 seconds</b> online. The clock turns red when 5 seconds are left.</li>
+            </ol>
+
+            <h3>Why Renju rules?</h3>
+            <p>In Omok, moving first is a big advantage, so without restrictions Black wins far more often even between equal players. Renju rules balance this by forbidding 3-3, 4-4 and overlines (six or more in a row) <b>for Black only</b>. White has no forbidden moves and wins with five or more. This game marks Black's forbidden points with a red ×, so you won't make a mistake even before you know all the rules. Once you are used to them, try turning the marks off.</p>
+
+            <h3>Shapes to know</h3>
+            <ul>
+                <li><b>Open three</b>: three stones with both ends empty. Left alone it becomes an open four next move, so block it right away.</li>
+                <li><b>Open four</b>: four stones with both ends empty. Blocking one end still leaves five at the other, so it can no longer be stopped.</li>
+                <li><b>Four-three</b>: one move that makes a four and an open three together. While the opponent blocks the four, the three becomes an open four. It is the classic winning move and is allowed for Black too.</li>
+                <li><b>Continuous fours</b>: making four after four so the opponent can only block, then winning at the end. The computer on hard looks for these and blocks yours.</li>
+            </ul>
+
+            <h3>Tips for winning</h3>
+            <ul>
+                <li><b>Defense first.</b> Never miss the opponent's open threes and fours; that matters more than your own attack.</li>
+                <li><b>Start near the center.</b> The middle of the board leaves the most directions to grow.</li>
+                <li><b>Leave gaps.</b> Stones placed one point apart are harder to block than stones placed side by side.</li>
+                <li><b>As White, use the forbidden points.</b> If Black can only block on a forbidden point, Black can't play there and White wins.</li>
+                <li><b>Practice with Undo.</b> Against the computer you can press [Undo] and try another move.</li>
+            </ul>
+
+            <h3>Playing online</h3>
+            <p><b>Quick match</b> pairs you with someone who is waiting, and <b>Create a room</b> gives you a room code and link to send to a friend. In rooms made with a friend you can chat freely; in quick matches with strangers you chat with a set of short preset messages. Rooms and chats are deleted automatically 24 hours after last use.</p>
+
+            <h3>FAQ</h3>
+            <dl>
+                <dt>Is four-three forbidden?</dt>
+                <dd>No. Under Renju rules only 3-3, 4-4 and overlines are forbidden for Black; four-three is allowed.</dd>
+                <dt>What if Black's five also forms a forbidden shape?</dt>
+                <dd>Exactly five in a row wins for Black. Making five comes first.</dd>
+                <dt>What if White makes six in a row?</dt>
+                <dd>White has no overline restriction and wins with five or more.</dd>
+            </dl>
+        </div>
+    </section>
 
     <footer class="om-foot">Copyright © 2026 WowEzBox. All rights reserved.</footer>
 

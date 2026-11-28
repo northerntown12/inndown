@@ -26,6 +26,25 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Noto+Sans+KR:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="omok.css?v=5">
+    <style>
+        /* 2026-11-28: 판 아래 설명 글 (검색엔진·처음 오신 분용) */
+        .om-guide { max-width: 980px; margin: 14px auto 0; padding: 0 16px; }
+        .om-guide-in { background: #fffdf6; border: 1px solid #e6d8bb; border-radius: 14px; padding: 22px 26px 18px; color: #3a3024; font-size: 0.95rem; line-height: 1.8; }
+        .om-guide h2 { margin: 0 0 8px; font-size: 1.22rem; color: #1e2942; }
+        .om-guide h3 { margin: 22px 0 6px; padding-left: 10px; border-left: 4px solid #c9a27e; font-size: 1.02rem; color: #1e2942; }
+        .om-guide p { margin: 6px 0; }
+        .om-guide ul, .om-guide ol { margin: 6px 0; padding-left: 1.3em; }
+        .om-guide li { margin: 3px 0; }
+        .om-guide table { border-collapse: collapse; margin: 8px 0; font-size: 0.9rem; }
+        .om-guide th, .om-guide td { border: 1px solid #e6d8bb; padding: 5px 12px; text-align: center; }
+        .om-guide th { background: #f4ecdd; }
+        .om-guide dt { margin-top: 10px; font-weight: 700; color: #1e2942; }
+        .om-guide dd { margin: 2px 0 0; }
+        @media (max-width: 640px) {
+            .om-guide { padding: 0 8px; }
+            .om-guide-in { padding: 16px 16px 12px; font-size: 0.93rem; }
+        }
+    </style>
 </head>
 <body>
     <header class="om-top">
@@ -146,6 +165,55 @@
             </details>
         </aside>
     </main>
+
+    <!-- 2026-11-28: 설명 글 -->
+    <section class="om-guide" aria-labelledby="omGuideTitle">
+        <div class="om-guide-in">
+            <h2 id="omGuideTitle">오목, 이렇게 즐겨요</h2>
+            <p>오목은 흑돌과 백돌을 번갈아 놓아 가로·세로·대각선 중 한 방향으로 <b>다섯 개를 먼저 잇는 쪽</b>이 이기는 게임이에요. 규칙은 간단하지만 수를 읽는 재미가 깊어요. WowEzBox 오목은 15×15 판에서 <b>렌주룰</b>로 두고, 컴퓨터(쉬움·보통·어려움)나 온라인 상대와 겨룰 수 있어요. 회원가입 없이 바로 시작할 수 있어요.</p>
+
+            <h3>시작하는 법</h3>
+            <ol>
+                <li>오른쪽(폰에서는 아래쪽)에서 <b>내 돌</b>(흑은 먼저, 백은 나중)과 <b>난이도</b>를 골라요.</li>
+                <li>[시작]을 누르고, 판 위 원하는 자리를 누르면 돌이 놓여요.</li>
+                <li>폰에서는 한 번 누르면 미리 보기가 뜨고, 같은 자리를 한 번 더 누르면 놓여요. 잘못 누르는 실수를 막기 위해서예요.</li>
+                <li>컴퓨터와 둘 때는 한 수에 <b>15초</b>, 온라인 대결은 <b>20초</b>예요. 시간이 5초 남으면 시계가 빨갛게 바뀌어요.</li>
+            </ol>
+
+            <h3>렌주룰은 왜 있나요?</h3>
+            <p>오목은 먼저 두는 흑이 훨씬 유리해서, 아무 제한 없이 두면 실력이 비슷해도 흑이 자주 이겨요. 렌주룰은 <b>흑에게만</b> 3-3, 4-4, 장목(6개 이상 잇기)을 금지해서 균형을 맞춘 규칙이에요. 백은 금지된 자리가 없고 5개 이상이면 이겨요. 이 게임은 흑의 금수 자리를 판 위에 빨간 ×로 보여 줘서, 규칙을 다 외우지 않아도 실수하지 않아요. 익숙해지면 표시를 끄고 두어 보세요.</p>
+
+            <h3>꼭 알아 둘 모양</h3>
+            <ul>
+                <li><b>열린 3</b>: 양쪽 끝이 비어 있는 돌 3개. 그냥 두면 다음 수에 열린 4가 되니 바로 막아야 해요.</li>
+                <li><b>열린 4</b>: 양쪽 끝이 비어 있는 돌 4개. 한쪽을 막아도 반대쪽에서 5가 돼서 더는 막을 수 없어요.</li>
+                <li><b>4-3</b>: 한 수로 4와 열린 3을 함께 만드는 수예요. 상대가 4를 막는 사이 3이 열린 4가 돼요. 흑에게도 허용되는 대표적인 승리 방법이에요.</li>
+                <li><b>연속 4</b>: 4를 계속 만들어 상대가 막기만 하게 몰다가 마지막에 이기는 방법이에요. 어려움 단계의 컴퓨터는 이런 수를 찾아내고, 내가 노리면 막아요.</li>
+            </ul>
+
+            <h3>이기는 요령</h3>
+            <ul>
+                <li><b>막기가 먼저예요.</b> 내 공격보다 상대의 열린 3과 4를 놓치지 않는 게 가장 중요해요.</li>
+                <li><b>가운데에서 시작하세요.</b> 판 가운데는 뻗어 나갈 방향이 많아 공격하기 좋아요.</li>
+                <li><b>한 칸씩 띄워 보세요.</b> 돌을 바로 붙이기보다 한 칸 띄운 모양이 상대가 막을 자리를 고르기 어렵게 만들어요.</li>
+                <li><b>백이라면 금수를 이용하세요.</b> 흑이 금수 자리로만 막을 수 있게 몰아가면, 흑은 그 자리에 둘 수 없어서 백이 이겨요.</li>
+                <li><b>무르기로 연습하세요.</b> 컴퓨터와 둘 때는 [무르기]로 돌아가 다른 수를 시험해 볼 수 있어요.</li>
+            </ul>
+
+            <h3>온라인 대결</h3>
+            <p><b>빠른 매칭</b>을 누르면 기다리는 사람과 바로 이어지고, <b>방 만들기</b>를 누르면 방 코드와 링크가 생겨서 친구에게 보낼 수 있어요. 친구와 만든 방에서는 자유롭게 대화할 수 있고, 처음 만나는 사람과의 빠른 매칭에서는 정해진 짧은 인사말로만 대화해요. 방과 대화는 마지막으로 이용한 뒤 24시간이 지나면 자동으로 지워져요.</p>
+
+            <h3>자주 묻는 질문</h3>
+            <dl>
+                <dt>4-3도 금수인가요?</dt>
+                <dd>아니요. 렌주룰에서 흑에게 금지되는 것은 3-3, 4-4, 장목뿐이고, 4-3은 둘 수 있어요.</dd>
+                <dt>흑이 5를 만드는 자리가 금수 모양과 겹치면요?</dt>
+                <dd>정확히 5개가 이어지면 흑이 이겨요. 5를 만드는 수가 먼저예요.</dd>
+                <dt>백이 6개를 이으면요?</dt>
+                <dd>백은 장목 제한이 없어서 5개 이상이면 이겨요.</dd>
+            </dl>
+        </div>
+    </section>
 
     <footer class="om-foot">Copyright © 2026 WowEzBox. All rights reserved.</footer>
 

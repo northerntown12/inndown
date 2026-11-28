@@ -26,6 +26,25 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Noto+Sans+KR:wght@400;600;700;900&family=Noto+Serif+KR:wght@700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="janggi.css">
+    <style>
+        /* 2026-11-28: 판 아래 설명 글 (검색엔진·처음 오신 분용) */
+        .g-guide { max-width: 1180px; margin: 14px auto 0; padding: 0 16px; }
+        .g-guide-in { background: #fffdf6; border: 1px solid #e6d8bb; border-radius: 14px; padding: 22px 26px 18px; color: #3a3024; font-size: 0.95rem; line-height: 1.8; }
+        .g-guide h2 { margin: 0 0 8px; font-size: 1.22rem; color: #36347a; }
+        .g-guide h3 { margin: 22px 0 6px; padding-left: 10px; border-left: 4px solid #b3b1f2; font-size: 1.02rem; color: #36347a; }
+        .g-guide p { margin: 6px 0; }
+        .g-guide ul, .g-guide ol { margin: 6px 0; padding-left: 1.3em; }
+        .g-guide li { margin: 3px 0; }
+        .g-guide table { border-collapse: collapse; margin: 8px 0; font-size: 0.9rem; }
+        .g-guide th, .g-guide td { border: 1px solid #e6d8bb; padding: 5px 12px; text-align: center; }
+        .g-guide th { background: #f4ecdd; }
+        .g-guide dt { margin-top: 10px; font-weight: 700; color: #36347a; }
+        .g-guide dd { margin: 2px 0 0; }
+        @media (max-width: 640px) {
+            .g-guide { padding: 0 8px; }
+            .g-guide-in { padding: 16px 16px 12px; font-size: 0.93rem; }
+        }
+    </style>
 </head>
 <body>
     <header class="g-top">
@@ -150,6 +169,55 @@
             </details>
         </aside>
     </main>
+
+    <!-- 2026-11-28: guide text -->
+    <section class="g-guide" aria-labelledby="jGuideTitle">
+        <div class="g-guide-in">
+            <h2 id="jGuideTitle">How to enjoy Janggi</h2>
+            <p>Janggi is Korea's traditional board game, often called Korean chess. Two sides, Cho and Han, each start with 16 pieces on a board of 9 by 10 lines, and you win by <b>checkmating</b> the opposing General so that it has nowhere to escape. On WowEzBox you can play the computer at three levels (easy, normal, hard) or play friends and other people online. There is no sign-up, and your game is saved on this device, so you can close the window and pick it up later.</p>
+
+            <h3>Getting started</h3>
+            <ol>
+                <li>Choose <b>your side</b> on the right (below the board on phones). Cho moves first, Han second.</li>
+                <li>Pick a <b>level</b> and a <b>setup</b>, then press [▶ Start] on the board.</li>
+                <li>Tap one of your pieces to see dots where it can go, then tap a dot to move.</li>
+                <li>If the Chinese characters on the pieces are unfamiliar, turn on "Show letters instead of Chinese characters".</li>
+            </ol>
+
+            <h3>The four setups</h3>
+            <p>Before the game starts, each side may swap the positions of its Horses and Elephants. From the left the four setups are <b>Horse-Elephant-Horse-Elephant, Elephant-Horse-Elephant-Horse, Horse-Elephant-Elephant-Horse</b> and <b>Elephant-Horse-Horse-Elephant</b>. Elephants reach far along diagonals while Horses guard nearby points, so the setup changes which side is better for attack and which for defense. Any setup is fine when you are starting out; try a few and see which feels right.</p>
+
+            <h3>Piece values</h3>
+            <table>
+                <tr><th>Chariot</th><th>Cannon</th><th>Horse</th><th>Elephant</th><th>Guard</th><th>Soldier</th></tr>
+                <tr><td>13</td><td>7</td><td>5</td><td>3</td><td>3</td><td>2</td></tr>
+            </table>
+            <p>These are the commonly used values. They help when you are deciding whether to trade pieces: giving up an Elephant to take a Cannon is a gain, while trading a Chariot for a Horse is a loss. This game is not decided on points; you play until checkmate.</p>
+
+            <h3>Tips for beginners</h3>
+            <ul>
+                <li><b>Look after your Chariots.</b> They are the strongest pieces. Don't give them away early; bring them out onto open lines to pressure the other side.</li>
+                <li><b>Cannons need a screen.</b> A Cannon must jump exactly one piece, so always check what it can jump over. A careless move can give the opponent's Cannon the screen it needs.</li>
+                <li><b>Block Horses and Elephants.</b> They cannot move if a point on their path is occupied, so one well-placed piece can be a strong defense.</li>
+                <li><b>Keep the palace solid.</b> Chariots, Cannons and Soldiers can also move along the palace diagonals. Keep your Guards close to the General.</li>
+                <li><b>Watch for checks.</b> You must answer a check, and if you can't, it is checkmate. Keep an eye on the lines the opponent's Chariots and Cannons aim at your palace.</li>
+                <li><b>Practice with Undo.</b> Against the computer you can press [↩ Undo] and try a different move.</li>
+            </ul>
+
+            <h3>Playing online</h3>
+            <p>In [🌐 Play online], <b>Quick match</b> pairs you with someone who is waiting, and <b>Create a room</b> gives you a 4-character room code and a link to send to a friend. You have <b>1 minute</b> per move; run out of time and you lose. To take back a move, ask your opponent (up to 3 times per game). You can also chat, and only the two of you can see it. Rooms and chats are deleted automatically 24 hours after last use.</p>
+
+            <h3>FAQ</h3>
+            <dl>
+                <dt>Is bikjang (facing Generals) a draw?</dt>
+                <dd>Not in this game. Facing Generals is not scored as a draw; you keep playing until checkmate.</dd>
+                <dt>When can I pass?</dt>
+                <dd>Whenever you are not in check, you can pass your turn. It is useful when no move looks good.</dd>
+                <dt>Can I play on my phone?</dt>
+                <dd>Yes. It works in the browser on phones, tablets and computers, with nothing to install.</dd>
+            </dl>
+        </div>
+    </section>
 
     <footer class="g-foot">Copyright © 2026 WowEzBox. All rights reserved.</footer>
 
